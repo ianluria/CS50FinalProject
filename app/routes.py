@@ -1,18 +1,20 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
 from app.forms import SaleForm, LoginForm
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 from werkzeug.urls import url_parse
 
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
-    return render_template("base.html")
+    return render_template("index.html")
 
 
 @app.route("/sale", methods=["GET", "POST"])
+@login_required
 def sale():
     form = SaleForm()
     if form.validate_on_submit():
@@ -21,7 +23,7 @@ def sale():
     return render_template("saleInput.html", form=form)
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
