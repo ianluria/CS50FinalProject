@@ -21,6 +21,7 @@ def sale():
         return redirect(url_for("index"))
     return render_template("saleInput.html", form=form)
 
+
 @app.route("/login")
 def login():
     if current_user.is_authenticated:
@@ -32,15 +33,14 @@ def login():
             flash("Invalid username or password.")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
-        next_page= request.args.get("next")
+        next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
             next_page = url_for("index")
         return redirect(next_page)
     return render_template("login.html", form=form)
 
+
 @app.route("/logout")
 def logout():
-        logout_user()
-        return redirect(url_for("index"))
-
-
+    logout_user()
+    return redirect(url_for("index"))
