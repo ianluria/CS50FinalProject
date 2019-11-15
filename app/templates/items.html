@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% block add %}{% endblock %}
+    {% block edit %}{% endblock %}
+    {% block delete %}{% endblock %}
+
+
+    {% for item in items %}
+        <div>{{ item.item }} cost {{item.price}} for {{item.cost}} added {{item.date}} </div>
+    {% endfor %}
+
+{% endblock %}
