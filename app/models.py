@@ -18,7 +18,6 @@ class Sales(db.Model):
 
 
 class Items(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True)
     item = db.Column(db.String(255), index=True, unique=True)
     date = db.Column(db.Date, index=True, default=date.today)
@@ -27,7 +26,7 @@ class Items(db.Model):
     sales = db.relationship("Sales", backref="item1", lazy="dynamic")
 
     def __repr__(self):
-        return '<Items {}>'.format(self.username)
+        return '<Items {}>'.format(self.item)
 
 
 class User(UserMixin, db.Model):
