@@ -6,24 +6,25 @@ from flask_login import UserMixin
 
 class Sales(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True)
-    item = db.Column(db.String(255),  db.ForeignKey("items.item"), index=True)
-    date = db.Column(db.Date, index=True, default=date.today)
-    price = db.Column(db.Float(2))
-    quantity = db.Column(db.Integer)
-    shipping = db.Column(db.Float(2))
+    username = db.Column(db.String(64), index=True, nullable=False)
+    item = db.Column(db.String(255),  db.ForeignKey("items.item"), index=True, nullable=False)
+    date = db.Column(db.Date, index=True, default=date.today, nullable=False)
+    price = db.Column(db.Float(2), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    shipping = db.Column(db.Float(2), nullable=False)
+    profit = db.Column(db.Float(2), nullable=False)
 
     def __repr__(self):
         return '<Sales {}>'.format(self.username)
 
 
 class Items(db.Model):
-    username = db.Column(db.String(64), index=True)
-    item = db.Column(db.String(255), index=True, unique=True)
-    date = db.Column(db.Date, index=True, default=date.today)
-    price = db.Column(db.Float(2))
-    quantity = db.Column(db.Integer)
-    sales = db.relationship("Sales", backref="item1", lazy="dynamic")
+    user = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
+    item = db.Column(db.String(255), index=True, unique=True, nullable=False)
+    date = db.Column(db.Date, index=True, default=date.today, nullable=False)
+    price = db.Column(db.Float(2), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    sales = db.relationship("Sales", backref="item", lazy="dynamic")
 
     def __repr__(self):
         return '<Items {}>'.format(self.item)
@@ -34,6 +35,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    items = db.relationship("Items", backref="user", lazy="dynamic")
 
     def __repr__(self):
         return '<User ()>'.format(self.username)
@@ -43,6 +45,14 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def removeItem(self, item):
+        if self.has_item(item):
+            self.items.remove(item)
+
+    def has_item(self, item):
+        return self.items.filter(usersItem==item).count() > 0
+
 
 
 @login.user_loader

@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from app.forms import SaleForm, LoginForm, RegistrationFrom, ItemForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Sales
 from werkzeug.urls import url_parse
 
 # Dashboard of user sales
@@ -18,33 +18,74 @@ def index():
 def sale():
     form = SaleForm()
     if form.validate_on_submit():
+
+        date = form.date.data
+        price = form.price.data
+        quantity = form.quantity.data
+        postage  = form.postage.data
+
+        #calculate profit
+        #populate_obj
+
+        newSale = Sales(username = current_user, date=date, price=price, quantity=quantity, shipping=postage)
+        db.session.add(newSale)
+        db.session.commit()
+
         flash("Sale Logged.")
         return redirect(url_for("index"))
-    return render_template("saleInput.html", form=form)
+
+    else:
+        # create dynamic list of choice values
+        return render_template("saleInput.html", form=form)
 
 
-# Create a new item
-@app.route("/addItem", methods=["GET", "POST"])
-@login_required
-def addItem():
-    form = ItemForm()
-    if form.validate_on_submit():
-        flash("New Item Added.")
-        #Need to add item info to db
-        return redirect(url_for("items"))
-    return render_template("items.html", form=form)
+# # Create a new item
+# @app.route("/addItem", methods=["GET", "POST"])
+# @login_required
+# def addItem():
+#     form = ItemForm()
+#     if form.validate_on_submit():
+
+#         itemFound = Items.query.filter_by(item=form.item.data).first()
+#         if not itemFound is None:
+#             flash("Item already being tracked.")
+#             return redirect(url_for("editItem"))
+
+#         flash("New Item Added.")
+#         #Need to add item info to db
+
+#         item = form.item.data
+#         date = form.date.data
+#         price = form.pricePaid.data
+#         quantity = form.totalQuantity.data
+            
+
+#         newItem = Items(username = current_user, item=item, date=date, price=price, quantity=quantity)
+#         db.session.add(newItem)
+#         db.session.commit()
+
+#         return redirect(url_for("items"))
+
+#     return render_template("items.html", form=form)
 
 
 # Edit an item
 # If get return list of current items
 # If post adjust the table
-@app.route("editItem", methods=["GET", "POST"])
-@login_required
-def editItem():
-    form = ItemForm()
-    if form.validate_on_submit():
-        return redirect(url_for("items"))
-    return render_template("_editItem.html", form=form)
+# @app.route("editItem", methods=["GET", "POST"])
+# @login_required
+# def editItem():
+#     form = ItemForm()
+#     if form.validate_on_submit():
+#         return redirect(url_for("items"))
+#     return render_template("_editItem.html", form=form)
+
+
+# remove item
+# get item to be removed from drop down menu
+# get this user
+# execute remove item on this user
+# update database
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
