@@ -19,8 +19,9 @@ class Sales(db.Model):
 
 
 class Items(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
-    item = db.Column(db.String(255), index=True, unique=True, nullable=False)
+    itemName = db.Column(db.String(255), index=True, unique=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.Float(2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)

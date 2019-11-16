@@ -49,5 +49,5 @@ class ItemForm(FlaskForm):
     totalQuantity = IntegerField("Total Quantity", validators=[DataRequired()])
     
 
-class EditItemForm(FlaskForm):
+# class EditItemForm(FlaskForm):
     
