@@ -7,7 +7,7 @@ from flask_login import UserMixin
 class Sales(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, nullable=False)
-    item = db.Column(db.String(255),  db.ForeignKey("items.item"), index=True, nullable=False)
+    itemName = db.Column(db.String(255),  db.ForeignKey("items.itemName"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.Float(2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -19,9 +19,9 @@ class Sales(db.Model):
 
 
 class Items(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
-    itemName = db.Column(db.String(255), index=True, unique=True, nullable=False)
+    # id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False, primary_key=True)
+    itemName = db.Column(db.String(255), index=True, nullable=False, primary_key=True)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.Float(2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
