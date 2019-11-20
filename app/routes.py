@@ -22,12 +22,13 @@ def sale():
         date = form.date.data
         price = form.price.data
         quantity = form.quantity.data
-        postage  = form.postage.data
+        postage = form.postage.data
 
-        #calculate profit
-        #populate_obj
+        # calculate profit
+        # populate_obj
 
-        newSale = Sales(username = current_user, date=date, price=price, quantity=quantity, shipping=postage)
+        newSale = Sales(username=current_user, date=date,
+                        price=price, quantity=quantity, shipping=postage)
         db.session.add(newSale)
         db.session.commit()
 
@@ -39,46 +40,67 @@ def sale():
         return render_template("saleInput.html", form=form)
 
 
-# # Create a new item
-# @app.route("/addItem", methods=["GET", "POST"])
-# @login_required
-# def addItem():
-#     form = ItemForm()
-#     if form.validate_on_submit():
+# Create a new item
+@app.route("/addItem", methods=["GET", "POST"])
+@login_required
+def addItem():
+    form = ItemForm()
 
-#         itemFound = Items.query.filter_by(item=form.item.data).first()
-#         if not itemFound is None:
-#             flash("Item already being tracked.")
-#             return redirect(url_for("editItem"))
+    print("form data: ", form.data)
 
-#         flash("New Item Added.")
-#         #Need to add item info to db
+    if form.validate_on_submit():
 
-#         item = form.item.data
-#         date = form.date.data
-#         price = form.pricePaid.data
-#         quantity = form.totalQuantity.data
-            
+        print("here.")
 
-#         newItem = Items(username = current_user, item=item, date=date, price=price, quantity=quantity)
-#         db.session.add(newItem)
-#         db.session.commit()
+        itemFound = Items.query.filter_by(item=form.item.data).first()
+        if not itemFound is None:
+            flash("Item already being tracked.")
+            return redirect(url_for("editItem"))
 
-#         return redirect(url_for("items"))
+        flash("New Item Added.")
+        # Need to add item info to db
 
-#     return render_template("items.html", form=form)
+        item = form.item.data
+        price = form.pricePaid.data
+        quantity = form.totalQuantity.data
+
+        newItem = Items(username=current_user, item=item,
+                        price=price, quantity=quantity)
+        db.session.add(newItem)
+        db.session.commit()
+
+        return redirect(url_for("items"))
+
+    return render_template("addItem.html", form=form)
 
 
 # Edit an item
 # If get return list of current items
 # If post adjust the table
-# @app.route("editItem", methods=["GET", "POST"])
-# @login_required
-# def editItem():
-#     form = ItemForm()
-#     if form.validate_on_submit():
-#         return redirect(url_for("items"))
-#     return render_template("_editItem.html", form=form)
+@app.route("editItem", methods=["GET", "POST"])
+@login_required
+def editItem():
+    form = EditItemForm()
+    if form.validate_on_submit():
+
+        item = form.item.data
+        price = form.pricePaid.data
+        quantity = form.totalQuantity.data
+
+        newItem = Items(username=current_user, item=item,
+                        price=price, quantity=quantity)
+        db.session.add(newItem)
+        db.session.commit()
+
+        return redirect(url_for("items"))
+
+    items - Items.query.all()
+    # Create a list of all itemNames
+    items = [name["itemName"] for name in items]
+
+    form.item.choices = items
+
+    return render_template("_editItem.html", form=form)
 
 
 # remove item
@@ -124,11 +146,6 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-
-
-
-
-
 
 
 # Display all items

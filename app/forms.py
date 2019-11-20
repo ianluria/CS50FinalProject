@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField
+from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
 
@@ -43,11 +43,11 @@ class RegistrationForm(FlaskForm):
 
 class ItemForm(FlaskForm):
     item = StringField("Item", validators=[DataRequired])
-    date = DateField("Date", validators=[DataRequired()], format='%d-%m-%Y')
+    # date = DateField("Date", validators=[DataRequired()], format='%d-%m-%Y')
     pricePaid = DecimalField("Total Price", validators=[DataRequired()], places=2)
     # Must be greater than 0 and less than 1000
     totalQuantity = IntegerField("Total Quantity", validators=[DataRequired()])
-    
+    submit = SubmitField('Add')
 
-# class EditItemForm(FlaskForm):
-    
+class EditItemForm(ItemForm):
+    item = SelectField("Item", validators=[DataRequired])
