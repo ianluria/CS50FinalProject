@@ -42,7 +42,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class ItemForm(FlaskForm):
-    item = StringField("Item", validators=[DataRequired])
+    item = StringField("Item", validators=[DataRequired()])
     # date = DateField("Date", validators=[DataRequired()], format='%d-%m-%Y')
     pricePaid = DecimalField("Total Price", validators=[DataRequired()], places=2)
     # Must be greater than 0 and less than 1000
@@ -50,4 +50,4 @@ class ItemForm(FlaskForm):
     submit = SubmitField('Add')
 
 class EditItemForm(ItemForm):
-    item = SelectField("Item", validators=[DataRequired])
+    item = SelectField("Item", validators=[DataRequired()])

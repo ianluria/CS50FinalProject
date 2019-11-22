@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm
+from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, EditItemForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Sales
+from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
 
 # Dashboard of user sales
@@ -47,15 +47,21 @@ def addItem():
     form = ItemForm()
 
     print("form data: ", form.data)
+    print("form errors: ", form.errors)
 
     if form.validate_on_submit():
 
         print("here.")
 
-        itemFound = Items.query.filter_by(item=form.item.data).first()
+        itemFound = Items.query.filter_by(itemName=form.item.data).first()
+
+        print("itemFound: ", itemFound)
+
         if not itemFound is None:
             flash("Item already being tracked.")
             return redirect(url_for("editItem"))
+
+        print("here 2.")
 
         flash("New Item Added.")
         # Need to add item info to db
@@ -64,10 +70,12 @@ def addItem():
         price = form.pricePaid.data
         quantity = form.totalQuantity.data
 
-        newItem = Items(username=current_user, item=item,
+        newItem = Items(username=current_user, itemName=item,
                         price=price, quantity=quantity)
         db.session.add(newItem)
         db.session.commit()
+
+        print("here 3.")
 
         return redirect(url_for("items"))
 
@@ -77,7 +85,7 @@ def addItem():
 # Edit an item
 # If get return list of current items
 # If post adjust the table
-@app.route("editItem", methods=["GET", "POST"])
+@app.route("/editItem", methods=["GET", "POST"])
 @login_required
 def editItem():
     form = EditItemForm()
