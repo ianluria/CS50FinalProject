@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, EditItemForm
+from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, EditItemSelectForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
@@ -81,34 +81,49 @@ def addItem():
 
     return render_template("addItem.html", form=form)
 
-
-# Edit an item
-# If get return list of current items
-# If post adjust the table
-@app.route("/editItem", methods=["GET", "POST"])
+@app.route("/editItemSelect", methods=["GET", "POST"])
 @login_required
-def editItem():
-    form = EditItemForm()
+def editItemSelect():
+
+    form = EditItemSelectForm()
+
+    if form.validate_on_submit():
+        itemForm = ItemForm()
+
+        itemForm.item.data = form.item.data
+
+        # Populate form data for item.data in database
+
+        return render_template("_editItemDetails.html", form=itemForm)
+
+    items = Items.query.all()
+    # Create a list of all itemNames
+    items = [name["itemName"] for name in items]
+
+    form.items.choices = items
+
+    return render_template("_editItemSelect.html", form=form)
+
+
+@app.route("/editItemDetails", methods=["POST"])
+@login_required
+def editItemDetails():
+    
+    form = ItemForm()
+
     if form.validate_on_submit():
 
         item = form.item.data
         price = form.pricePaid.data
         quantity = form.totalQuantity.data
 
+        # Need to update listing not create a new one
         newItem = Items(username=current_user, item=item,
                         price=price, quantity=quantity)
         db.session.add(newItem)
         db.session.commit()
 
         return redirect(url_for("items"))
-
-    items - Items.query.all()
-    # Create a list of all itemNames
-    items = [name["itemName"] for name in items]
-
-    form.item.choices = items
-
-    return render_template("_editItem.html", form=form)
 
 
 # remove item

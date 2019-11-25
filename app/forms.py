@@ -49,5 +49,6 @@ class ItemForm(FlaskForm):
     totalQuantity = IntegerField("Total Quantity", validators=[DataRequired()])
     submit = SubmitField('Add')
 
-class EditItemForm(ItemForm):
-    item = SelectField("Item", validators=[DataRequired()])
+class EditItemSelectForm(FlaskForm):
+    items = SelectField("Items", validators=[DataRequired()])
+    submit = SubmitField('Select')

@@ -1,0 +1,22 @@
+{% extends "items.html" %}
+
+{% block edit %}
+
+
+<h6>Edit Item Select</h6>
+<form action="/_editItemDetails" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.items.label }}<br>
+        {{ form.items() }}
+        {% for error in form.items.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
+
+
+{% endblock %}
