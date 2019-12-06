@@ -116,7 +116,10 @@ def editItemSelect():
         itemFound = Items.query.filter(Items.user == current_user).filter(
             Items.itemName == form.items.data).first()
 
-        itemForm = ItemForm(itemFound)
+        print(itemFound.__dict__.items())
+
+        itemForm = ItemForm(obj=itemFound)
+        itemForm.itemName.render_kw={'readonly': True}
 
         return render_template("_editItemDetails.html", form=itemForm, items=items)
     
