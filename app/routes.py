@@ -39,6 +39,21 @@ def sale():
         # create dynamic list of choice values
         return render_template("saleInput.html", form=form)
 
+@app.route("/items", methods=["GET"])
+@login_required
+def items():
+
+    # Make this into a separate function.
+
+    items = Items.query.filter_by(username=current_user.username).all()
+
+    # Create a list of all itemNames
+    # items = [item.itemName for item in items]
+
+    # print(items)
+
+    return render_template("items.html", items=items)
+
 
 # Create a new item
 @app.route("/addItem", methods=["GET", "POST"])
@@ -48,6 +63,8 @@ def addItem():
 
     print("form data: ", form.data)
     print("form errors: ", form.errors)
+
+    print("current user: ", current_user.__dict__)
 
     if form.validate_on_submit():
 
@@ -70,16 +87,17 @@ def addItem():
         price = form.price.data
         quantity = form.quantity.data
 
-        newItem = Items(user=current_user, itemName=item,
+        newItem = Items(username=current_user.username, itemName=item,
                         price=price, quantity=quantity)
         db.session.add(newItem)
         db.session.commit()
 
         print("here 3.")
 
-        return redirect(url_for("items"))
+        return redirect(url_for("addItem"))
 
     return render_template("addItem.html", form=form)
+
 
 @app.route("/editItemSelect", methods=["GET", "POST"])
 @login_required
@@ -94,12 +112,12 @@ def editItemSelect():
 
     form.items.choices = names
 
-
     if form.validate_on_submit():
 
         print("edit item select validated.")
 
-        itemFound = Items.query.filter(Items.user==current_user).filter(Items.itemName==form.items.data).first()
+        itemFound = Items.query.filter(Items.user == current_user).filter(
+            Items.itemName == form.items.data).first()
 
         itemForm = ItemForm(itemFound)
 
@@ -107,7 +125,6 @@ def editItemSelect():
 
         return render_template("_editItemDetails.html", form=itemForm)
 
-    
     return render_template("_editItemSelect.html", form=form)
 
 
@@ -141,7 +158,6 @@ def editItemDetails():
         # # db.session.commit()
 
         return render_template("_editItemDetails.html", form=form)
-        
 
 
 # remove item
