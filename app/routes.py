@@ -53,7 +53,7 @@ def addItem():
 
         print("here.")
 
-        itemFound = Items.query.filter_by(itemName=form.item.data).first()
+        itemFound = Items.query.filter_by(itemName=form.itemName.data).first()
 
         print("itemFound: ", itemFound)
 
@@ -66,11 +66,11 @@ def addItem():
         flash("New Item Added.")
         # Need to add item info to db
 
-        item = form.item.data
-        price = form.pricePaid.data
-        quantity = form.totalQuantity.data
+        item = form.itemName.data
+        price = form.price.data
+        quantity = form.quantity.data
 
-        newItem = Items(username=current_user, itemName=item,
+        newItem = Items(user=current_user, itemName=item,
                         price=price, quantity=quantity)
         db.session.add(newItem)
         db.session.commit()
@@ -87,43 +87,61 @@ def editItemSelect():
 
     form = EditItemSelectForm()
 
+    items = Items.query.filter_by(user=current_user).all()
+
+    # Create a list of all itemNames
+    names = [(item.itemName, item.itemName) for item in items]
+
+    form.items.choices = names
+
+
     if form.validate_on_submit():
-        itemForm = ItemForm()
 
-        itemForm.item.data = form.item.data
+        print("edit item select validated.")
 
-        # Populate form data for item.data in database
+        itemFound = Items.query.filter(Items.user==current_user).filter(Items.itemName==form.items.data).first()
+
+        itemForm = ItemForm(itemFound)
+
+        #itemForm.item.data = form.items.data
 
         return render_template("_editItemDetails.html", form=itemForm)
 
-    items = Items.query.all()
-    # Create a list of all itemNames
-    items = [name["itemName"] for name in items]
-
-    form.items.choices = items
-
+    
     return render_template("_editItemSelect.html", form=form)
 
 
 @app.route("/editItemDetails", methods=["POST"])
 @login_required
 def editItemDetails():
-    
+
     form = ItemForm()
 
     if form.validate_on_submit():
 
-        item = form.item.data
-        price = form.pricePaid.data
-        quantity = form.totalQuantity.data
+        print("validated here.")
 
-        # Need to update listing not create a new one
-        newItem = Items(username=current_user, item=item,
-                        price=price, quantity=quantity)
-        db.session.add(newItem)
-        db.session.commit()
+        # item = Items.query.filter_by(itemName=form.items.data).first()
 
-        return redirect(url_for("items"))
+        # print(item)
+
+        # if item is None:
+        #     # error
+
+        # updateItem = ItemForm()
+
+        # updateItem.item.data = item.itemName
+        # updateItem.pricePaid.data = item.price
+        # updateItem.totalQuantity.data = item.quantity
+
+        # # # Need to update listing not create a new one
+        # # newItem = Items(username=current_user, item=item,
+        # #                 price=price, quantity=quantity)
+        # # db.session.add(newItem)
+        # # db.session.commit()
+
+        return render_template("_editItemDetails.html", form=form)
+        
 
 
 # remove item

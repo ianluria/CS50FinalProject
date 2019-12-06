@@ -7,23 +7,23 @@
     {{ form.hidden_tag() }}
 
     <p>
-        {{ form.item.label }}<br>
-        {{ form.item() }}
-        {% for error in form.item.errors %}
+        {{ form.itemName.label }}<br>
+        {{ form.itemName() }}
+        {% for error in form.itemName.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
     <p>
-        {{ form.pricePaid.label }}<br>
-        {{ form.pricePaid() }}
-        {% for error in form.pricePaid.errors %}
+        {{ form.price.label }}<br>
+        {{ form.price() }}
+        {% for error in form.price.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
     <p>
-        {{ form.totalQuantity.label }}<br>
-        {{ form.totalQuantity() }}
-        {% for error in form.totalQuantity.errors %}
+        {{ form.quantity.label }}<br>
+        {{ form.quantity() }}
+        {% for error in form.quantity.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
