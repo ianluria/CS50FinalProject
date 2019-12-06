@@ -39,6 +39,7 @@ def sale():
         # create dynamic list of choice values
         return render_template("saleInput.html", form=form)
 
+
 @app.route("/items", methods=["GET"])
 @login_required
 def items():
@@ -60,11 +61,6 @@ def items():
 @login_required
 def addItem():
     form = ItemForm()
-
-    print("form data: ", form.data)
-    print("form errors: ", form.errors)
-
-    print("current user: ", current_user.__dict__)
 
     if form.validate_on_submit():
 
@@ -96,7 +92,8 @@ def addItem():
 
         return redirect(url_for("addItem"))
 
-    return render_template("addItem.html", form=form)
+    items = Items.query.filter_by(username=current_user.username).all()
+    return render_template("_addItem.html", form=form, items=items)
 
 
 @app.route("/editItemSelect", methods=["GET", "POST"])
@@ -105,7 +102,7 @@ def editItemSelect():
 
     form = EditItemSelectForm()
 
-    items = Items.query.filter_by(user=current_user).all()
+    items = Items.query.filter_by(username=current_user.username).all()
 
     # Create a list of all itemNames
     names = [(item.itemName, item.itemName) for item in items]
@@ -121,11 +118,9 @@ def editItemSelect():
 
         itemForm = ItemForm(itemFound)
 
-        #itemForm.item.data = form.items.data
-
-        return render_template("_editItemDetails.html", form=itemForm)
-
-    return render_template("_editItemSelect.html", form=form)
+        return render_template("_editItemDetails.html", form=itemForm, items=items)
+    
+    return render_template("_editItemSelect.html", form=form, items=items)
 
 
 @app.route("/editItemDetails", methods=["POST"])
