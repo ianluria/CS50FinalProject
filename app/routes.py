@@ -66,25 +66,30 @@ def addItem():
 
         print("here.")
 
-        itemFound = Items.query.filter_by(itemName=form.itemName.data).first()
+        itemFound = Items.query.filter_by(user=current_user).filter_by(itemName=form.itemName.data).first()
 
         print("itemFound: ", itemFound)
 
         if not itemFound is None:
             flash("Item already being tracked.")
-            return redirect(url_for("editItem"))
+            return redirect(url_for("items"))
 
         print("here 2.")
 
         flash("New Item Added.")
         # Need to add item info to db
 
-        item = form.itemName.data
-        price = form.price.data
-        quantity = form.quantity.data
+        newItem = Items()
 
-        newItem = Items(username=current_user.username, itemName=item,
-                        price=price, quantity=quantity)
+        # item = form.itemName.data
+        # price = form.price.data
+        # quantity = form.quantity.data
+
+        # newItem = Items(username=current_user.username, itemName=item,
+        #                 price=price, quantity=quantity)
+
+        form.populate_obj(newItem)
+
         db.session.add(newItem)
         db.session.commit()
 

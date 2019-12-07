@@ -6,13 +6,15 @@
 <form action="/editItemDetails" method="post" novalidate>
     {{ form.hidden_tag() }}
 
-    <p>
+    <p>{{ form.itemName.data }}</p>
+    
+    <!-- <p>
         {{ form.itemName.label }}<br>
         {{ form.itemName() }}
         {% for error in form.itemName.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
-    </p>
+    </p> -->
     <p>
         {{ form.price.label }}<br>
         {{ form.price() }}
