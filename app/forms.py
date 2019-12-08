@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField
+from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
 
@@ -47,6 +47,7 @@ class ItemForm(FlaskForm):
     price = DecimalField("Total Price", validators=[DataRequired()], places=2)
     # Must be greater than 0 and less than 1000
     quantity = IntegerField("Total Quantity", validators=[DataRequired()])
+    hidden = HiddenField()
     submit = SubmitField('Add')
 
 class EditItemSelectForm(FlaskForm):

@@ -7,14 +7,10 @@
     {{ form.hidden_tag() }}
 
     <p>{{ form.itemName.data }}</p>
-    
-    <!-- <p>
-        {{ form.itemName.label }}<br>
-        {{ form.itemName() }}
-        {% for error in form.itemName.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p> -->
+
+
+    {{ form.hidden() }}
+
     <p>
         {{ form.price.label }}<br>
         {{ form.price() }}
@@ -30,11 +26,9 @@
         {% endfor %}
     </p>
 
-    <p>{{ form.submit() }}</p>
+    <p>{{ form.submit(render_kw = {"transportName":form.itemName.data}) }}</p>
 </form>
 
 
 
 {% endblock %}
-
-

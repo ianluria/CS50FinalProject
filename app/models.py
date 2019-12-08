@@ -20,7 +20,7 @@ class Sales(db.Model):
 
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), db.ForeignKey("user.username"), default=current_user.username index=True, nullable=False)
+    username = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
     itemName = db.Column(db.String(255), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.Float(2), nullable=False)
