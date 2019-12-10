@@ -1,9 +1,10 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, EditItemSelectForm
+from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
+from app.helpers import populateSelectField
 
 # Dashboard of user sales
 @app.route('/')
@@ -101,6 +102,8 @@ def deleteItem():
 
     form = ItemSelectForm()
 
+    populateSelectField(form)
+
     if form.validate_on_submit():
 
         item = Items.query.filter_by(user=current_user).filter_by(
@@ -123,6 +126,8 @@ def deleteItem():
 def editItem():
 
     form = ItemSelectForm()
+
+    items = populateSelectField(form)
 
     if form.validate_on_submit():
 

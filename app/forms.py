@@ -50,6 +50,6 @@ class ItemForm(FlaskForm):
     hidden = HiddenField()
     submit = SubmitField('Add')
 
-class EditItemSelectForm(FlaskForm):
+class ItemSelectForm(FlaskForm):
     items = SelectField("Items", validators=[DataRequired()])
     submit = SubmitField('Select')
