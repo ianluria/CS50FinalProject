@@ -78,12 +78,12 @@ def addItem():
     items = Items.query.filter_by(username=current_user.username).all()
     return render_template("_addItem.html", form=form, items=items)
 
-# Allow user to select which item to edit
-@app.route("/editItemSelect", methods=["GET", "POST"])
-@login_required
-def editItemSelect():
 
-    form = EditItemSelectForm()
+@app.route("/selectItem", methods=["GET"])
+@login_required
+def selectItem():
+
+    form = ItemSelectForm()
 
     items = Items.query.filter_by(username=current_user.username).all()
 
@@ -92,6 +92,38 @@ def editItemSelect():
 
     form.items.choices = names
 
+    return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
+
+
+@app.route("/deleteItem", methods=["POST"])
+@login_required
+def deleteItem():
+
+    form = ItemSelectForm()
+
+    if form.validate_on_submit():
+
+        item = Items.query.filter_by(user=current_user).filter_by(
+            itemName=form.items.data).first()
+
+        if item is None:
+            flash("Item doesn't exist.")
+            return redirect(url_for("items"))
+
+        db.session.delete(item)
+        db.session.commit()
+
+        flash(f"Item {item.itemName} deleted.")
+
+    return redirect(url_for("items"))
+
+# Allow user to select which item to edit
+@app.route("/editItem", methods=["GET", "POST"])
+@login_required
+def editItem():
+
+    form = ItemSelectForm()
+
     if form.validate_on_submit():
 
         itemFound = Items.query.filter_by(user=current_user).filter_by(
@@ -99,7 +131,7 @@ def editItemSelect():
 
         if itemFound is None:
             flash("Item doesn't exist.")
-            return redirect(url_for("editItemSelect"))
+            return redirect(url_for("items"))
 
         # Populate an itemForm object with the itemFound data stored in the database.
         itemForm = ItemForm(obj=itemFound)
@@ -107,7 +139,7 @@ def editItemSelect():
 
         return render_template("_editItemDetails.html", form=itemForm, items=items)
 
-    return render_template("_editItemSelect.html", form=form, items=items)
+    return redirect(url_for("items"))
 
 
 @app.route("/editItemDetails", methods=["POST"])
@@ -138,7 +170,7 @@ def editItemDetails():
 
         return redirect(url_for("items"))
 
-    return redirect(url_for("editItemSelect"))
+    return redirect(url_for("items"))
 
 
 # remove item
