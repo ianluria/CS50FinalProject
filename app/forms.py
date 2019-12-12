@@ -5,8 +5,7 @@ from app.models import User
 
 
 class SaleForm(FlaskForm):
-    #Need item
-    
+    items = SelectField("Item", validators=[DataRequired()])
     date = DateField("Date", validators=[DataRequired()], format='%d-%m-%Y')
     price = DecimalField("Price", validators=[DataRequired()], places=2)
     # Must be greater than 0 and less than 1000

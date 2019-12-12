@@ -4,7 +4,8 @@ from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelec
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
-from app.helpers import populateSelectField
+from app.helpers import populateSelectField, calculateProfit
+from datetime import date
 
 # Dashboard of user sales
 @app.route('/')
@@ -18,18 +19,18 @@ def index():
 @login_required
 def sale():
     form = SaleForm()
+
+    populateSelectField(form)
+
     if form.validate_on_submit():
 
-        date = form.date.data
-        price = form.price.data
-        quantity = form.quantity.data
-        postage = form.postage.data
+        newSale = Sales()
+        
+        form.populate_obj(newSale)
 
-        # calculate profit
-        # populate_obj
-
-        newSale = Sales(username=current_user, date=date,
-                        price=price, quantity=quantity, shipping=postage)
+        newSale.username = current_user.username
+        newSale.profit = calculateProfit(newSale)
+        
         db.session.add(newSale)
         db.session.commit()
 
@@ -37,7 +38,8 @@ def sale():
         return redirect(url_for("index"))
 
     else:
-        # create dynamic list of choice values
+        form.date.data = date.today()
+        # .strftime("%m/%d/%y")
         return render_template("saleInput.html", form=form)
 
 # General purpose page with links which also displays the current items
@@ -86,12 +88,14 @@ def selectItem():
 
     form = ItemSelectForm()
 
-    items = Items.query.filter_by(username=current_user.username).all()
+    items = populateSelectField(form)
 
-    # Create a list of items for use in select field
-    names = [(item.itemName, item.itemName) for item in items]
+    # items = Items.query.filter_by(username=current_user.username).all()
 
-    form.items.choices = names
+    # # Create a list of items for use in select field
+    # names = [(item.itemName, item.itemName) for item in items]
+
+    # form.items.choices = names
 
     return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
 
