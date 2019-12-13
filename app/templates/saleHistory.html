@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>
+    {{ form.items.label }}<br>
+    {{ form.items() }}
+    {% for error in form.items.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+</p>
+<p>{{ form.submit() }}</p>
+
+
+{% block history %}{% endblock %}
+
+{% endblock %}

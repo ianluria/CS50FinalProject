@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm
+from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleSelectForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
@@ -41,6 +41,34 @@ def sale():
         form.date.data = date.today()
         # .strftime("%m/%d/%y")
         return render_template("saleInput.html", form=form)
+
+@app.route("/saleHistory", methods=["GET", "POST"])
+@login_required
+def saleHistory():
+
+    form = SaleSelectForm()
+
+    items = Items.query.filter_by(username=current_user.username).all()
+
+    names = [(item.itemName, item.itemName) for item in items]
+
+    form.items.choices = names
+    form.items.size = len(names)
+
+    if form.validate_on_submit():
+
+        historyList = []
+
+        for item in form.items.data:
+
+            # Sort by date
+            history = Sales.query.filter_by(username=current_user.username).filter_by(item=item).all()
+            historyList.append(history)
+        
+        return render_template("saleHistory.html", history=historyList, form=form)
+
+return render_template("saleHistory.html", form=form)
+    
 
 # General purpose page with links which also displays the current items
 @app.route("/items", methods=["GET"])

@@ -14,6 +14,9 @@ class SaleForm(FlaskForm):
     postage = DecimalField("Postage", validators=[DataRequired()], places=2)
     submit = SubmitField("Log Sale")
 
+class SaleSelectForm(FlaskForm):
+    items = SelectMultipleField("Item(s)", validators=[DataRequired()])
+    submit = SubmitField("History")
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
