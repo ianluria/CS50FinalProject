@@ -4,7 +4,7 @@ from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelec
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
-from app.helpers import populateSelectField, calculateProfit
+from app.helpers import populateSelectField, calculateProfit, populateItemsObject
 from datetime import date
 
 # Dashboard of user sales
@@ -26,10 +26,17 @@ def sale():
 
         newSale = Sales()
         
-        form.populate_obj(newSale)
+        # form.populate_obj(newSale)
 
         newSale.username = current_user.username
-        newSale.profit = calculateProfit(newSale)
+        newSale.itemName = form.items.data
+        newSale.date = form.date.data
+        newSale.price = str(form.price.data)
+        newSale.quantity = form.quantity.data
+        newSale.shipping = str(form.shipping.data)
+        newSale.item = Items.query.filter_by(username=current_user.username).filter_by(itemName=form.items.data).first()
+        
+        calculateProfit(newSale)
         
         db.session.add(newSale)
         db.session.commit()
@@ -61,13 +68,14 @@ def saleHistory():
 
         for item in form.items.data:
 
-            # Sort by date
-            history = Sales.query.filter_by(username=current_user.username).filter_by(item=item).all()
+            history = Sales.query.filter_by(username=current_user.username).filter_by(itemName=item).all()
             historyList.append(history)
-        
+
+        historyList = [element for sublist in historyList for element in sublist]
+            
         return render_template("saleHistory.html", history=historyList, form=form)
 
-return render_template("saleHistory.html", form=form)
+    return render_template("saleHistory.html", form=form)
     
 
 # General purpose page with links which also displays the current items
@@ -95,15 +103,15 @@ def addItem():
             flash("Item already being tracked.")
             return redirect(url_for("addItem"))
 
-        flash("New Item Added.")
+        
+        newItem = Items()
 
-        newItem = Items(username=current_user.username)
-
-        form.populate_obj(newItem)
+        populateItemsObject(newItem, form)
 
         db.session.add(newItem)
         db.session.commit()
 
+        flash("New Item Added.")
         return redirect(url_for("addItem"))
 
     items = Items.query.filter_by(username=current_user.username).all()
@@ -196,9 +204,7 @@ def editItemDetails():
             flash("Item doesn't exist.")
             return redirect(url_for("items"))
 
-        form.populate_obj(item)
-        del item.hidden
-        del item.submit
+        populateItemsObject(item, form)
 
         db.session.add(item)
         db.session.commit()

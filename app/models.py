@@ -9,10 +9,10 @@ class Sales(db.Model):
     username = db.Column(db.String(64), index=True, nullable=False)
     itemName = db.Column(db.String(255),  db.ForeignKey("items.itemName"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
-    price = db.Column(db.Float(2), nullable=False)
+    price = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    shipping = db.Column(db.Float(2), nullable=False)
-    profit = db.Column(db.Float(2), nullable=False)
+    shipping = db.Column(db.String(64), nullable=False)
+    profit = db.Column(db.String(64), nullable=False)
 
     def __repr__(self):
         return '<Sales {}>'.format(self.username)
@@ -23,7 +23,7 @@ class Items(db.Model):
     username = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
     itemName = db.Column(db.String(255), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
-    price = db.Column(db.Float(2), nullable=False)
+    price = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     sales = db.relationship("Sales", backref="item", lazy="dynamic")
 

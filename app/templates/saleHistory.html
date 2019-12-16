@@ -2,16 +2,30 @@
 
 {% block content %}
 
-<p>
-    {{ form.items.label }}<br>
-    {{ form.items() }}
-    {% for error in form.items.errors %}
-    <span style="color: red;">[{{ error }}]</span>
+
+
+<h6>Sale Select</h6>
+<form action="/saleHistory" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.items.label }}<br>
+        {{ form.items() }}
+        {% for error in form.items.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+
+</form>
+
+
+{% if history %}
+    <ul>
+    {% for sale in history %}
+        <li>{{ sale.itemName }}, {{ sale.date }} {{ sale.price}} {{ sale.quantity }} </li>
     {% endfor %}
-</p>
-<p>{{ form.submit() }}</p>
-
-
-{% block history %}{% endblock %}
+    </ul>
+{% endif %}
 
 {% endblock %}

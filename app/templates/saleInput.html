@@ -35,9 +35,9 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.postage.label }}<br>
-        {{ form.postage() }}
-        {% for error in form.postage.errors %}
+        {{ form.shipping.label }}<br>
+        {{ form.shipping() }}
+        {% for error in form.shipping.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
