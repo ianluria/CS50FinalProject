@@ -15,6 +15,13 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
+    <p>
+        {{ form.action.label }}<br>
+        {{ form.action() }}
+        {% for error in form.action.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
     <p>{{ form.submit() }}</p>
 
 </form>
@@ -26,6 +33,19 @@
         <li>{{ sale.itemName }}, {{ sale.date }} {{ sale.price}} {{ sale.quantity }} </li>
     {% endfor %}
     </ul>
+{% elif adjustForm %}
+<table>  
+    {% for subfield in adjustForm.sale %}
+    <tr>
+        <td>{{ subfield }}</td>
+        <td>{{ subfield.label }}</td>
+    </tr>
+    {% endfor %} }
+</table>
 {% endif %}
+
+
+
+
 
 {% endblock %}

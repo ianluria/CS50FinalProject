@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField
+from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField, RadioField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
 
@@ -16,7 +16,12 @@ class SaleForm(FlaskForm):
 
 class SaleSelectForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[DataRequired()])
-    submit = SubmitField("History")
+    action = RadioField("Action", validators=[DataRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale")])
+    submit = SubmitField("Get History")
+
+class SaleHistoryAdjustForm(FlaskForm):
+    sale = RadioField("Select Sale", validators=[DataRequired()])
+    submit = SubmitField("Action")
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])

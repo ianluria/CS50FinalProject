@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleSelectForm
+from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleSelectForm, SaleHistoryAdjustForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
@@ -72,8 +72,17 @@ def saleHistory():
             historyList.append(history)
 
         historyList = [element for sublist in historyList for element in sublist]
-            
-        return render_template("saleHistory.html", history=historyList, form=form)
+
+        # Determine how template will be structured depending on which action choice user has made.
+        userAction = form.action.data
+
+        if userAction == "edit" or "delete":
+            adjustSaleHistoryForm = SaleHistoryAdjustForm()
+            adjustSaleChoices = [(sale.id,sale) for sale in historyList]
+            SaleHistoryActionForm.sale.choices = adjustSaleChoices 
+            return render_template("saleHistory.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
+        else:
+            return render_template("saleHistory.html", history=historyList, form=form)
 
     return render_template("saleHistory.html", form=form)
     
