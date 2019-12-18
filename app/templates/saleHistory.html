@@ -29,19 +29,24 @@
 
 {% if history %}
     <ul>
-    {% for sale in history %}
+        {% for sale in history %}
         <li>{{ sale.itemName }}, {{ sale.date }} {{ sale.price}} {{ sale.quantity }} </li>
-    {% endfor %}
+        {% endfor %}
     </ul>
 {% elif adjustForm %}
-<table>  
-    {% for subfield in adjustForm.sale %}
-    <tr>
-        <td>{{ subfield }}</td>
-        <td>{{ subfield.label }}</td>
-    </tr>
-    {% endfor %} }
-</table>
+    <form action="/{{ userAction }}SaleHistory" method="post" novalidate>
+        {{ adjustForm.hidden_tag() }}
+        <p>{{ adjustForm.hidden.data }}</p>
+        <table>
+            {% for subfield in adjustForm.sale %}
+            <tr>
+                <td>{{ subfield }}</td>
+                <td>{{ subfield.label }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p>{{ adjustForm.submit() }}</p>
+    </form>
 {% endif %}
 
 

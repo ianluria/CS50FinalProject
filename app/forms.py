@@ -21,6 +21,7 @@ class SaleSelectForm(FlaskForm):
 
 class SaleHistoryAdjustForm(FlaskForm):
     sale = RadioField("Select Sale", validators=[DataRequired()])
+    hidden = HiddenField(validators=[DataRequired()])
     submit = SubmitField("Action")
 
 class LoginForm(FlaskForm):

@@ -25,7 +25,7 @@ def sale():
     if form.validate_on_submit():
 
         newSale = Sales()
-        
+
         # form.populate_obj(newSale)
 
         newSale.username = current_user.username
@@ -34,10 +34,11 @@ def sale():
         newSale.price = str(form.price.data)
         newSale.quantity = form.quantity.data
         newSale.shipping = str(form.shipping.data)
-        newSale.item = Items.query.filter_by(username=current_user.username).filter_by(itemName=form.items.data).first()
-        
+        newSale.item = Items.query.filter_by(
+            username=current_user.username).filter_by(itemName=form.items.data).first()
+
         calculateProfit(newSale)
-        
+
         db.session.add(newSale)
         db.session.commit()
 
@@ -48,6 +49,7 @@ def sale():
         form.date.data = date.today()
         # .strftime("%m/%d/%y")
         return render_template("saleInput.html", form=form)
+
 
 @app.route("/saleHistory", methods=["GET", "POST"])
 @login_required
@@ -65,27 +67,55 @@ def saleHistory():
     if form.validate_on_submit():
 
         historyList = []
+        itemsUserSelected = form.items.data
 
-        for item in form.items.data:
+        for item in itemsUserSelected:
 
-            history = Sales.query.filter_by(username=current_user.username).filter_by(itemName=item).all()
+            #history = Items.query.filter_by(itemName=item).first().sales
+            history = Sales.query.filter_by(
+                username=current_user.username).filter_by(itemName=item).all()
             historyList.append(history)
 
-        historyList = [element for sublist in historyList for element in sublist]
+        historyList = [
+            element for sublist in historyList for element in sublist]
 
         # Determine how template will be structured depending on which action choice user has made.
         userAction = form.action.data
 
-        if userAction == "edit" or "delete":
+        # print(historyList)
+        print(userAction)
+
+        if userAction == "edit" or userAction == "delete":
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
-            adjustSaleChoices = [(sale.id,sale) for sale in historyList]
-            SaleHistoryActionForm.sale.choices = adjustSaleChoices 
+            adjustSaleHistoryForm.hidden.data = itemsUserSelected
+            print("hidden", adjustSaleHistoryForm.hidden.data)
+            adjustSaleChoices = [
+                (sale.id, f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
+            adjustSaleHistoryForm.sale.choices = adjustSaleChoices
             return render_template("saleHistory.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
+            print("history")
             return render_template("saleHistory.html", history=historyList, form=form)
 
     return render_template("saleHistory.html", form=form)
-    
+
+
+@app.route("/deleteSaleHistory", methods=["POST"])
+@login_required
+def deleteSaleHistory():
+
+    form = SaleHistoryAdjustForm()
+
+    print("In delete", form.hidden.__dict__)
+
+    # sale = Sales.query.filter_by(id=form.)
+    return
+
+
+# @app.route("/editSaleHistory", methods=["POST"])
+# @login_required
+# def editSaleHistory():
+
 
 # General purpose page with links which also displays the current items
 @app.route("/items", methods=["GET"])
@@ -112,7 +142,6 @@ def addItem():
             flash("Item already being tracked.")
             return redirect(url_for("addItem"))
 
-        
         newItem = Items()
 
         populateItemsObject(newItem, form)
