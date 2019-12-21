@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for
 from flask_login import current_user
 from app.forms import ItemSelectForm, SaleForm, ItemForm
-from app.models import Items, Sales
+from app.models import Items, Sales, User
 from decimal import Decimal, getcontext
 
 getcontext().prec = 2
@@ -29,11 +29,11 @@ def populateItemsObject(obj, form):
 
     if isinstance(obj, Items):
         if isinstance(form, ItemForm):
-            newItem.username = username = current_user.username
-            newItem.itemName = form.itemName
-            newItem.price = str(form.price)
-            newItem.quantity = form.quantity
-            newItem.user = User.query.filter_by(
+            obj.username = current_user.username
+            obj.itemName = form.itemName.data
+            obj.price = str(form.price.data)
+            obj.quantity = form.quantity.data
+            obj.user = User.query.filter_by(
                 username=current_user.username).first()
             return
 
@@ -60,3 +60,22 @@ def calculateProfit(model):
 
     else:
         raise TypeError("Model must be of Sales type.")
+
+
+def createSaleHistoryList(listOfItems):
+
+    historyList = []
+
+    for item in listOfItems:
+
+        #history = Items.query.filter_by(itemName=item).first().sales
+        history = Sales.query.filter_by(
+            username=current_user.username).filter_by(itemName=item).all()
+        historyList.append(history)
+
+    historyList = [element for sublist in historyList for element in sublist]
+
+    adjustSaleChoices = [
+        (sale.id, f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
+
+    return adjustSaleChoices

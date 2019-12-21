@@ -1,9 +1,9 @@
 {% extends "items.html" %}
 
-{% block add %}
+{% block edit %}
 
 <h1>Input Item</h1>
-<form action="" method="post" novalidate>
+<form action="/addItem" method="post" novalidate>
     {{ form.hidden_tag() }}
 
     <p>

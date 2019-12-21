@@ -3,16 +3,23 @@
 {% block content %}
 
 <h1>Input Sale</h1>
-<form action="" method="post" novalidate>
+<form action="/sale" method="post" novalidate>
     {{ form.hidden_tag() }}
 
-    <p>
-        {{ form.items.label }}<br>
-        {{ form.items() }}
-        {% for error in form.items.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
+    {% if action == "edit" %}
+        <p>Editing {{ form.items.data }}</p>
+
+        {{ form.id() }}
+
+    {% else %}
+        <p>
+            {{ form.items.label }}<br>
+            {{ form.items() }}
+            {% for error in form.items.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+    {% endif %}
     <p>
         {{ form.date.label }}<br>
         {{ form.date() }}

@@ -12,6 +12,7 @@ class SaleForm(FlaskForm):
     quantity = IntegerField("Quantity", validators=[DataRequired()])
     # Need a default value of 0.50
     shipping = DecimalField("Postage", validators=[DataRequired()], places=2)
+    id = HiddenField()
     submit = SubmitField("Log Sale")
 
 class SaleSelectForm(FlaskForm):
