@@ -2,8 +2,6 @@
 
 {% block content %}
 
-
-
 <h6>Sale Select</h6>
 <form action="/saleHistory" method="post" novalidate>
     {{ form.hidden_tag() }}
@@ -30,7 +28,7 @@
 {% if history %}
     <ul>
         {% for sale in history %}
-        <li>{{ sale.itemName }}, {{ sale.date }} {{ sale.price}} {{ sale.quantity }} </li>
+        <p>{{ sale }}</p>
         {% endfor %}
     </ul>
 {% elif adjustForm %}

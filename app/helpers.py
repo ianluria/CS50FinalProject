@@ -62,11 +62,11 @@ def calculateProfit(model):
         raise TypeError("Model must be of Sales type.")
 
 
-def createSaleHistoryList(listOfItems):
+def createSaleHistoryList(listOfItemNames):
 
     historyList = []
 
-    for item in listOfItems:
+    for item in listOfItemNames:
 
         #history = Items.query.filter_by(itemName=item).first().sales
         history = Sales.query.filter_by(
@@ -77,5 +77,6 @@ def createSaleHistoryList(listOfItems):
 
     adjustSaleChoices = [
         (sale.id, f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
+
 
     return adjustSaleChoices

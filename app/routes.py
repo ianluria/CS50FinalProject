@@ -103,7 +103,17 @@ def deleteSaleHistory():
 
     form.sale.choices = createSaleHistoryList(userSelectionList)
 
+    print("form: ", form.__dict__)
+
+    print("form sale:", form.sale.__dict__)
+
+    print("form hidden", form.hidden.__dict__)
+
+    print("form validate: ", form.validate_on_submit())
+
     if form.validate_on_submit():
+
+        print("form sale data", form.sale.data)
 
         saleToDelete = Sales.query.filter_by(user=current_user).filter_by(
             id=form.sale.data).first()
@@ -113,6 +123,8 @@ def deleteSaleHistory():
             return redirect(url_for("saleHistory"))
 
         flash(f"Sale {saleToDelete.itemName} deleted.")
+
+        print("delete", saleToDelete)
 
         db.session.delete(saleToDelete)
         db.session.commit()
@@ -133,6 +145,9 @@ def deleteSaleHistory():
 @app.route("/editSaleHistory", methods=["POST"])
 @login_required
 def editSaleHistory():
+
+    print("edit sale history")
+
     form = SaleHistoryAdjustForm()
 
     userSelectionList = [sale.strip(
@@ -159,7 +174,9 @@ def editSaleHistory():
         saleFormToEdit.quantity.data = saleToEdit.quantity
         saleFormToEdit.shipping.data = saleToEdit.shipping
 
-        return render_template("saleInput.html", form=form, action="edit")
+        return render_template("saleInput.html", form=saleFormToEdit, action="edit")
+
+    print("edit error")
 
     return
 
