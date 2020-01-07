@@ -26,8 +26,8 @@ def sale():
 
         if form.id.data:
 
-            usersSale = Sales.query.filter_by(user=current_user).filter_by(
-                id=form.sale.data).first()
+            usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
+                id=form.id.data).first()
 
             if usersSale is None:
                 flash("Sale doesn't exist.")
@@ -138,8 +138,6 @@ def deleteSaleHistory():
 @login_required
 def editSaleHistory():
 
-    print("edit sale history")
-
     form = SaleHistoryAdjustForm()
 
     userSelectionList = [sale.strip(
@@ -149,8 +147,8 @@ def editSaleHistory():
 
     if form.validate_on_submit():
 
-        saleToEdit = Sales.query.filter_by(user=current_user).filter_by(
-            id=form.sale.data).first()
+        saleToEdit = Sales.query.filter_by(username=current_user.username).filter_by(
+            id=int(form.sale.data)).first()
 
         if saleToEdit is None:
             flash("Sale doesn't exist.")
@@ -168,10 +166,7 @@ def editSaleHistory():
 
         return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 
-    print("edit error")
-
     return
-
 
 # General purpose page with links which also displays the current items
 @app.route("/items", methods=["GET"])
