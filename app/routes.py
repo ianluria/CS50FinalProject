@@ -59,7 +59,7 @@ def sale():
         # .strftime("%m/%d/%y")
         return render_template("saleInput.html", form=form)
 
-
+# Returns a history of sales per item
 @app.route("/saleHistory", methods=["GET", "POST"])
 @login_required
 def saleHistory():
@@ -103,20 +103,12 @@ def deleteSaleHistory():
 
     form.sale.choices = createSaleHistoryList(userSelectionList)
 
-    print("form: ", form.__dict__)
-
-    print("form sale:", form.sale.__dict__)
-
-    print("form hidden", form.hidden.__dict__)
-
-    print("form validate: ", form.validate_on_submit())
-
     if form.validate_on_submit():
 
         print("form sale data", form.sale.data)
 
-        saleToDelete = Sales.query.filter_by(user=current_user).filter_by(
-            id=form.sale.data).first()
+        saleToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
+            id=int(form.sale.data)).first()
 
         if saleToDelete is None:
             flash("Sale doesn't exist.")

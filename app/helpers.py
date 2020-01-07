@@ -76,7 +76,6 @@ def createSaleHistoryList(listOfItemNames):
     historyList = [element for sublist in historyList for element in sublist]
 
     adjustSaleChoices = [
-        (sale.id, f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
-
+        (str(sale.id), f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
 
     return adjustSaleChoices
