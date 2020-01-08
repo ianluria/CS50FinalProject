@@ -25,11 +25,13 @@ def sale():
 
     if form.validate_on_submit():
 
+        # If the id hidden field has data, the sale is being edited.
         if form.id.data:
 
-            # (id, item name)
+            # Create a tuple as (sale id, item name)
             idData = tuple(re.findall(r'[\w]+', form.id.data))
 
+            # Get sale from database.
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
                 id=idData[0]).first()
 
@@ -37,9 +39,21 @@ def sale():
                 flash("Sale doesn't exist.")
                 return redirect(url_for("saleHistory"))
 
-        else:
+            # Check if the user has changed the item type
+            # if idData[1] not form.items.data:
+            #     userChangedItem = True
+
+            # Get the new item from the database
+
+            # Update the sale's item and itemName
+
+        # If there is not form.id.data, create a new instance of the Sales model.
+        if not form.id.data:
             usersSale = Sales()
             usersSale.username = current_user.username
+
+        if not form.id.data or not idData[1] == form.items.data:
+
             # Consider deleting this in favor of using the foreign key
             usersSale.itemName = form.items.data
             usersSale.item = Items.query.filter_by(
