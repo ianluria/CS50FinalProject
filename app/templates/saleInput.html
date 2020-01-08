@@ -7,19 +7,18 @@
     {{ form.hidden_tag() }}
 
     {% if action == "edit" %}
-        <p>Editing {{ form.items.data }}</p>
+        <p>Editing...</p>
 
         {{ form.id() }}
-
-    {% else %}
-        <p>
-            {{ form.items.label }}<br>
-            {{ form.items() }}
-            {% for error in form.items.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
     {% endif %}
+
+    <p>
+        {{ form.items.label }}<br>
+        {{ form.items() }}
+        {% for error in form.items.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
     <p>
         {{ form.date.label }}<br>
         {{ form.date() }}

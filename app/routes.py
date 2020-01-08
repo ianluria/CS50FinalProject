@@ -6,6 +6,7 @@ from app.models import User, Sales, Items
 from werkzeug.urls import url_parse
 from app.helpers import populateSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
 from datetime import date
+import re
 
 # Dashboard of user sales
 @app.route('/')
@@ -26,8 +27,11 @@ def sale():
 
         if form.id.data:
 
+            # (id, item name)
+            idData = tuple(re.findall(r'[\w]+', form.id.data))
+
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
-                id=form.id.data).first()
+                id=idData[0]).first()
 
             if usersSale is None:
                 flash("Sale doesn't exist.")
@@ -158,7 +162,7 @@ def editSaleHistory():
         populateSelectField(saleFormToEdit)
 
         saleFormToEdit.items.data = saleToEdit.item.itemName
-        saleFormToEdit.id.data = saleToEdit.id
+        saleFormToEdit.id.data = (saleToEdit.id, saleToEdit.item.itemName)
         saleFormToEdit.date.data = saleToEdit.date
         saleFormToEdit.price.data = saleToEdit.price
         saleFormToEdit.quantity.data = saleToEdit.quantity
