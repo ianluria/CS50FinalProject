@@ -72,7 +72,7 @@ def newSale():
         db.session.commit()
 
         flash(f"Sale Logged for {usersSale.item.itemName}")
-        return redirect(url_for("index"))
+        return redirect(url_for("sales"))
 
     else:
         form.date.data = date.today()

@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>Input Sale</h1>
-<form action="/sale" method="post" novalidate>
+<form action="/newSale" method="post" novalidate>
     {{ form.hidden_tag() }}
 
     {% if action == "edit" %}
