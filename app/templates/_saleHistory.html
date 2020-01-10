@@ -1,0 +1,11 @@
+{% extends "sales.html" %}
+
+{% block history %}
+
+    <ul>
+        {% for sale in history %}
+        <p>{{ sale }}</p>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

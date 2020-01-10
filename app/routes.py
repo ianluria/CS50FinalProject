@@ -21,9 +21,9 @@ def index():
     return render_template("index.html")
 
 # Enter a new sale or edit and existing
-@app.route("/sale", methods=["GET", "POST"])
+@app.route("/newSale", methods=["GET", "POST"])
 @login_required
-def sale():
+def newSale():
     form = SaleForm()
 
     populateSelectField(form)
@@ -42,7 +42,7 @@ def sale():
 
             if usersSale is None:
                 flash("Sale doesn't exist.")
-                return redirect(url_for("saleHistory"))
+                return redirect(url_for("sales"))
 
             # Get the new item from the database
 
@@ -80,9 +80,9 @@ def sale():
         return render_template("saleInput.html", form=form)
 
 # Returns a history of sales per item
-@app.route("/saleHistory", methods=["GET", "POST"])
+@app.route("/sales", methods=["GET", "POST"])
 @login_required
-def saleHistory():
+def sales():
 
     form = SaleSelectForm()
 
@@ -105,11 +105,11 @@ def saleHistory():
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
             adjustSaleHistoryForm.hidden.data = form.items.data
             adjustSaleHistoryForm.sale.choices = saleHistory
-            return render_template("saleHistory.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
+            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
-            return render_template("saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
+            return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
 
-    return render_template("saleHistory.html", form=form)
+    return render_template("sales.html", form=form)
 
 
 @app.route("/deleteSaleHistory", methods=["POST"])
@@ -132,7 +132,7 @@ def deleteSaleHistory():
 
         if saleToDelete is None:
             flash("Sale doesn't exist.")
-            return redirect(url_for("saleHistory"))
+            return redirect(url_for("sales"))
 
         flash(f"Sale {saleToDelete.itemName} deleted.")
 
@@ -141,7 +141,7 @@ def deleteSaleHistory():
         db.session.delete(saleToDelete)
         db.session.commit()
 
-    return redirect(url_for("saleHistory"))
+    return redirect(url_for("sales"))
 
     # print("In delete list", userSelectionList)
 
@@ -172,7 +172,7 @@ def editSaleHistory():
 
         if saleToEdit is None:
             flash("Sale doesn't exist.")
-            return redirect(url_for("saleHistory"))
+            return redirect(url_for("sales"))
 
         saleFormToEdit = SaleForm()
         populateSelectField(saleFormToEdit)
