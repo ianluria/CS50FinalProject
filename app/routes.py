@@ -1,12 +1,17 @@
+# Standard library imports
+import re
+
+# Third party imports
+from datetime import date
 from flask import render_template, flash, redirect, url_for, request
+from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
+
+# Local application imports
 from app import app, db
 from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleSelectForm, SaleHistoryAdjustForm
-from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Sales, Items
-from werkzeug.urls import url_parse
 from app.helpers import populateSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
-from datetime import date
-import re
+from app.models import User, Sales, Items
 
 # Dashboard of user sales
 @app.route('/')
@@ -15,7 +20,7 @@ import re
 def index():
     return render_template("index.html")
 
-# Enter a new sale
+# Enter a new sale or edit and existing
 @app.route("/sale", methods=["GET", "POST"])
 @login_required
 def sale():
@@ -28,7 +33,7 @@ def sale():
         # If the id hidden field has data, the sale is being edited.
         if form.id.data:
 
-            # Create a tuple as (sale id, item name)
+            # Create a tuple as (orginial sale id, orignial item name)
             idData = tuple(re.findall(r'[\w]+', form.id.data))
 
             # Get sale from database.
@@ -39,10 +44,6 @@ def sale():
                 flash("Sale doesn't exist.")
                 return redirect(url_for("saleHistory"))
 
-            # Check if the user has changed the item type
-            # if idData[1] not form.items.data:
-            #     userChangedItem = True
-
             # Get the new item from the database
 
             # Update the sale's item and itemName
@@ -52,6 +53,7 @@ def sale():
             usersSale = Sales()
             usersSale.username = current_user.username
 
+        # Link userSale object to a Item object if there is not one linked or user changed item during edit
         if not form.id.data or not idData[1] == form.items.data:
 
             # Consider deleting this in favor of using the foreign key
@@ -74,7 +76,7 @@ def sale():
 
     else:
         form.date.data = date.today()
-        # .strftime("%m/%d/%y")
+        #.strftime("%m/%d/%Y")
         return render_template("saleInput.html", form=form)
 
 # Returns a history of sales per item
