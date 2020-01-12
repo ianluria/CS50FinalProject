@@ -5,6 +5,7 @@ import re
 from datetime import date
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy import func
 from werkzeug.urls import url_parse
 
 # Local application imports
@@ -18,6 +19,10 @@ from app.models import User, Sales, Items
 @app.route('/index')
 @login_required
 def index():
+
+    totalNumberOfSales = Sales.query.filter_by(username=current_user.username).count()
+    totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(username=current_user.username).scalar()
+
     return render_template("index.html")
 
 # Enter a new sale or edit and existing
