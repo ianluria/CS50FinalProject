@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <!-- <h1>Hi {{ current_user.username }}!</h1> -->
-    <p>{{ current_user.username }}'s online sales tracker.</p>
 
-    <p>Tracking {{ totalNumberOfSales }} worth {{ totalProfit }} for {{ totalNumberOfItems }}.</p>
+    <p>{{ message }}</p>
 
+    <ul>
+        <li><a href="{{ url_for('newSale') }}">Add a new sale.</a></li>
+        <li><a href="{{ url_for('sales') }}">Edit or view a history of sales.</a></li>
+        <li><a href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
+        <li><a href="{{ url_for('selectItem', destination='editItem') }}">Edit an item.</a></li>
+    </ul>
 
 {% endblock %}

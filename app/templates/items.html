@@ -4,12 +4,12 @@
 
 <p>items.</p>
 
-<a href="/addItem">Add Item</a>
-<a href="/selectItem?destination=editItem">Edit Item</a>
-<a href="/selectItem?destination=deleteItem">Delete Item</a>
+<a href="{{ url_for('addItem') }}">Add Item</a>
+<a href="{{ url_for('selectItem', destination='editItem') }}">Edit Item</a>
+<a href="{{ url_for('selectItem', destination='deleteItem') }}">Delete Item</a>
 
 
-    {% block edit %}{% endblock %}
+{% block edit %}{% endblock %}
     
 {% block itemsList %}
 <p>List of items on items.html</p>    

@@ -21,9 +21,11 @@ from app.models import User, Sales, Items
 def index():
 
     totalNumberOfSales = Sales.query.filter_by(username=current_user.username).count()
-    totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(username=current_user.username).scalar()
+    totalSales = db.session.query(func.sum(Sales.price)).filter_by(username=current_user.username).scalar()
 
-    return render_template("index.html")
+    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth ${totalSales}."
+
+    return render_template("index.html", message=message)
 
 # Enter a new sale or edit and existing
 @app.route("/newSale", methods=["GET", "POST"])
@@ -84,7 +86,6 @@ def newSale():
         #.strftime("%m/%d/%Y")
         return render_template("saleInput.html", form=form)
 
-# Returns a history of sales per item
 @app.route("/sales", methods=["GET", "POST"])
 @login_required
 def sales():
