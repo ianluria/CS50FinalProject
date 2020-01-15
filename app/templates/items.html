@@ -5,8 +5,8 @@
 <p>items.</p>
 
 <a href="{{ url_for('addItem') }}">Add Item</a>
-<a href="{{ url_for('selectItem', destination='editItem') }}">Edit Item</a>
-<a href="{{ url_for('selectItem', destination='deleteItem') }}">Delete Item</a>
+<!-- <a href="{{ url_for('selectItem', destination='editItem') }}">Edit Item</a>
+<a href="{{ url_for('selectItem', destination='deleteItem') }}">Delete Item</a> -->
 
 
 {% block edit %}{% endblock %}
@@ -17,5 +17,26 @@
         <div>{{ item.itemName }} cost {{item.price}} for {{item.quantity}} added on {{item.date}} </div>
     {% endfor %}
 {% endblock %}
+
+<form action={{ destination }} method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.items.label }}<br>
+        {{ form.items() }}
+        {% for error in form.items.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.action.label }}<br>
+        {{ form.action() }}
+        {% for error in form.action.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
 
 {% endblock %}

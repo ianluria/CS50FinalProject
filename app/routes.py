@@ -194,14 +194,15 @@ def editSaleHistory():
 
     return
 
-# General purpose page with links which also displays the current items
 @app.route("/items", methods=["GET"])
 @login_required
 def items():
 
-    items = Items.query.filter_by(username=current_user.username).all()
+    form = ItemSelectForm()
 
-    return render_template("items.html", items=items)
+    items = populateSelectField(form)
+
+    return render_template("items.html", items=items, form=form)
 
 
 # Create a new item
@@ -212,12 +213,18 @@ def addItem():
 
     if form.validate_on_submit():
 
+        # if item is already in database, update its info based on incoming data from form, else make a new items object.
+
+
+
+
+        # Check if the item name is already in database
         itemFound = Items.query.filter_by(user=current_user).filter_by(
             itemName=form.itemName.data).first()
 
         if not itemFound is None:
             flash("Item already being tracked.")
-            return redirect(url_for("addItem"))
+            return redirect(url_for("items"))
 
         newItem = Items()
 
@@ -227,108 +234,75 @@ def addItem():
         db.session.commit()
 
         flash("New Item Added.")
-        return redirect(url_for("addItem"))
-
-    items = Items.query.filter_by(username=current_user.username).all()
-    return render_template("_addItem.html", form=form, items=items)
-
-
-@app.route("/selectItem", methods=["GET"])
-@login_required
-def selectItem():
-
-    form = ItemSelectForm()
-
-    items = populateSelectField(form)
-
-    # items = Items.query.filter_by(username=current_user.username).all()
-
-    # # Create a list of items for use in select field
-    # names = [(item.itemName, item.itemName) for item in items]
-
-    # form.items.choices = names
-
-    return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
-
-
-@app.route("/deleteItem", methods=["POST"])
-@login_required
-def deleteItem():
-
-    form = ItemSelectForm()
-
-    populateSelectField(form)
-
-    if form.validate_on_submit():
-
-        item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.items.data).first()
-
-        if item is None:
-            flash("Item doesn't exist.")
-            return redirect(url_for("items"))
-
-        db.session.delete(item)
-        db.session.commit()
-
-        flash(f"Item {item.itemName} deleted.")
-
-    return redirect(url_for("items"))
-
-# Allow user to select which item to edit
-@app.route("/editItem", methods=["GET", "POST"])
-@login_required
-def editItem():
-
-    form = ItemSelectForm()
-
-    items = populateSelectField(form)
-
-    if form.validate_on_submit():
-
-        itemFound = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.items.data).first()
-
-        if itemFound is None:
-            flash("Item doesn't exist.")
-            return redirect(url_for("items"))
-
-        # Populate an itemForm object with the itemFound data stored in the database.
-        itemForm = ItemForm(obj=itemFound)
-        itemForm.hidden.data = itemFound.itemName
-
-        return render_template("_editItemDetails.html", form=itemForm, items=items)
-
-    return redirect(url_for("items"))
-
-
-@app.route("/editItemDetails", methods=["POST"])
-@login_required
-def editItemDetails():
-
-    form = ItemForm()
-
-    form.itemName.data = form.hidden.data
-
-    if form.validate_on_submit():
-
-        item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.hidden.data).first()
-
-        if item is None:
-            flash("Item doesn't exist.")
-            return redirect(url_for("items"))
-
-        populateItemsObject(item, form)
-
-        db.session.add(item)
-        db.session.commit()
-
-        flash(f"Item {item.itemName} updated.")
-
         return redirect(url_for("items"))
 
+    # Return a list of the items already in database
+    return render_template("_addItem.html", form=form)
+
+# Prepares form for user seeking to edit or delete an item.
+@app.route("/adjustItem", methods=["POST"])
+@login_required
+def adjustItem():
+
+    form = ItemSelectForm()
+
+    items = populateSelectField(form)
+
+    if form.validate_on_submit():
+
+        item = Items.query.filter_by(user=current_user).filter_by(
+            itemName=form.items.data).first()
+
+        if item is None:
+            flash("Item doesn't exist.")
+            return redirect(url_for("items"))
+
+        if form.action.data == "delete":
+
+            db.session.delete(item)
+            db.session.commit()
+
+            flash(f"Item {item.itemName} deleted.")
+
+        elif form.action.data == "edit":
+
+            # Populate an itemForm object with the itemFound data stored in the database.
+            itemForm = ItemForm(obj=item)
+            itemForm.hidden.data = item.itemName
+
+        return render_template("_addItem.html", form=itemForm)
+
+
     return redirect(url_for("items"))
+    # return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
+
+# @app.route("/editItemDetails", methods=["POST"])
+# @login_required
+# def editItemDetails():
+
+#     form = ItemForm()
+
+#     form.itemName.data = form.hidden.data
+
+#     if form.validate_on_submit():
+
+#         item = Items.query.filter_by(user=current_user).filter_by(
+#             itemName=form.hidden.data).first()
+
+#         if item is None:
+#             flash("Item doesn't exist.")
+#             return redirect(url_for("items"))
+
+#         populateItemsObject(item, form)
+
+#         db.session.add(item)
+#         db.session.commit()
+
+#         flash(f"Item {item.itemName} updated.")
+
+#         return redirect(url_for("items"))
+
+#     return redirect(url_for("items"))
 
 
 # remove item

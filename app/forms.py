@@ -60,5 +60,6 @@ class ItemForm(FlaskForm):
     submit = SubmitField('Add')
 
 class ItemSelectForm(FlaskForm):
-    items = SelectField("Items", validators=[DataRequired()])
+    items = RadioField("Items", validators=[DataRequired()])
+    action = RadioField("Action", choices=[('edit','Edit'),('delete','Delete')])
     submit = SubmitField('Select')

@@ -64,16 +64,18 @@ def calculateProfit(model):
 
 def createSaleHistoryList(listOfItemNames):
 
-    historyList = []
+    # historyList = []
 
-    for item in listOfItemNames:
+    historyList = Sales.query.filter(Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
-        #history = Items.query.filter_by(itemName=item).first().sales
-        history = Sales.query.filter_by(
-            username=current_user.username).filter_by(itemName=item).all()
-        historyList.append(history)
+    # for item in listOfItemNames:
 
-    historyList = [element for sublist in historyList for element in sublist]
+    #     #history = Items.query.filter_by(itemName=item).first().sales
+    #     history = Sales.query.filter_by(
+    #         username=current_user.username).filter_by(itemName=item).all()
+    #     historyList.append(history)
+
+    # historyList = [element for sublist in historyList for element in sublist]
 
     adjustSaleChoices = [
         (str(sale.id), f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date.strftime('%m/%d/%Y')} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
