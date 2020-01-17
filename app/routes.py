@@ -20,8 +20,10 @@ from app.models import User, Sales, Items
 @login_required
 def index():
 
-    totalNumberOfSales = Sales.query.filter_by(username=current_user.username).count()
-    totalSales = db.session.query(func.sum(Sales.price)).filter_by(username=current_user.username).scalar()
+    totalNumberOfSales = Sales.query.filter_by(
+        username=current_user.username).count()
+    totalSales = db.session.query(func.sum(Sales.price)).filter_by(
+        username=current_user.username).scalar()
 
     message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth ${totalSales}."
 
@@ -83,8 +85,9 @@ def newSale():
 
     else:
         form.date.data = date.today()
-        #.strftime("%m/%d/%Y")
+        # .strftime("%m/%d/%Y")
         return render_template("saleInput.html", form=form)
+
 
 @app.route("/sales", methods=["GET", "POST"])
 @login_required
@@ -194,6 +197,7 @@ def editSaleHistory():
 
     return
 
+
 @app.route("/items", methods=["GET"])
 @login_required
 def items():
@@ -209,37 +213,57 @@ def items():
 @app.route("/addItem", methods=["GET", "POST"])
 @login_required
 def addItem():
+
     form = ItemForm()
 
     if form.validate_on_submit():
 
-        # if item is already in database, update its info based on incoming data from form, else make a new items object.
+        # Establish an itemName to query database
+        if form.hidden.data and not form.hidden.data == form.itemName.data:
 
+            # throw warning message?
+            itemName = form.hidden.data
 
+        else:
+            itemName = form.itemName.data
 
+        item = Items.query.filter_by(user=current_user).filter_by(
+            itemName=itemName).first()
 
-        # Check if the item name is already in database
-        itemFound = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.itemName.data).first()
+        edit = True
 
-        if not itemFound is None:
-            flash("Item already being tracked.")
-            return redirect(url_for("items"))
+        # Create a new Items object if the user is entering a new item
+        if item is None:
 
-        newItem = Items()
+            item = Items()
+            edit = False
 
-        populateItemsObject(newItem, form)
+        # Update item with new data from form.
+        populateItemsObject(item, form, edit=edit)
 
-        db.session.add(newItem)
+        if edit:
+            # Update every relevant sale in the history to reflect the changes the user made to item.
+            sales = Sales.query.filter_by(user=current_user).filter_by(
+                itemName=item.itemName).all()
+    
+            for sale in sales:
+                sale.itemName = item.itemName
+                calculateProfit(sale)
+                db.session.add(sale)
+
+            flash(f"Item {item.itemName} updated.")
+        else:
+            flash(f"{item.itemName} added.")
+
+        db.session.add(item)
         db.session.commit()
 
-        flash("New Item Added.")
         return redirect(url_for("items"))
 
     # Return a list of the items already in database
     return render_template("_addItem.html", form=form)
 
-# Prepares form for user seeking to edit or delete an item.
+
 @app.route("/adjustItem", methods=["POST"])
 @login_required
 def adjustItem():
@@ -266,43 +290,17 @@ def adjustItem():
 
         elif form.action.data == "edit":
 
-            # Populate an itemForm object with the itemFound data stored in the database.
+            # Populate an itemForm object with the "item" data stored in the database.
             itemForm = ItemForm(obj=item)
+            # Store the current name of the item in a hidden field to track if the user makes changes to the name.
             itemForm.hidden.data = item.itemName
 
-        return render_template("_addItem.html", form=itemForm)
+            flash(f"Editing {item.itemName}.")
 
+            return render_template("_addItem.html", form=itemForm)
 
     return redirect(url_for("items"))
     # return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
-
-# @app.route("/editItemDetails", methods=["POST"])
-# @login_required
-# def editItemDetails():
-
-#     form = ItemForm()
-
-#     form.itemName.data = form.hidden.data
-
-#     if form.validate_on_submit():
-
-#         item = Items.query.filter_by(user=current_user).filter_by(
-#             itemName=form.hidden.data).first()
-
-#         if item is None:
-#             flash("Item doesn't exist.")
-#             return redirect(url_for("items"))
-
-#         populateItemsObject(item, form)
-
-#         db.session.add(item)
-#         db.session.commit()
-
-#         flash(f"Item {item.itemName} updated.")
-
-#         return redirect(url_for("items"))
-
-#     return redirect(url_for("items"))
 
 
 # remove item

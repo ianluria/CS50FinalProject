@@ -25,16 +25,20 @@ def populateSelectField(form):
         raise TypeError("Form must be of ItemSelectForm or SaleForm type.")
 
 
-def populateItemsObject(obj, form):
+def populateItemsObject(obj, form, edit=False):
 
     if isinstance(obj, Items):
         if isinstance(form, ItemForm):
-            obj.username = current_user.username
+            
             obj.itemName = form.itemName.data
             obj.price = str(form.price.data)
             obj.quantity = form.quantity.data
-            obj.user = User.query.filter_by(
-                username=current_user.username).first()
+
+            # Only fill these values if a new instance of Items is being created.
+            if not edit:
+                obj.username = current_user.username
+                obj.user = User.query.filter_by(
+                    username=current_user.username).first()
             return
 
     raise TypeError(
