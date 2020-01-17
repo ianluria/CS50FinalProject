@@ -243,9 +243,9 @@ def addItem():
 
         if edit:
             # Update every relevant sale in the history to reflect the changes the user made to item.
-            sales = Sales.query.filter_by(user=current_user).filter_by(
-                itemName=item.itemName).all()
-    
+            sales = Sales.query.filter_by(username=current_user.username).filter_by(
+                item=item).all()
+
             for sale in sales:
                 sale.itemName = item.itemName
                 calculateProfit(sale)
@@ -274,6 +274,7 @@ def adjustItem():
 
     if form.validate_on_submit():
 
+        # First or 404?
         item = Items.query.filter_by(user=current_user).filter_by(
             itemName=form.items.data).first()
 
@@ -300,14 +301,7 @@ def adjustItem():
             return render_template("_addItem.html", form=itemForm)
 
     return redirect(url_for("items"))
-    # return render_template("_itemSelect.html", form=form, items=items, destination="/" + request.args.get("destination"))
 
-
-# remove item
-# get item to be removed from drop down menu
-# get this user
-# execute remove item on this user
-# update database
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -346,8 +340,3 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-
-
-# Display all items
-
-# Show history of sales
