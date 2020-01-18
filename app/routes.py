@@ -1,5 +1,6 @@
 # Standard library imports
 import re
+import ast
 
 # Third party imports
 from datetime import date
@@ -45,6 +46,7 @@ def newSale():
             # Create a tuple as (orginial sale id, orignial item name)
             idData = tuple(re.findall(r'[\w]+', form.id.data))
 
+            # first or 404 ???
             # Get sale from database.
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
                 id=idData[0]).first()
@@ -62,13 +64,14 @@ def newSale():
             usersSale = Sales()
             usersSale.username = current_user.username
 
-        # Link userSale object to a Item object if there is not one linked or user changed item during edit
+        # Link userSale object to an Item object if there is not one linked or user changed item during edit
         if not form.id.data or not idData[1] == form.items.data:
 
             # Consider deleting this in favor of using the foreign key
             usersSale.itemName = form.items.data
+            #first or 404????
             usersSale.item = Items.query.filter_by(
-                username=current_user.username).filter_by(itemName=form.items.data).first()
+                user=current_user).filter_by(itemName=form.items.data).first()
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
@@ -127,64 +130,44 @@ def adjustSaleHistory():
 
     form = SaleHistoryAdjustForm()
 
-    # Get list of all relevant sales to pass validation check
-    userSelectionList = [sale.strip(
-        "\' ") for sale in form.hidden.data.strip("[]").split(",")]
+    # Convert string data from form into a dict
+    hiddenData = ast.literal_eval(form.hidden.data)
 
-    form.sale.choices = createSaleHistoryList(userSelectionList)
+    # Get list of all relevant sales to pass validation check
+    # userSelectionList = [sale.strip(
+    #     "\' ") for sale in form.hidden.data.strip("[]").split(",")]
+
+    form.sale.choices = createSaleHistoryList(hiddenData["itemsSelected"])
 
     if form.validate_on_submit():
 
         # first or 404?
-        saleToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
-            id=int(form.sale.data)).first()
+        saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
+                id=int(form.sale.data)).first()
 
-        # if saleToDelete is None:
-        #     flash("Sale doesn't exist.")
-        #     return redirect(url_for("sales"))
+        if hiddenData["action"] == "delete":
 
-        flash(f"Sale {saleToDelete.itemName} deleted.")
+            flash(f"Sale {saleToAdjust.itemName} deleted.")
 
-        db.session.delete(saleToDelete)
-        db.session.commit()
+            db.session.delete(saleToAdjust)
+            db.session.commit()
+
+        elif hiddenData["action"] == "edit":
+
+            saleFormToEdit = SaleForm()
+
+            populateSelectField(saleFormToEdit)
+            saleFormToEdit.items.data = saleToAdjust.item.itemName
+            
+            saleFormToEdit.id.data = (saleToAdjust.id, saleToAdjust.item.itemName)
+            saleFormToEdit.date.data = saleToAdjust.date
+            saleFormToEdit.price.data = saleToAdjust.price
+            saleFormToEdit.quantity.data = saleToAdjust.quantity
+            saleFormToEdit.shipping.data = saleToAdjust.shipping
+
+            return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 
     return redirect(url_for("sales"))
-
-
-@app.route("/editSaleHistory", methods=["POST"])
-@login_required
-def editSaleHistory():
-
-    form = SaleHistoryAdjustForm()
-
-    userSelectionList = [sale.strip(
-        "\' ") for sale in form.hidden.data.strip("[]").split(",")]
-
-    form.sale.choices = createSaleHistoryList(userSelectionList)
-
-    if form.validate_on_submit():
-
-        # First or 404 ?
-        saleToEdit = Sales.query.filter_by(username=current_user.username).filter_by(
-            id=int(form.sale.data)).first()
-
-        # if saleToEdit is None:
-        #     flash("Sale doesn't exist.")
-        #     return redirect(url_for("sales"))
-
-        saleFormToEdit = SaleForm()
-        populateSelectField(saleFormToEdit)
-
-        saleFormToEdit.items.data = saleToEdit.item.itemName
-        saleFormToEdit.id.data = (saleToEdit.id, saleToEdit.item.itemName)
-        saleFormToEdit.date.data = saleToEdit.date
-        saleFormToEdit.price.data = saleToEdit.price
-        saleFormToEdit.quantity.data = saleToEdit.quantity
-        saleFormToEdit.shipping.data = saleToEdit.shipping
-
-        return render_template("saleInput.html", form=saleFormToEdit, action="edit")
-
-    return
 
 
 @app.route("/items", methods=["GET"])

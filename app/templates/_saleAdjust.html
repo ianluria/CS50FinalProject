@@ -2,7 +2,7 @@
 
 {% block history %}
 
-    <form action="/{{ userAction }}SaleHistory" method="post" novalidate>
+    <form action="/adjustSaleHistory" method="post" novalidate>
         {{ adjustForm.hidden_tag() }}
         <p>{{ adjustForm.hidden.data }}</p>
         <table>
