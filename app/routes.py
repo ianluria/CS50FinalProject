@@ -95,7 +95,7 @@ def sales():
 
     form = SaleSelectForm()
 
-    items = Items.query.filter_by(username=current_user.username).all()
+    items = Items.query.filter_by(user=current_user).all()
 
     names = [(item.itemName, item.itemName) for item in items]
 
@@ -112,7 +112,7 @@ def sales():
 
         if userAction == "edit" or userAction == "delete":
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
-            adjustSaleHistoryForm.hidden.data = form.items.data
+            adjustSaleHistoryForm.hidden.data = {'action':userAction,'itemsSelected':form.items.data}
             adjustSaleHistoryForm.sale.choices = saleHistory
             return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
@@ -121,12 +121,13 @@ def sales():
     return render_template("sales.html", form=form)
 
 
-@app.route("/deleteSaleHistory", methods=["POST"])
+@app.route("/adjustSaleHistory", methods=["POST"])
 @login_required
-def deleteSaleHistory():
+def adjustSaleHistory():
 
     form = SaleHistoryAdjustForm()
 
+    # Get list of all relevant sales to pass validation check
     userSelectionList = [sale.strip(
         "\' ") for sale in form.hidden.data.strip("[]").split(",")]
 
@@ -134,33 +135,20 @@ def deleteSaleHistory():
 
     if form.validate_on_submit():
 
-        print("form sale data", form.sale.data)
-
+        # first or 404?
         saleToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
             id=int(form.sale.data)).first()
 
-        if saleToDelete is None:
-            flash("Sale doesn't exist.")
-            return redirect(url_for("sales"))
+        # if saleToDelete is None:
+        #     flash("Sale doesn't exist.")
+        #     return redirect(url_for("sales"))
 
         flash(f"Sale {saleToDelete.itemName} deleted.")
-
-        print("delete", saleToDelete)
 
         db.session.delete(saleToDelete)
         db.session.commit()
 
     return redirect(url_for("sales"))
-
-    # print("In delete list", userSelectionList)
-
-    # sale = Sales.query.filter_by(id=form.)
-
-    # validation of submit may require validation to know which choices the user had to choose from
-    # hidden field will contain the items the user choose to edit
-    # populate a list of all sales for each item chosen
-
-    #saleHistoryList = createSaleHistoryList(form.hidden.data)
 
 
 @app.route("/editSaleHistory", methods=["POST"])
@@ -176,12 +164,13 @@ def editSaleHistory():
 
     if form.validate_on_submit():
 
+        # First or 404 ?
         saleToEdit = Sales.query.filter_by(username=current_user.username).filter_by(
             id=int(form.sale.data)).first()
 
-        if saleToEdit is None:
-            flash("Sale doesn't exist.")
-            return redirect(url_for("sales"))
+        # if saleToEdit is None:
+        #     flash("Sale doesn't exist.")
+        #     return redirect(url_for("sales"))
 
         saleFormToEdit = SaleForm()
         populateSelectField(saleFormToEdit)
@@ -202,6 +191,7 @@ def editSaleHistory():
 @login_required
 def items():
 
+    # Form that allows user to select an existing item to edit or delete
     form = ItemSelectForm()
 
     items = populateSelectField(form)
@@ -221,7 +211,6 @@ def addItem():
         # Establish an itemName to query database
         if form.hidden.data and not form.hidden.data == form.itemName.data:
 
-            # throw warning message?
             itemName = form.hidden.data
 
         else:
@@ -231,6 +220,12 @@ def addItem():
             itemName=itemName).first()
 
         edit = True
+
+        # User has entered an item name that is in database, but did not arrive through the editing route.
+        if item and not form.hidden.data:
+            flash(
+                f"Item '{itemName}' is already in database.  Use editing option to adjust it.")
+            return redirect(url_for("items"))
 
         # Create a new Items object if the user is entering a new item
         if item is None:
@@ -263,7 +258,7 @@ def addItem():
     # Return a list of the items already in database
     return render_template("_addItem.html", form=form)
 
-
+# Route which processes a user's request to edit or delete an existing item.
 @app.route("/adjustItem", methods=["POST"])
 @login_required
 def adjustItem():
@@ -287,13 +282,15 @@ def adjustItem():
             db.session.delete(item)
             db.session.commit()
 
+            # Also delete sales history for item??
+
             flash(f"Item {item.itemName} deleted.")
 
         elif form.action.data == "edit":
 
-            # Populate an itemForm object with the "item" data stored in the database.
+            # Populate an itemForm object with the "item" data stored in the database to show user.
             itemForm = ItemForm(obj=item)
-            # Store the current name of the item in a hidden field to track if the user makes changes to the name.
+            # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
 
             flash(f"Editing {item.itemName}.")
