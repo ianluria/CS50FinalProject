@@ -43,13 +43,14 @@ def newSale():
         # If the id hidden field has data, the sale is being edited.
         if form.id.data:
 
+            hiddenData = ast.literal_eval(form.id.data)
             # Create a tuple as (orginial sale id, orignial item name)
-            idData = tuple(re.findall(r'[\w]+', form.id.data))
+            # idData = tuple(re.findall(r'[\w]+', form.id.data))
 
             # first or 404 ???
             # Get sale from database.
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
-                id=idData[0]).first()
+                id=hiddenData["id"]).first()
 
             if usersSale is None:
                 flash("Sale doesn't exist.")
@@ -65,11 +66,11 @@ def newSale():
             usersSale.username = current_user.username
 
         # Link userSale object to an Item object if there is not one linked or user changed item during edit
-        if not form.id.data or not idData[1] == form.items.data:
+        if not form.id.data or not hiddenData["originalItemName"] == form.items.data:
 
             # Consider deleting this in favor of using the foreign key
             usersSale.itemName = form.items.data
-            #first or 404????
+            # first or 404????
             usersSale.item = Items.query.filter_by(
                 user=current_user).filter_by(itemName=form.items.data).first()
 
@@ -115,7 +116,8 @@ def sales():
 
         if userAction == "edit" or userAction == "delete":
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
-            adjustSaleHistoryForm.hidden.data = {'action':userAction,'itemsSelected':form.items.data}
+            adjustSaleHistoryForm.hidden.data = {
+                'action': userAction, 'itemsSelected': form.items.data}
             adjustSaleHistoryForm.sale.choices = saleHistory
             return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
@@ -143,7 +145,7 @@ def adjustSaleHistory():
 
         # first or 404?
         saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
-                id=int(form.sale.data)).first()
+            id=int(form.sale.data)).first()
 
         if hiddenData["action"] == "delete":
 
@@ -158,8 +160,9 @@ def adjustSaleHistory():
 
             populateSelectField(saleFormToEdit)
             saleFormToEdit.items.data = saleToAdjust.item.itemName
-            
-            saleFormToEdit.id.data = (saleToAdjust.id, saleToAdjust.item.itemName)
+
+            saleFormToEdit.id.data = {
+                "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
             saleFormToEdit.date.data = saleToAdjust.date
             saleFormToEdit.price.data = saleToAdjust.price
             saleFormToEdit.quantity.data = saleToAdjust.quantity
