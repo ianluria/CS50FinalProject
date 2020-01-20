@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for
 from flask_login import current_user
-from app.forms import ItemSelectForm, SaleForm, ItemForm
+from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
 from app.models import Items, Sales, User
 from decimal import Decimal, getcontext
 
@@ -11,7 +11,7 @@ getcontext().prec = 2
 
 def populateItemSelectField(form):
 
-    if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm) or isinstance(form, SaleSelectForm):
+    if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm) or isinstance(form, SaleActionForm):
 
         items = Items.query.filter_by(username=current_user.username).all()
 
@@ -22,7 +22,7 @@ def populateItemSelectField(form):
 
         return items
     else:
-        raise TypeError("Form must be of ItemSelectForm, SaleSelectForm, or SaleForm type.")
+        raise TypeError("Form must be of ItemSelectForm, SaleActionForm, or SaleForm type.")
 
 
 def populateItemsObject(obj, form, edit=False):
