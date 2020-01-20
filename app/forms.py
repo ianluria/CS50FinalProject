@@ -12,10 +12,10 @@ class SaleForm(FlaskForm):
     quantity = IntegerField("Quantity", validators=[DataRequired()])
     # Need a default value of 0.50
     shipping = DecimalField("Postage", validators=[DataRequired()], places=2)
-    id = HiddenField()
+    hidden = HiddenField()
     submit = SubmitField("Log Sale")
 
-class SaleSelectForm(FlaskForm):
+class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[DataRequired()])
     action = RadioField("Action", validators=[DataRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale")])
     submit = SubmitField("Get History")

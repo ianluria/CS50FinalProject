@@ -4,7 +4,6 @@
 
     <form action="/adjustSaleHistory" method="post" novalidate>
         {{ adjustForm.hidden_tag() }}
-        <p>{{ adjustForm.hidden.data }}</p>
         <table>
             {% for subfield in adjustForm.sale %}
             <tr>
@@ -15,6 +14,5 @@
         </table>
         <p>{{ adjustForm.submit() }}</p>
     </form>
-
 
 {% endblock %}

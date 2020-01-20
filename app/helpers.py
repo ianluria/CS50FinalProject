@@ -9,9 +9,9 @@ getcontext().prec = 2
 # """Populates form select field and returns results from items query."""
 
 
-def populateSelectField(form):
+def populateItemSelectField(form):
 
-    if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm):
+    if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm) or isinstance(form, SaleSelectForm):
 
         items = Items.query.filter_by(username=current_user.username).all()
 
@@ -22,7 +22,7 @@ def populateSelectField(form):
 
         return items
     else:
-        raise TypeError("Form must be of ItemSelectForm or SaleForm type.")
+        raise TypeError("Form must be of ItemSelectForm, SaleSelectForm, or SaleForm type.")
 
 
 def populateItemsObject(obj, form, edit=False):

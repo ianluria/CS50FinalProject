@@ -11,8 +11,8 @@ from werkzeug.urls import url_parse
 
 # Local application imports
 from app import app, db
-from app.forms import SaleForm, LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleSelectForm, SaleHistoryAdjustForm
-from app.helpers import populateSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
+from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
 from app.models import User, Sales, Items
 
 # Dashboard of user sales
@@ -36,43 +36,35 @@ def index():
 def newSale():
     form = SaleForm()
 
-    populateSelectField(form)
+    populateItemSelectField(form)
 
     if form.validate_on_submit():
 
         # If the id hidden field has data, the sale is being edited.
-        if form.id.data:
+        if form.hidden.data:
 
-            hiddenData = ast.literal_eval(form.id.data)
-            # Create a tuple as (orginial sale id, orignial item name)
-            # idData = tuple(re.findall(r'[\w]+', form.id.data))
+            # Create a dictionary from form hidden data.
+            hiddenData = ast.literal_eval(form.hidden.data)
 
-            # first or 404 ???
             # Get sale from database.
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
-                id=hiddenData["id"]).first()
+                id=hiddenData["id"]).first_or_404()
 
-            if usersSale is None:
-                flash("Sale doesn't exist.")
-                return redirect(url_for("sales"))
+            flash(f"{form.items.data}'s sale on {form.date} edited.")
+        else:
+            flash(f"New sale Logged for {form.items.data}")
 
-            # Get the new item from the database
-
-            # Update the sale's item and itemName
-
-        # If there is not form.id.data, create a new instance of the Sales model.
-        if not form.id.data:
+        # If there is not form.hidden.data, create a new instance of the Sales model.
+        if not form.hidden.data:
             usersSale = Sales()
             usersSale.username = current_user.username
 
         # Link userSale object to an Item object if there is not one linked or user changed item during edit
-        if not form.id.data or not hiddenData["originalItemName"] == form.items.data:
+        if not form.hidden.data or not hiddenData["originalItemName"] == form.items.data:
 
-            # Consider deleting this in favor of using the foreign key
-            usersSale.itemName = form.items.data
-            # first or 404????
             usersSale.item = Items.query.filter_by(
-                user=current_user).filter_by(itemName=form.items.data).first()
+                user=current_user).filter_by(itemName=form.items.data).first_or_404()
+            usersSale.itemName = usersSale.item.itemName
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
@@ -84,12 +76,10 @@ def newSale():
         db.session.add(usersSale)
         db.session.commit()
 
-        flash(f"Sale Logged for {usersSale.item.itemName}")
         return redirect(url_for("sales"))
 
     else:
         form.date.data = date.today()
-        # .strftime("%m/%d/%Y")
         return render_template("saleInput.html", form=form)
 
 
@@ -97,13 +87,10 @@ def newSale():
 @login_required
 def sales():
 
-    form = SaleSelectForm()
+    form = SaleActionForm()
 
-    items = Items.query.filter_by(user=current_user).all()
+    names = populateItemSelectField(form)
 
-    names = [(item.itemName, item.itemName) for item in items]
-
-    form.items.choices = names
     form.items.size = len(names)
 
     if form.validate_on_submit():
@@ -116,8 +103,11 @@ def sales():
 
         if userAction == "edit" or userAction == "delete":
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
+
+            # Dict created to populate SaleHistoryAdjustForm.sale.choices to pass form validation and document users action intent for the /adjustSaleHistory route.
             adjustSaleHistoryForm.hidden.data = {
                 'action': userAction, 'itemsSelected': form.items.data}
+
             adjustSaleHistoryForm.sale.choices = saleHistory
             return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
@@ -135,17 +125,12 @@ def adjustSaleHistory():
     # Convert string data from form into a dict
     hiddenData = ast.literal_eval(form.hidden.data)
 
-    # Get list of all relevant sales to pass validation check
-    # userSelectionList = [sale.strip(
-    #     "\' ") for sale in form.hidden.data.strip("[]").split(",")]
-
     form.sale.choices = createSaleHistoryList(hiddenData["itemsSelected"])
 
     if form.validate_on_submit():
 
-        # first or 404?
         saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
-            id=int(form.sale.data)).first()
+            id=int(form.sale.data)).first_or_404()
 
         if hiddenData["action"] == "delete":
 
@@ -156,12 +141,14 @@ def adjustSaleHistory():
 
         elif hiddenData["action"] == "edit":
 
+            # Create a SaleForm that will be prepopulated with the sale-to-edit's information that the user can then adjust
             saleFormToEdit = SaleForm()
 
-            populateSelectField(saleFormToEdit)
+            populateItemSelectField(saleFormToEdit)
             saleFormToEdit.items.data = saleToAdjust.item.itemName
 
-            saleFormToEdit.id.data = {
+            # Store a dictionary with information used to process an edit on the newSale route
+            saleFormToEdit.hidden.data = {
                 "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
             saleFormToEdit.date.data = saleToAdjust.date
             saleFormToEdit.price.data = saleToAdjust.price
@@ -180,7 +167,7 @@ def items():
     # Form that allows user to select an existing item to edit or delete
     form = ItemSelectForm()
 
-    items = populateSelectField(form)
+    items = populateItemSelectField(form)
 
     return render_template("items.html", items=items, form=form)
 
@@ -197,6 +184,7 @@ def addItem():
         # Establish an itemName to query database
         if form.hidden.data and not form.hidden.data == form.itemName.data:
 
+            # Use the unmodified item name to query the database
             itemName = form.hidden.data
 
         else:
@@ -251,24 +239,24 @@ def adjustItem():
 
     form = ItemSelectForm()
 
-    items = populateSelectField(form)
+    items = populateItemSelectField(form)
 
     if form.validate_on_submit():
 
-        # First or 404?
         item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.items.data).first()
-
-        if item is None:
-            flash("Item doesn't exist.")
-            return redirect(url_for("items"))
+            itemName=form.items.data).first_or_404()
 
         if form.action.data == "delete":
 
+            # Delete all sales history for item
+            salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
+                item=item).all()
+
+            for sale in salesToDelete:
+                db.session.delete(sale)
+
             db.session.delete(item)
             db.session.commit()
-
-            # Also delete sales history for item??
 
             flash(f"Item {item.itemName} deleted.")
 
