@@ -18,7 +18,7 @@ class SaleForm(FlaskForm):
 class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[DataRequired()])
     action = RadioField("Action", validators=[DataRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale")])
-    submit = SubmitField("Get History")
+    submit = SubmitField("Get Sales")
 
 class SaleHistoryAdjustForm(FlaskForm):
     sale = RadioField("Select Sale", validators=[DataRequired()])
@@ -30,7 +30,6 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField("Sign In")
-
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])

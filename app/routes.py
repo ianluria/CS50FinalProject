@@ -50,9 +50,9 @@ def newSale():
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
                 id=hiddenData["id"]).first_or_404()
 
-            flash(f"{form.items.data}'s sale on {form.date} edited.")
+            flash(f"{form.items.data}'s sale on {form.date.value} has been edited.")
         else:
-            flash(f"New sale Logged for {form.items.data}")
+            flash(f"New Sale Logged for {form.items.data}.")
 
         # If there is not form.hidden.data, create a new instance of the Sales model.
         if not form.hidden.data:
@@ -109,7 +109,8 @@ def sales():
                 'action': userAction, 'itemsSelected': form.items.data}
 
             adjustSaleHistoryForm.sale.choices = saleHistory
-            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
+            adjustSaleHistoryForm.submit.label.text = f"{userAction.capitalize()} Sale"
+            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm)
         else:
             return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
 

@@ -7,9 +7,8 @@
     {{ form.hidden_tag() }}
 
     {% if action == "edit" %}
-        <p>Editing...</p>
+        <p>Editing sale for {{ form.items.data }}.</p>
 
-        {{ form.id() }}
     {% endif %}
 
     <p>

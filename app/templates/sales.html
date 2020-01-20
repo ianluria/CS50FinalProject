@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<a href="{{ url_for('newSale') }}">Add a new sale.</a>
+
 <h6>Sale Select</h6>
 <form action="/sales" method="post" novalidate>
     {{ form.hidden_tag() }}
