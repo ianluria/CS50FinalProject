@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>Are you sure you want to delete {{ form.hidden.data }}?</p>
+<p>This is a permanent change.  Every sale in history for {{ form.hidden.data }} will be removed as well.</p>
+<p>All profit calculations will be adjusted accordingly.</p>
+
+<form action="/deleteItem" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>{{ form.confirm() }}</p>
+
+</form>
+
+{% endblock %}

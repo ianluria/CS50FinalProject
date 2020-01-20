@@ -11,7 +11,7 @@ from werkzeug.urls import url_parse
 
 # Local application imports
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm
+from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
 from app.models import User, Sales, Items
 
@@ -50,7 +50,8 @@ def newSale():
             usersSale = Sales.query.filter_by(username=current_user.username).filter_by(
                 id=hiddenData["id"]).first_or_404()
 
-            flash(f"{form.items.data}'s sale on {form.date.value} has been edited.")
+            flash(
+                f"{form.items.data}'s sale on {form.date.raw_data[0]} has been edited.")
         else:
             flash(f"New Sale Logged for {form.items.data}.")
 
@@ -244,24 +245,29 @@ def adjustItem():
 
     if form.validate_on_submit():
 
-        item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=form.items.data).first_or_404()
-
         if form.action.data == "delete":
 
-            # Delete all sales history for item
-            salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
-                item=item).all()
+            # deleteConfirmationForm = DeleteConfirmationForm(hidden=form.items.data)
 
-            for sale in salesToDelete:
-                db.session.delete(sale)
+            return render_template("deleteConfirmation.html", form=DeleteConfirmationForm(hidden=form.items.data))
+            # Forward user to a warning page
 
-            db.session.delete(item)
-            db.session.commit()
+            # # Delete all sales history for item
+            # salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
+            #     item=item).all()
 
-            flash(f"Item {item.itemName} deleted.")
+            # for sale in salesToDelete:
+            #     db.session.delete(sale)
+
+            # db.session.delete(item)
+            # db.session.commit()
+
+            # flash(f"Item {item.itemName} deleted.")
 
         elif form.action.data == "edit":
+
+            item = Items.query.filter_by(user=current_user).filter_by(
+                itemName=form.items.data).first_or_404()
 
             # Populate an itemForm object with the "item" data stored in the database to show user.
             itemForm = ItemForm(obj=item)
@@ -271,6 +277,32 @@ def adjustItem():
             flash(f"Editing {item.itemName}.")
 
             return render_template("_addItem.html", form=itemForm)
+
+    return redirect(url_for("items"))
+
+
+@app.route("/deleteItem", methods=["POST"])
+@login_required
+def deleteItem():
+
+    form = DeleteConfirmationForm()
+
+    if form.validate_on_submit():
+
+        item = Items.query.filter_by(user=current_user).filter_by(
+            itemName=form.hidden.data).first_or_404()
+
+        # Delete all sales history for item
+        salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
+            item=item).all()
+
+        for sale in salesToDelete:
+            db.session.delete(sale)
+
+        db.session.delete(item)
+        db.session.commit()
+
+        flash(f"Item {item.itemName} deleted.")
 
     return redirect(url_for("items"))
 

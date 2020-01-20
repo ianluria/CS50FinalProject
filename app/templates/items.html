@@ -2,19 +2,12 @@
 
 {% block content %}
 
-<p>items.</p>
-
 <a href="{{ url_for('addItem') }}">Add New Item</a>
+
+<p>{{ current_user.username }}'s Items for Sale</p>
 
 {% block edit %}{% endblock %}
     
-{% block itemsList %}
-<p>List of items on items.html</p>    
-    {% for item in items %}
-        <div>{{ item.itemName }} cost {{item.price}} for {{item.quantity}} added on {{item.date}} </div>
-    {% endfor %}
-{% endblock %}
-
 <form action="/adjustItem" method="post" novalidate>
     {{ form.hidden_tag() }}
 
@@ -35,5 +28,12 @@
 
     <p>{{ form.submit() }}</p>
 </form>
+
+{% block itemsList %}
+    {% for item in items %}
+        <div>{{ item.itemName }} cost {{item.price}} for {{item.quantity}} added on {{item.date}}</div>
+    {% endfor %}
+{% endblock %}
+
 
 {% endblock %}

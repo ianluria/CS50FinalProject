@@ -22,14 +22,15 @@ def populateItemSelectField(form):
 
         return items
     else:
-        raise TypeError("Form must be of ItemSelectForm, SaleActionForm, or SaleForm type.")
+        raise TypeError(
+            "Form must be of ItemSelectForm, SaleActionForm, or SaleForm type.")
 
 
 def populateItemsObject(obj, form, edit=False):
 
     if isinstance(obj, Items):
         if isinstance(form, ItemForm):
-            
+
             obj.itemName = form.itemName.data
             obj.price = str(form.price.data)
             obj.quantity = form.quantity.data
@@ -68,18 +69,8 @@ def calculateProfit(model):
 
 def createSaleHistoryList(listOfItemNames):
 
-    # historyList = []
-
-    historyList = Sales.query.filter(Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
-
-    # for item in listOfItemNames:
-
-    #     #history = Items.query.filter_by(itemName=item).first().sales
-    #     history = Sales.query.filter_by(
-    #         username=current_user.username).filter_by(itemName=item).all()
-    #     historyList.append(history)
-
-    # historyList = [element for sublist in historyList for element in sublist]
+    historyList = Sales.query.filter(
+        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
         (str(sale.id), f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date.strftime('%m/%d/%Y')} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]

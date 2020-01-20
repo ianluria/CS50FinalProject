@@ -62,3 +62,7 @@ class ItemSelectForm(FlaskForm):
     items = RadioField("Items", validators=[DataRequired()])
     action = RadioField("Action", choices=[('edit','Edit'),('delete','Delete')])
     submit = SubmitField('Select')
+
+class DeleteConfirmationForm(FlaskForm):
+    hidden = HiddenField(validators=[DataRequired()])
+    confirm = SubmitField("Confirm Deletion")
