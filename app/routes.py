@@ -12,7 +12,7 @@ from werkzeug.urls import url_parse
 # Local application imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd
 from app.models import User, Sales, Items
 
 # Dashboard of user sales
@@ -169,6 +169,9 @@ def items():
 
     items = populateItemSelectField(form)
 
+    items = [f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+    # Ian3 cost $785.0 for 700 added on 2019-12-05
+
     return render_template("items.html", items=items, form=form)
 
 
@@ -187,7 +190,7 @@ def addItem():
             # Use the unmodified item name to query the database
             itemName = form.hidden.data
 
-            # Go through all the sales for the item and update the foreign key.
+            # Go through all the sales for the item and update the foreign key due to name change.
             updateSales = True
 
         else:
@@ -209,26 +212,14 @@ def addItem():
             item = Items()
             edit = False
 
-        # if updateSales:
-        #     sales = Sales.query.filter_by(username=current_user.username).filter_by(item=item).all()
-        # elif edit and not updateSales:
-        #     sales =
         if edit:
             sales = item.sales.all()
-
-            # for sale in item.sales:
-            # Update each sale's itemName to the new itemName from form
-            # sale.itemName = form.itemName.data
 
         # Update item with new data from form.
         populateItemsObject(item, form, edit=edit)
 
         # The profit for each sale will be updated given the new item information from user
         if edit:
-
-            # for sale in sales:
-            #     calculateProfit(sale)
-
             for sale in sales:
                 if updateSales:
                     # Update each sale's itemName to the new itemName from form
@@ -254,7 +245,7 @@ def adjustItem():
 
     form = ItemSelectForm()
 
-    items = populateItemSelectField(form)
+    populateItemSelectField(form)
 
     if form.validate_on_submit():
 

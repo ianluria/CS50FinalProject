@@ -12,28 +12,27 @@
     {{ form.hidden_tag() }}
 
     <p>
-        {{ form.items.label }}<br>
-        {{ form.items() }}
-        {% for error in form.items.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
         {{ form.action.label }}<br>
         {{ form.action() }}
         {% for error in form.action.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-
+    <p>
+        {{ form.items.label }}<br>
+        {{ form.items() }}
+        {% for error in form.items.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    
     <p>{{ form.submit() }}</p>
 </form>
 
 {% block itemsList %}
     {% for item in items %}
-        <div>{{ item.itemName }} cost ${{item.price}} for {{item.quantity}} added on {{item.date}}</div>
+        <p>{{ item }}</p>
     {% endfor %}
 {% endblock %}
-
 
 {% endblock %}

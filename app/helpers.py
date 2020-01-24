@@ -4,7 +4,7 @@ from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
 from app.models import Items, Sales, User
 from decimal import Decimal, getcontext
 
-getcontext().prec = 2
+# getcontext().prec = 2
 
 # """Populates form select field and returns results from items query."""
 
@@ -74,6 +74,11 @@ def createSaleHistoryList(listOfItemNames):
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
-        (str(sale.id), f"{sale.itemName} quantity {sale.quantity} at ${sale.price} on {sale.date.strftime('%m/%d/%Y')} shipping ${sale.shipping} for a profit of ${sale.profit}") for sale in historyList]
+        (str(sale.id), f"{sale.itemName} quantity of {sale.quantity} at {usd(sale.price)} sold on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(sale.shipping)} for a profit of {usd(sale.profit)}.") for sale in historyList]
 
     return adjustSaleChoices
+
+
+def usd(value):
+    """Format value as USD."""
+    return f"${value:,.2f}"
