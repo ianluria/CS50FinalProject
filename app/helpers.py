@@ -40,6 +40,7 @@ def populateItemsObject(obj, form, edit=False):
                 obj.username = current_user.username
                 obj.user = User.query.filter_by(
                     username=current_user.username).first()
+            
             return
 
     raise TypeError(

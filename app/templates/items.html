@@ -31,7 +31,7 @@
 
 {% block itemsList %}
     {% for item in items %}
-        <div>{{ item.itemName }} cost {{item.price}} for {{item.quantity}} added on {{item.date}}</div>
+        <div>{{ item.itemName }} cost ${{item.price}} for {{item.quantity}} added on {{item.date}}</div>
     {% endfor %}
 {% endblock %}
 

@@ -19,9 +19,8 @@ class Sales(db.Model):
 
 
 class Items(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    itemName = db.Column(db.String(255), index=True, primary_key=True)
     username = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
-    itemName = db.Column(db.String(255), index=True, nullable=False, unique=True)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -30,7 +29,7 @@ class Items(db.Model):
     def __repr__(self):
         return '<Items {}>'.format(self.itemName)
 
-
+# Remove id ???
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), index=True, unique=True)

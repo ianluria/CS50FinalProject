@@ -54,9 +54,7 @@ def newSale():
                 f"{form.items.data}'s sale on {form.date.raw_data[0]} has been edited.")
         else:
             flash(f"New Sale Logged for {form.items.data}.")
-
-        # If there is not form.hidden.data, create a new instance of the Sales model.
-        if not form.hidden.data:
+            # Create a new instance of the Sales model.
             usersSale = Sales()
             usersSale.username = current_user.username
 
@@ -65,7 +63,7 @@ def newSale():
 
             usersSale.item = Items.query.filter_by(
                 user=current_user).filter_by(itemName=form.items.data).first_or_404()
-            usersSale.itemName = usersSale.item.itemName
+            # usersSale.itemName = usersSale.item.itemName
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
@@ -183,11 +181,14 @@ def addItem():
 
     if form.validate_on_submit():
 
-        # Establish an itemName to query database
+        # The user has altered the item name.
         if form.hidden.data and not form.hidden.data == form.itemName.data:
 
             # Use the unmodified item name to query the database
             itemName = form.hidden.data
+
+            # Go through all the sales for the item and update the foreign key.
+            updateSales = True
 
         else:
             itemName = form.itemName.data
@@ -205,22 +206,34 @@ def addItem():
 
         # Create a new Items object if the user is entering a new item
         if item is None:
-
             item = Items()
             edit = False
+
+        # if updateSales:
+        #     sales = Sales.query.filter_by(username=current_user.username).filter_by(item=item).all()
+        # elif edit and not updateSales:
+        #     sales =
+        if edit:
+            sales = item.sales.all()
+
+            # for sale in item.sales:
+            # Update each sale's itemName to the new itemName from form
+            # sale.itemName = form.itemName.data
 
         # Update item with new data from form.
         populateItemsObject(item, form, edit=edit)
 
+        # The profit for each sale will be updated given the new item information from user
         if edit:
-            # Update every relevant sale in the history to reflect the changes the user made to item.
-            sales = Sales.query.filter_by(username=current_user.username).filter_by(
-                item=item).all()
+
+            # for sale in sales:
+            #     calculateProfit(sale)
 
             for sale in sales:
-                sale.itemName = item.itemName
+                if updateSales:
+                    # Update each sale's itemName to the new itemName from form
+                    sale.itemName = item.itemName
                 calculateProfit(sale)
-                db.session.add(sale)
 
             flash(f"Item {item.itemName} updated.")
         else:
