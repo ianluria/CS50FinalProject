@@ -13,6 +13,7 @@ class Sales(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     shipping = db.Column(db.String(64), nullable=False)
     profit = db.Column(db.String(64), nullable=False)
+    packaging = db.Column(db.String(64), nullable=False)
 
     def __repr__(self):
         return '<Sales {}>'.format(self.username)
@@ -32,7 +33,7 @@ class Items(db.Model):
 # Remove id ???
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     items = db.relationship("Items", backref="user", lazy="dynamic")

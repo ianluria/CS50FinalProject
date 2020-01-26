@@ -69,6 +69,7 @@ def newSale():
         usersSale.price = str(form.price.data)
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
+        usersSale.packaging = str(form.packaging.data)
 
         calculateProfit(usersSale)
 
@@ -81,7 +82,7 @@ def newSale():
         form.date.data = date.today()
         return render_template("saleInput.html", form=form)
 
-
+# Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
 @app.route("/sales", methods=["GET", "POST"])
 @login_required
 def sales():
@@ -103,7 +104,7 @@ def sales():
         if userAction == "edit" or userAction == "delete":
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
 
-            # Dict created to populate SaleHistoryAdjustForm.sale.choices to pass form validation and document users action intent for the /adjustSaleHistory route.
+            # Dict created to populate SaleHistoryAdjustForm.sale.choices to pass form validation and document user's action intent for the /adjustSaleHistory route.
             adjustSaleHistoryForm.hidden.data = {
                 'action': userAction, 'itemsSelected': form.items.data}
 
@@ -134,7 +135,8 @@ def adjustSaleHistory():
 
         if hiddenData["action"] == "delete":
 
-            flash(f"Sale {saleToAdjust.itemName} deleted.")
+            flash(
+                f"A sale from {saleToAdjust.itemName} made on {saleToAdjust.date.strftime('%m/%d/%Y')} has been deleted.")
 
             db.session.delete(saleToAdjust)
             db.session.commit()
@@ -154,6 +156,7 @@ def adjustSaleHistory():
             saleFormToEdit.price.data = saleToAdjust.price
             saleFormToEdit.quantity.data = saleToAdjust.quantity
             saleFormToEdit.shipping.data = saleToAdjust.shipping
+            saleFormToEdit.packaging.data = saleToAdjust.packaging
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 
@@ -169,13 +172,14 @@ def items():
 
     items = populateItemSelectField(form)
 
-    items = [f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+    items = [
+        f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
     # Ian3 cost $785.0 for 700 added on 2019-12-05
 
     return render_template("items.html", items=items, form=form)
 
 
-# Create a new item
+# Create a new item or edit an existing item's details
 @app.route("/addItem", methods=["GET", "POST"])
 @login_required
 def addItem():
@@ -191,10 +195,11 @@ def addItem():
             itemName = form.hidden.data
 
             # Go through all the sales for the item and update the foreign key due to name change.
-            updateSales = True
+            updateForeignKey = True
 
         else:
             itemName = form.itemName.data
+            updateForeignKey = False
 
         item = Items.query.filter_by(user=current_user).filter_by(
             itemName=itemName).first()
@@ -221,7 +226,7 @@ def addItem():
         # The profit for each sale will be updated given the new item information from user
         if edit:
             for sale in sales:
-                if updateSales:
+                if updateForeignKey:
                     # Update each sale's itemName to the new itemName from form
                     sale.itemName = item.itemName
                 calculateProfit(sale)

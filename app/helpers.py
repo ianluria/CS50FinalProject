@@ -54,7 +54,7 @@ def calculateProfit(model):
         unitCost = Decimal(model.item.price) / Decimal(model.item.quantity)
 
         cost = Decimal(model.quantity) * Decimal(unitCost) + \
-            Decimal(model.shipping)
+            Decimal(model.shipping) + Decimal(model.packaging)
 
         profit = Decimal(model.price) - Decimal(cost)
 
