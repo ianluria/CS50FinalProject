@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField, RadioField
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, Length, NumberRange
-from app.models import User
+from app.models import User, Items
+from app import db
+from sqlalchemy import func
 
 import datetime
 
@@ -24,6 +26,14 @@ class SaleForm(FlaskForm):
         if field.data > datetime.date.today():
             raise ValidationError("Date cannot be in the future.")
 
+
+    def validate_quantity(form,field):
+
+        totalNumberOfItemSold = db.session.query(func.sum(Items.quantity)).filter_by(
+        user=current_user).filter_by(itemName=form.items.data).scalar()
+
+        if field.data > totalNumberOfItemSold:
+            raise ValidationError(f"{totalNumberOfItemSold} of quantity remaining for {form.items.data}.")
 
 class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[InputRequired()])

@@ -26,7 +26,7 @@ def index():
     totalSales = db.session.query(func.sum(Sales.price)).filter_by(
         username=current_user.username).scalar()
 
-    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth ${totalSales}."
+    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth ${totalSales or 0}."
 
     return render_template("index.html", message=message)
 

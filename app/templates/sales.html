@@ -4,29 +4,32 @@
 
 <a href="{{ url_for('newSale') }}">Add a new sale.</a>
 
-<h6>Sale Select</h6>
-<form action="/sales" method="post" novalidate>
-    {{ form.hidden_tag() }}
+{% if form.items.choices %}
 
-    <p>
-        {{ form.items.label }}<br>
-        {{ form.items() }}
-        {% for error in form.items.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.action.label }}<br>
-        {{ form.action() }}
-        {% for error in form.action.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
+    <h6>Sale Select</h6>
+    <form action="/sales" method="post" novalidate>
+        {{ form.hidden_tag() }}
 
-</form>
+        <p>
+            {{ form.items.label }}<br>
+            {{ form.items() }}
+            {% for error in form.items.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.action.label }}<br>
+            {{ form.action() }}
+            {% for error in form.action.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
 
-{% block history %}{% endblock %}
+    </form>
 
+    {% block history %}{% endblock %}
+
+{% endif %}
 
 {% endblock %}

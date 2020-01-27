@@ -2,37 +2,41 @@
 
 {% block content %}
 
-<a href="{{ url_for('addItem') }}">Add New Item</a>
+<a href="{{ url_for('addItem') }}">Add new item.</a>
 
-<p>{{ current_user.username }}'s Items for Sale</p>
+{% if itemsList %}
 
-{% block edit %}{% endblock %}
-    
-<form action="/adjustItem" method="post" novalidate>
-    {{ form.hidden_tag() }}
+    <p>{{ current_user.username }}'s Items for Sale</p>
 
-    <p>
-        {{ form.action.label }}<br>
-        {{ form.action() }}
-        {% for error in form.action.errors %}
-        <span style="color: red;">[{{ error }}]</span>
+    {% block edit %}{% endblock %}
+        
+    <form action="/adjustItem" method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.action.label }}<br>
+            {{ form.action() }}
+            {% for error in form.action.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.items.label }}<br>
+            {{ form.items() }}
+            {% for error in form.items.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+
+    {% block itemsList %}
+        {% for item in items %}
+            <p>{{ item }}</p>
         {% endfor %}
-    </p>
-    <p>
-        {{ form.items.label }}<br>
-        {{ form.items() }}
-        {% for error in form.items.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    
-    <p>{{ form.submit() }}</p>
-</form>
+    {% endblock %}
 
-{% block itemsList %}
-    {% for item in items %}
-        <p>{{ item }}</p>
-    {% endfor %}
-{% endblock %}
+{% endif %}
 
 {% endblock %}

@@ -13,7 +13,7 @@ class Sales(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     shipping = db.Column(db.String(64), nullable=False)
     profit = db.Column(db.String(64), nullable=False)
-    packaging = db.Column(db.String(64), nullable=False)
+    packaging = db.Column(db.String(64), nullable=True)
 
     def __repr__(self):
         return '<Sales {}>'.format(self.username)
