@@ -4,9 +4,9 @@
 
 <a href="{{ url_for('addItem') }}">Add new item.</a>
 
-{% if itemsList %}
+{% if items %}
 
-    <p>{{ current_user.username }}'s Items for Sale</p>
+    <p>Choose edit or delete and then an item.</p>
 
     {% block edit %}{% endblock %}
         
@@ -31,11 +31,10 @@
         <p>{{ form.submit() }}</p>
     </form>
 
-    {% block itemsList %}
-        {% for item in items %}
-            <p>{{ item }}</p>
-        {% endfor %}
-    {% endblock %}
+    <p>{{ current_user.username }}'s Items for Sale</p>
+    {% for item in items %}
+        <p>{{ item }}</p>
+    {% endfor %}
 
 {% endif %}
 

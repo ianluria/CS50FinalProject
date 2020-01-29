@@ -4,7 +4,7 @@
 
 <a href="{{ url_for('newSale') }}">Add a new sale.</a>
 
-{% if form.items.choices %}
+{% if not zeroSales %}
 
     <h6>Sale Select</h6>
     <form action="/sales" method="post" novalidate>

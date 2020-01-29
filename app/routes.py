@@ -26,7 +26,7 @@ def index():
     totalSales = db.session.query(func.sum(Sales.price)).filter_by(
         username=current_user.username).scalar()
 
-    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth ${totalSales or 0}."
+    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth {usd(totalSales or 0)}."
 
     return render_template("index.html", message=message)
 
@@ -114,7 +114,9 @@ def sales():
         else:
             return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
 
-    return render_template("sales.html", form=form)
+    zeroSales = True if not Sales.query.filter_by(username=current_user.username).first() else False
+
+    return render_template("sales.html", form=form, zeroSales=zeroSales)
 
 
 @app.route("/adjustSaleHistory", methods=["POST"])

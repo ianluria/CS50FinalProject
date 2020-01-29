@@ -74,7 +74,7 @@ def createSaleHistoryList(listOfItemNames):
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
-        (str(sale.id), f"{sale.itemName} quantity of {sale.quantity} at {usd(sale.price)} sold on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(sale.shipping)} for a profit of {usd(sale.profit)}.") for sale in historyList]
+        (str(sale.id), f"{sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices
 

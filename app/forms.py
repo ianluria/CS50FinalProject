@@ -4,7 +4,7 @@ from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, L
 from app.models import User, Items
 from app import db
 from sqlalchemy import func
-
+from flask_login import current_user
 import datetime
 
 
@@ -70,7 +70,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class ItemForm(FlaskForm):
-    itemName = StringField("Item", validators=[InputRequired(), Length(max=255)])
+    itemName = StringField("Item Name", validators=[InputRequired(), Length(max=255)])
     # date = DateField("Date", validators=[InputRequired()], format='%d-%m-%Y')
     price = DecimalField("Total Price", validators=[InputRequired(), NumberRange(min=0)], places=2)
     # Must be greater than 0 and less than 1000
