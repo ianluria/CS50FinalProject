@@ -40,27 +40,32 @@ def populateItemsObject(obj, form, edit=False):
                 obj.username = current_user.username
                 obj.user = User.query.filter_by(
                     username=current_user.username).first()
-            
+
             return
 
     raise TypeError(
         "Obj must be of Items type and form must be of ItemForm type.")
 
 
-def calculateProfit(model):
+def calculateProfit(model, refund=False):
 
     if isinstance(model, Sales):
 
         unitCost = Decimal(model.item.price) / Decimal(model.item.quantity)
 
         cost = Decimal(model.quantity) * Decimal(unitCost) + \
-            Decimal(model.shipping) + Decimal(model.packaging)
+            Decimal(model.shipping) + Decimal(model.packaging) + \
+                    Decimal(model.fees)
 
-        profit = Decimal(model.price) - Decimal(cost)
+        if refund:
+            model.profit = str(Decimal(0-cost+Decimal(model.fees).quantize(Decimal("1.00"))
+            return
 
-        profit = Decimal(profit).quantize(Decimal("1.00"))
+        profit=Decimal(model.price) - Decimal(cost)
 
-        model.profit = str(profit)
+        profit=Decimal(profit).quantize(Decimal("1.00"))
+
+        model.profit=str(profit)
 
         return
 
@@ -70,10 +75,10 @@ def calculateProfit(model):
 
 def createSaleHistoryList(listOfItemNames):
 
-    historyList = Sales.query.filter(
+    historyList=Sales.query.filter(
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
-    adjustSaleChoices = [
+    adjustSaleChoices=[
         (str(sale.id), f"{sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices

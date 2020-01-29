@@ -70,6 +70,7 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
+        usersSale.fees = str((usersSale.price*form.ebayFee.data)+(usersSale.price*form.payPalPercent.data)+form.payPalFixed.data)
 
         calculateProfit(usersSale)
 
@@ -101,7 +102,7 @@ def sales():
         # Determine how template will be structured depending on which action choice user has made.
         userAction = form.action.data
 
-        if userAction == "edit" or userAction == "delete":
+        if userAction in ["edit", "delete", "refund"]:
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
 
             # Dict created to populate SaleHistoryAdjustForm.sale.choices to pass form validation and document user's action intent for the /adjustSaleHistory route.
@@ -161,6 +162,12 @@ def adjustSaleHistory():
             saleFormToEdit.packaging.data = saleToAdjust.packaging
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
+        elif hiddenData["action"] == "refund":
+
+            saleToAdjust.refund = True
+            calculateProfit(saleToAdjust, True)
+            flash(f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
+
 
     return redirect(url_for("sales"))
 

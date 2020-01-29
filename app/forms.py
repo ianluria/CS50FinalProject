@@ -15,6 +15,9 @@ class SaleForm(FlaskForm):
     quantity = IntegerField("Quantity", validators=[InputRequired(), NumberRange(min=0)])
     shipping = DecimalField("Postage", validators=[InputRequired(), NumberRange(min=0)], places=2)
     packaging = DecimalField("Packaging", validators=[InputRequired(), NumberRange(min=0)], places=2)
+    ebayFee = DecimalField("eBay Fee", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
+    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
+    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
     hidden = HiddenField()
     submit = SubmitField("Log Sale")
 
