@@ -3,6 +3,7 @@ from flask_login import current_user
 from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
 from app.models import Items, Sales, User
 from decimal import Decimal, getcontext
+from app import db
 
 # getcontext().prec = 2
 
@@ -55,17 +56,18 @@ def calculateProfit(model, refund=False):
 
         cost = Decimal(model.quantity) * Decimal(unitCost) + \
             Decimal(model.shipping) + Decimal(model.packaging) + \
-                    Decimal(model.fees)
+            Decimal(model.fees)
 
         if refund:
-            model.profit = str(Decimal(0-cost+Decimal(model.fees).quantize(Decimal("1.00"))
+            model.profit = str(
+                Decimal(0-cost+Decimal(model.fees).quantize(Decimal("1.00"))))
             return
 
-        profit=Decimal(model.price) - Decimal(cost)
+        profit = Decimal(model.price) - Decimal(cost)
 
-        profit=Decimal(profit).quantize(Decimal("1.00"))
+        profit = Decimal(profit).quantize(Decimal("1.00"))
 
-        model.profit=str(profit)
+        model.profit = str(profit)
 
         return
 
@@ -75,10 +77,10 @@ def calculateProfit(model, refund=False):
 
 def createSaleHistoryList(listOfItemNames):
 
-    historyList=Sales.query.filter(
+    historyList = Sales.query.filter(
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
-    adjustSaleChoices=[
+    adjustSaleChoices = [
         (str(sale.id), f"{sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices
@@ -87,3 +89,9 @@ def createSaleHistoryList(listOfItemNames):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+
+def truncate():
+    t = (Items.query.delete(), Sales.query.delete())
+    db.session.commit()
+    return t

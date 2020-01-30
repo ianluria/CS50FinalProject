@@ -162,6 +162,7 @@ def adjustSaleHistory():
             saleFormToEdit.packaging.data = saleToAdjust.packaging
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
+            
         elif hiddenData["action"] == "refund":
 
             saleToAdjust.refund = True
