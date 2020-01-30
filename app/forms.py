@@ -15,9 +15,9 @@ class SaleForm(FlaskForm):
     quantity = IntegerField("Quantity", validators=[InputRequired(), NumberRange(min=0)])
     shipping = DecimalField("Postage", validators=[InputRequired(), NumberRange(min=0)], places=2)
     packaging = DecimalField("Packaging", validators=[InputRequired(), NumberRange(min=0)], places=2)
-    ebayFee = DecimalField("eBay Fee", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
-    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
-    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=100)], places=2)
+    ebayFee = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=0.1)
+    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2, default=0.05)
+    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=.05)
     hidden = HiddenField()
     submit = SubmitField("Log Sale")
 
@@ -83,7 +83,7 @@ class ItemForm(FlaskForm):
 
 class ItemSelectForm(FlaskForm):
     items = RadioField("Items", validators=[InputRequired()])
-    action = RadioField("Action", choices=[('edit','Edit'),('delete','Delete')])
+    action = RadioField("Action", validators=[InputRequired()], choices=[('edit','Edit'),('delete','Delete')])
     submit = SubmitField('Select')
 
 class DeleteConfirmationForm(FlaskForm):

@@ -34,6 +34,12 @@ def index():
 @app.route("/newSale", methods=["GET", "POST"])
 @login_required
 def newSale():
+
+    # Redirect user to addItem if no items have been added yet.
+    if not Items.query.filter_by(user=current_user).first():
+        flash("Please add an item before adding a new sale.")
+        return redirect(url_for("addItem"))
+
     form = SaleForm()
 
     populateItemSelectField(form)
@@ -63,14 +69,13 @@ def newSale():
 
             usersSale.item = Items.query.filter_by(
                 user=current_user).filter_by(itemName=form.items.data).first_or_404()
-            # usersSale.itemName = usersSale.item.itemName
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.fees = str((usersSale.price*form.ebayFee.data)+(usersSale.price*form.payPalPercent.data)+form.payPalFixed.data)
+        usersSale.fees = str((form.price.data*form.ebayFee.data)+(form.price.data*form.payPalPercent.data)+form.payPalFixed.data)
 
         calculateProfit(usersSale)
 

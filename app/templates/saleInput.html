@@ -53,8 +53,30 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
+    <p>
+        {{ form.ebayFee.label }}<br>
+        {{ form.ebayFee() }}
+        {% for error in form.ebayFee.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {{ form.payPalFixed.label }}<br>
+        {{ form.payPalFixed() }}
+        {% for error in form.payPalFixed.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {{ form.payPalPercent.label }}<br>
+        {{ form.payPalPercent() }}
+        {% for error in form.payPalPercent.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
 
     <p>{{ form.submit() }}</p>
+
+
+
+
+
 </form>
 
 {% endblock %}

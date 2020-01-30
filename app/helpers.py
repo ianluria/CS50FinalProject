@@ -88,10 +88,5 @@ def createSaleHistoryList(listOfItemNames):
 
 def usd(value):
     """Format value as USD."""
-    return f"${value:,.2f}"
-
-
-def truncate():
-    t = (Items.query.delete(), Sales.query.delete())
-    db.session.commit()
-    return t
+    # return f"${value:,.2f}"
+    return f"${Decimal(value):,.2f}"
