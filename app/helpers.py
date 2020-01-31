@@ -60,7 +60,7 @@ def calculateProfit(model, refund=False):
 
         if refund:
             model.profit = str(
-                Decimal(0-cost+Decimal(model.fees).quantize(Decimal("1.00"))))
+                Decimal(0-cost+Decimal(model.fees)).quantize(Decimal("1.00")))
             return
 
         profit = Decimal(model.price) - Decimal(cost)
@@ -81,7 +81,7 @@ def createSaleHistoryList(listOfItemNames):
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
-        (str(sale.id), f"{sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
+        (str(sale.id), f"{sale.refund} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices
 

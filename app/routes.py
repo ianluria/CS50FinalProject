@@ -29,7 +29,8 @@ def index():
 
     items = Items.query.filter_by(user=current_user).all()
 
-    itemAndQuantityList = [(item.itemName, item.quantity - sum([sale.quantity for sale in item.sales])) for item in items]
+    itemAndQuantityList = [(item.itemName, item.quantity -
+                            sum([sale.quantity for sale in item.sales])) for item in items]
 
     totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales worth {usd(totalSales or 0)}."
 
@@ -80,7 +81,8 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.fees = str((form.price.data*form.ebayFee.data)+(form.price.data*form.payPalPercent.data)+form.payPalFixed.data)
+        usersSale.fees = str(Decimal((form.price.data*form.ebayFee.data)+(form.price.data *
+                                                                          form.payPalPercent.data)+form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
 
@@ -119,13 +121,20 @@ def sales():
             adjustSaleHistoryForm.hidden.data = {
                 'action': userAction, 'itemsSelected': form.items.data}
 
-            adjustSaleHistoryForm.sale.choices = saleHistory
+            # Only return sales for refund that have not already been refunded
+            if userAction == "refund":
+                adjustSaleHistoryForm.sale.choices = [
+                    sale for sale in saleHistory if not sale[1][:6] == "Refund"]
+            else:
+                adjustSaleHistoryForm.sale.choices = saleHistory
+
             adjustSaleHistoryForm.submit.label.text = f"{userAction.capitalize()} Sale"
             return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm)
         else:
             return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
 
-    zeroSales = True if not Sales.query.filter_by(username=current_user.username).first() else False
+    zeroSales = True if not Sales.query.filter_by(
+        username=current_user.username).first() else False
 
     return render_template("sales.html", form=form, zeroSales=zeroSales)
 
@@ -172,13 +181,15 @@ def adjustSaleHistory():
             saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
-            
+
         elif hiddenData["action"] == "refund":
 
             saleToAdjust.refund = True
             calculateProfit(saleToAdjust, True)
-            flash(f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
-
+            db.session.add(saleToAdjust)
+            db.session.commit()
+            flash(
+                f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
 
     return redirect(url_for("sales"))
 
