@@ -2,7 +2,11 @@
 
 {% block content %}
 
-    <p>{{ message }}</p>
+    <p>{{ totalSalesMessage }}</p>
+    
+    {% for item in itemQuantityRemaining %}
+      <p>{{ item[1] }} units remaning for {{ item[0] }}.</p>
+    {% endfor %}
 
     <ul>
         <li><a href="{{ url_for('newSale') }}">Add a new sale.</a></li>

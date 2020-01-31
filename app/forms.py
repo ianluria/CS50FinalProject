@@ -32,15 +32,18 @@ class SaleForm(FlaskForm):
 
     def validate_quantity(form,field):
 
-        totalNumberOfItemSold = db.session.query(func.sum(Items.quantity)).filter_by(
-        user=current_user).filter_by(itemName=form.items.data).scalar()
+        item = Items.query.filter_by(user=current_user).filter_by(itemName=form.items.data).first_or_404()
 
-        if field.data > totalNumberOfItemSold:
-            raise ValidationError(f"{totalNumberOfItemSold} of quantity remaining for {form.items.data}.")
+        totalNumberOfItemsSold = item.quantity - sum([sale.quantity for sale in item.sales])
+
+        # totalNumberOfItemSales = db.session.query(func.sum(Sales.quantity)).filter_by(username=current_user.username).filter_by(itemName=)
+
+        if field.data > totalNumberOfItemsSold:
+            raise ValidationError(f"{totalNumberOfItemsSold} of quantity remaining for {form.items.data}.")
 
 class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[InputRequired()])
-    action = RadioField("Action", validators=[InputRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale")])
+    action = RadioField("Action", validators=[InputRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale"), ("refund", "Refund Sale")])
     submit = SubmitField("Get Sales")
 
 class SaleHistoryAdjustForm(FlaskForm):

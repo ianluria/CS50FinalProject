@@ -4,6 +4,7 @@ import ast
 
 # Third party imports
 from datetime import date
+from decimal import Decimal
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import func
@@ -26,9 +27,13 @@ def index():
     totalSales = db.session.query(func.sum(Sales.price)).filter_by(
         username=current_user.username).scalar()
 
-    message = f"{current_user.username} is tracking {totalNumberOfSales} sales worth {usd(totalSales or 0)}."
+    items = Items.query.filter_by(user=current_user).all()
 
-    return render_template("index.html", message=message)
+    itemAndQuantityList = [(item.itemName, item.quantity - sum([sale.quantity for sale in item.sales])) for item in items]
+
+    totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales worth {usd(totalSales or 0)}."
+
+    return render_template("index.html", totalSalesMessage=totalSalesMessage, itemQuantityRemaining=itemAndQuantityList)
 
 # Enter a new sale or edit and existing
 @app.route("/newSale", methods=["GET", "POST"])
@@ -161,10 +166,10 @@ def adjustSaleHistory():
             saleFormToEdit.hidden.data = {
                 "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
             saleFormToEdit.date.data = saleToAdjust.date
-            saleFormToEdit.price.data = saleToAdjust.price
+            saleFormToEdit.price.data = Decimal(saleToAdjust.price)
             saleFormToEdit.quantity.data = saleToAdjust.quantity
-            saleFormToEdit.shipping.data = saleToAdjust.shipping
-            saleFormToEdit.packaging.data = saleToAdjust.packaging
+            saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
+            saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
             
