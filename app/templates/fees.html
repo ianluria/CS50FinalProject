@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="/fees" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.ebayPercent.label }}<br>
+        {{ form.ebayPercent() }}
+        {% for error in form.ebayPercent.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.payPalFixed.label }}<br>
+        {{ form.payPalFixed() }}
+        {% for error in form.payPalFixed.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.payPalPercent.label }}<br>
+        {{ form.payPalPercent() }}
+        {% for error in form.payPalPercent.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+
+    <p>{{ form.submit() }}</p>
+
+
+
+
+</form>
+{% endblock %}

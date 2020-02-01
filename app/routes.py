@@ -81,8 +81,8 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.fees = str(Decimal((form.price.data*form.ebayFee.data)+(form.price.data *
-                                                                          form.payPalPercent.data)+form.payPalFixed.data).quantize(Decimal("1.00")))
+        usersSale.fees = str(Decimal((form.price.data*form.ebayPercent.data)+(form.price.data *
+                                                                              form.payPalPercent.data)+form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
 
@@ -319,6 +319,19 @@ def adjustItem():
             return render_template("_addItem.html", form=itemForm)
 
     return redirect(url_for("items"))
+
+
+@app.route("/fees", methods=["POST"])
+@login_required
+def fees():
+
+    form = FeeForm()
+
+    if form.validate_on_submit():
+
+        current_user.ebayPercent = form.ebayPercent
+        current_user.payPalPercent = form.payPalPercent
+        current_user.payPalFixed = form.payPalFixed
 
 
 @app.route("/deleteItem", methods=["POST"])

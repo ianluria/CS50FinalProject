@@ -8,16 +8,13 @@ from flask_login import current_user
 import datetime
 
 
-class SaleForm(FlaskForm):
+class SaleForm(FeeForm):
     items = SelectField("Item", validators=[InputRequired()])
     date = DateField("Date", validators=[InputRequired()], format='%m-%d-%Y')
     price = DecimalField("Price", validators=[InputRequired(), NumberRange(min=0)], places=2)
     quantity = IntegerField("Quantity", validators=[InputRequired(), NumberRange(min=0)])
     shipping = DecimalField("Postage", validators=[InputRequired(), NumberRange(min=0)], places=2)
     packaging = DecimalField("Packaging", validators=[InputRequired(), NumberRange(min=0)], places=2)
-    ebayFee = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=0.1)
-    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2, default=0.05)
-    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=.05)
     hidden = HiddenField()
     submit = SubmitField("Log Sale")
 
@@ -92,3 +89,9 @@ class ItemSelectForm(FlaskForm):
 class DeleteConfirmationForm(FlaskForm):
     hidden = HiddenField(validators=[InputRequired()])
     confirm = SubmitField("Confirm Deletion")
+
+class FeeForm(FlaskForm):
+    ebayPercent = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=current_user.ebayPercent)
+    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2, default=current_user.payPalFixed)
+    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=current_user.payPalPercent)
+
