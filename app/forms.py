@@ -7,6 +7,12 @@ from sqlalchemy import func
 from flask_login import current_user
 import datetime
 
+class FeeForm(FlaskForm):
+
+    eBayPercent = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2)
+    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2)
+    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2)
+    submit = SubmitField("Adjust Fees")
 
 class SaleForm(FeeForm):
     items = SelectField("Item", validators=[InputRequired()])
@@ -90,8 +96,4 @@ class DeleteConfirmationForm(FlaskForm):
     hidden = HiddenField(validators=[InputRequired()])
     confirm = SubmitField("Confirm Deletion")
 
-class FeeForm(FlaskForm):
-    ebayPercent = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=current_user.ebayPercent)
-    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2, default=current_user.payPalFixed)
-    payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2, default=current_user.payPalPercent)
 

@@ -12,7 +12,7 @@ from werkzeug.urls import url_parse
 
 # Local application imports
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm
+from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm, FeeForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd
 from app.models import User, Sales, Items
 
@@ -21,6 +21,8 @@ from app.models import User, Sales, Items
 @app.route('/index')
 @login_required
 def index():
+
+    t = current_user
 
     totalNumberOfSales = Sales.query.filter_by(
         username=current_user.username).count()
@@ -92,7 +94,11 @@ def newSale():
         return redirect(url_for("sales"))
 
     else:
+        # Prefill certain fields of the form
         form.date.data = date.today()
+        form.eBayPercent.data = Decimal(current_user.eBayPercent)
+        form.payPalPercent.data = Decimal(current_user.payPalPercent)
+        form.payPalFixed.data = Decimal(current_user.payPalFixed)
         return render_template("saleInput.html", form=form)
 
 # Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
@@ -321,7 +327,7 @@ def adjustItem():
     return redirect(url_for("items"))
 
 
-@app.route("/fees", methods=["POST"])
+@app.route("/fees", methods=["GET","POST"])
 @login_required
 def fees():
 
@@ -329,10 +335,18 @@ def fees():
 
     if form.validate_on_submit():
 
-        current_user.ebayPercent = form.ebayPercent
-        current_user.payPalPercent = form.payPalPercent
-        current_user.payPalFixed = form.payPalFixed
+        current_user.eBayPercent = str(form.eBayPercent.data)
+        current_user.payPalPercent = str(form.payPalPercent.data)
+        current_user.payPalFixed = str(form.payPalFixed.data)
+        db.session.add(current_user)
+        db.session.commit()
+        return redirect(url_for("index"))
 
+    form.eBayPercent.data = Decimal(current_user.eBayPercent)
+    form.payPalPercent.data = Decimal(current_user.payPalPercent)
+    form.payPalFixed.data = Decimal(current_user.payPalFixed)
+
+    return render_template("fees.html", form=form)   
 
 @app.route("/deleteItem", methods=["POST"])
 @login_required

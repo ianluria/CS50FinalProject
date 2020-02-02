@@ -53,9 +53,9 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.ebayFee.label }}<br>
-        {{ form.ebayFee() }}
-        {% for error in form.ebayFee.errors %}
+        {{ form.eBayPercent.label }}<br>
+        {{ form.eBayPercent() }}
+        {% for error in form.eBayPercent.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
         {{ form.payPalFixed.label }}<br>
