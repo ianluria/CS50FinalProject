@@ -2,13 +2,14 @@
 
 {% block content %}
 
-<h1>Input Sale</h1>
+{% if action == "edit" %}
+    <p>Editing sale for {{ form.items.data }}</p>
+{% elif action == "add" %}
+    <p>Add a New Sale</p>
+{% endif %}
+
 <form action="/newSale" method="post" novalidate>
     {{ form.hidden_tag() }}
-
-    {% if action == "edit" %}
-        <p>Editing sale for {{ form.items.data }}.</p>
-    {% endif %}
 
     <p>
         {{ form.items.label }}<br>

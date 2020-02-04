@@ -83,7 +83,7 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.fees = str(Decimal((form.price.data*form.ebayPercent.data)+(form.price.data *
+        usersSale.fees = str(Decimal((form.price.data*form.eBayPercent.data)+(form.price.data *
                                                                               form.payPalPercent.data)+form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
@@ -99,7 +99,7 @@ def newSale():
         form.eBayPercent.data = Decimal(current_user.eBayPercent)
         form.payPalPercent.data = Decimal(current_user.payPalPercent)
         form.payPalFixed.data = Decimal(current_user.payPalFixed)
-        return render_template("saleInput.html", form=form)
+        return render_template("saleInput.html", form=form, action="edit" if form.hidden.data else "add")
 
 # Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
 @app.route("/sales", methods=["GET", "POST"])
@@ -142,7 +142,9 @@ def sales():
     zeroSales = True if not Sales.query.filter_by(
         username=current_user.username).first() else False
 
-    return render_template("sales.html", form=form, zeroSales=zeroSales)
+    zeroItems = True if not Items.query.filter_by(user=current_user).first() else False
+
+    return render_template("sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
 
 
 @app.route("/adjustSaleHistory", methods=["POST"])
@@ -316,7 +318,7 @@ def adjustItem():
                 itemName=form.items.data).first_or_404()
 
             # Populate an itemForm object with the "item" data stored in the database to show user.
-            itemForm = ItemForm(obj=item)
+            itemForm = ItemForm(price=Decimal(item.price),quantity=item.quantity, itemName=item.itemName)
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
 

@@ -2,34 +2,38 @@
 
 {% block content %}
 
-<a href="{{ url_for('newSale') }}">Add a new sale.</a>
+    {% if zeroItems %}
+        <a href="{{ url_for('items') }}">Add an item first to get started adding sales.</a>
 
-{% if not zeroSales %}
+    {% else %}
+        <a href="{{ url_for('newSale') }}">Add a new sale.</a>
 
-    <h6>Sale Select</h6>
-    <form action="/sales" method="post" novalidate>
-        {{ form.hidden_tag() }}
+        {% if not zeroSales %}
 
-        <p>
-            {{ form.items.label }}<br>
-            {{ form.items() }}
-            {% for error in form.items.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.action.label }}<br>
-            {{ form.action() }}
-            {% for error in form.action.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+            <h6>Sale Select</h6>
+            <form action="/sales" method="post" novalidate>
+                {{ form.hidden_tag() }}
 
-    </form>
+                <p>
+                    {{ form.items.label }}<br>
+                    {{ form.items() }}
+                    {% for error in form.items.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.action.label }}<br>
+                    {{ form.action() }}
+                    {% for error in form.action.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>{{ form.submit() }}</p>
 
-    {% block history %}{% endblock %}
+            </form>
 
-{% endif %}
-
+            {% block history %}{% endblock %}
+            
+        {% endif %}
+    {% endif %}
 {% endblock %}

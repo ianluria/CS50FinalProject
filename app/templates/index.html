@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    <p>{{ totalSalesMessage }}</p>
+    <p>{{totalSalesMessage}}</p>
     
     {% for item in itemQuantityRemaining %}
-      <p>{{ item[1] }} units remaning for {{ item[0] }}.</p>
+      <p>{{item[1]}} units remaning for {{item[0]}}.</p>
     {% endfor %}
 
     <ul>

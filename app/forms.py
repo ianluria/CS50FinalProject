@@ -87,6 +87,12 @@ class ItemForm(FlaskForm):
     hidden = HiddenField()
     submit = SubmitField('Add')
 
+    def validate_itemName(form, field):
+        itemName = field.data.strip()
+        item = Items.query.filter_by(user=current_user).filter_by(itemName=itemName).first()
+        if item:   
+            raise ValidationError(f"{itemName} is already being tracked.")
+
 class ItemSelectForm(FlaskForm):
     items = RadioField("Items", validators=[InputRequired()])
     action = RadioField("Action", validators=[InputRequired()], choices=[('edit','Edit'),('delete','Delete')])

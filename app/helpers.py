@@ -32,7 +32,7 @@ def populateItemsObject(obj, form, edit=False):
     if isinstance(obj, Items):
         if isinstance(form, ItemForm):
 
-            obj.itemName = form.itemName.data
+            obj.itemName = form.itemName.data.strip()
             obj.price = str(form.price.data)
             obj.quantity = form.quantity.data
 
@@ -81,7 +81,7 @@ def createSaleHistoryList(listOfItemNames):
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
-        (str(sale.id), f"{sale.refund} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
+        (str(sale.id), f"{sale.refund if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices
 
