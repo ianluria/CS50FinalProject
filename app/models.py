@@ -14,7 +14,8 @@ class Sales(db.Model):
     shipping = db.Column(db.String(64), nullable=False)
     profit = db.Column(db.String(64), nullable=False)
     packaging = db.Column(db.String(64), nullable=True)
-    fees = db.Column(db.String(64))
+    payPalFees = db.Column(db.String(64))
+    eBayFees = db.Column(db.String(64))
     refund = db.Column(db.Boolean)
 
     def __repr__(self):

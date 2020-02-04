@@ -34,7 +34,7 @@ def index():
     itemAndQuantityList = [(item.itemName, item.quantity -
                             sum([sale.quantity for sale in item.sales])) for item in items]
 
-    totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales with total profit of {usd(totalProfit or 0)}."
+    totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales with total {'profit' if totalProfit >= 0 else 'loss'} of {usd(totalProfit or 0)}."
 
     return render_template("index.html", totalSalesMessage=totalSalesMessage, itemQuantityRemaining=itemAndQuantityList)
 
@@ -83,8 +83,8 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.fees = str(Decimal((form.price.data*form.eBayPercent.data)+(form.price.data *
-                                                                              form.payPalPercent.data)+form.payPalFixed.data).quantize(Decimal("1.00")))
+        usersSale.eBayFees = str(Decimal(form.price.data*form.eBayPercent.data).quantize(Decimal("1.00")))
+        usersSale.payPalFees = str(Decimal(form.price.data * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
 

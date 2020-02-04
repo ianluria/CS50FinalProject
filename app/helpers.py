@@ -56,11 +56,12 @@ def calculateProfit(model, refund=False):
 
         cost = Decimal(model.quantity) * Decimal(unitCost) + \
             Decimal(model.shipping) + Decimal(model.packaging) + \
-            Decimal(model.fees)
+            Decimal(model.eBayFees) + Decimal(model.payPalFees)
 
         if refund:
+            # eBay fees are usually returned to seller
             model.profit = str(
-                Decimal(0-cost+Decimal(model.fees)).quantize(Decimal("1.00")))
+                Decimal(0-cost+Decimal(model.eBayFees)).quantize(Decimal("1.00")))
             return
 
         profit = Decimal(model.price) - Decimal(cost)
