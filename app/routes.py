@@ -13,7 +13,7 @@ from werkzeug.urls import url_parse
 # Local application imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm, FeeForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd, populateFeeFields
 from app.models import User, Sales, Items
 
 # Dashboard of user sales
@@ -26,7 +26,7 @@ def index():
 
     totalNumberOfSales = Sales.query.filter_by(
         username=current_user.username).count()
-    totalSales = db.session.query(func.sum(Sales.price)).filter_by(
+    totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(
         username=current_user.username).scalar()
 
     items = Items.query.filter_by(user=current_user).all()
@@ -34,7 +34,7 @@ def index():
     itemAndQuantityList = [(item.itemName, item.quantity -
                             sum([sale.quantity for sale in item.sales])) for item in items]
 
-    totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales worth {usd(totalSales or 0)}."
+    totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} sales with total profit of {usd(totalProfit or 0)}."
 
     return render_template("index.html", totalSalesMessage=totalSalesMessage, itemQuantityRemaining=itemAndQuantityList)
 
@@ -96,9 +96,7 @@ def newSale():
     else:
         # Prefill certain fields of the form
         form.date.data = date.today()
-        form.eBayPercent.data = Decimal(current_user.eBayPercent)
-        form.payPalPercent.data = Decimal(current_user.payPalPercent)
-        form.payPalFixed.data = Decimal(current_user.payPalFixed)
+        populateFeeFields(form)
         return render_template("saleInput.html", form=form, action="edit" if form.hidden.data else "add")
 
 # Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
@@ -187,6 +185,7 @@ def adjustSaleHistory():
             saleFormToEdit.quantity.data = saleToAdjust.quantity
             saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
             saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
+            populateFeeFields(saleFormToEdit)
 
             return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 

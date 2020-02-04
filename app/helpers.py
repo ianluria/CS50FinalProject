@@ -81,7 +81,7 @@ def createSaleHistoryList(listOfItemNames):
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
 
     adjustSaleChoices = [
-        (str(sale.id), f"{sale.refund if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a profit of {usd(Decimal(sale.profit))}.") for sale in historyList]
+        (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
     return adjustSaleChoices
 
@@ -90,3 +90,13 @@ def usd(value):
     """Format value as USD."""
     # return f"${value:,.2f}"
     return f"${Decimal(value):,.2f}"
+
+
+def populateFeeFields(form):
+    if isinstance(form, SaleForm):
+        form.eBayPercent.data = Decimal(current_user.eBayPercent)
+        form.payPalPercent.data = Decimal(current_user.payPalPercent)
+        form.payPalFixed.data = Decimal(current_user.payPalFixed)
+        return
+    else:
+        raise TypeError("form must be of SaleForm type.")
