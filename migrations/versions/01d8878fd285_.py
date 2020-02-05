@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9ff389fdc4f6
+Revision ID: 01d8878fd285
 Revises: 
-Create Date: 2020-01-29 17:31:29.583854
+Create Date: 2020-02-04 15:35:34.095171
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9ff389fdc4f6'
+revision = '01d8878fd285'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,6 +23,9 @@ def upgrade():
     sa.Column('username', sa.String(length=64), nullable=True),
     sa.Column('email', sa.String(length=120), nullable=True),
     sa.Column('password_hash', sa.String(length=128), nullable=True),
+    sa.Column('payPalFixed', sa.String(length=64), nullable=True),
+    sa.Column('payPalPercent', sa.String(length=64), nullable=True),
+    sa.Column('eBayPercent', sa.String(length=64), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
@@ -49,7 +52,8 @@ def upgrade():
     sa.Column('shipping', sa.String(length=64), nullable=False),
     sa.Column('profit', sa.String(length=64), nullable=False),
     sa.Column('packaging', sa.String(length=64), nullable=True),
-    sa.Column('fees', sa.String(length=64), nullable=True),
+    sa.Column('payPalFees', sa.String(length=64), nullable=True),
+    sa.Column('eBayFees', sa.String(length=64), nullable=True),
     sa.Column('refund', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['itemName'], ['items.itemName'], ),
     sa.PrimaryKeyConstraint('id')

@@ -29,6 +29,8 @@ def index():
     totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(
         username=current_user.username).scalar()
 
+    totalProfit = 0 if totalProfit == None else totalProfit   
+
     items = Items.query.filter_by(user=current_user).all()
 
     itemAndQuantityList = [(item.itemName, item.quantity -
@@ -112,11 +114,11 @@ def sales():
 
     if form.validate_on_submit():
 
-        # List of tuples (sale.id, string of sale information)
-        saleHistory = createSaleHistoryList(form.items.data)
-
         # Determine how template will be structured depending on which action choice user has made.
         userAction = form.action.data
+
+        # List of tuples (sale.id, string of sale information)
+        saleHistory = createSaleHistoryList(form.items.data, userAction)
 
         if userAction in ["edit", "delete", "refund"]:
             adjustSaleHistoryForm = SaleHistoryAdjustForm()
@@ -133,7 +135,7 @@ def sales():
                 adjustSaleHistoryForm.sale.choices = saleHistory
 
             adjustSaleHistoryForm.submit.label.text = f"{userAction.capitalize()} Sale"
-            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm)
+            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
         else:
             return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
 
@@ -341,6 +343,7 @@ def fees():
         current_user.payPalFixed = str(form.payPalFixed.data)
         db.session.add(current_user)
         db.session.commit()
+        flash("Selling fees sucessfully updated.")
         return redirect(url_for("index"))
 
     form.eBayPercent.data = Decimal(current_user.eBayPercent)

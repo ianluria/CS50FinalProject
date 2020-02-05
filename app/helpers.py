@@ -76,10 +76,13 @@ def calculateProfit(model, refund=False):
         raise TypeError("Model must be of Sales type.")
 
 
-def createSaleHistoryList(listOfItemNames):
+def createSaleHistoryList(listOfItemNames, userAction=False):
 
     historyList = Sales.query.filter(
         Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
+
+    if userAction in ["edit","refund"]:
+        historyList = [sale for sale in historyList if not sale.refund ]
 
     adjustSaleChoices = [
         (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
