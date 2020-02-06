@@ -40,6 +40,7 @@ class User(UserMixin, db.Model):
     payPalFixed = db.Column(db.String(64), default=0)
     payPalPercent = db.Column(db.String(64), default=0)
     eBayPercent = db.Column(db.String(64), default=0)
+    saleDisplayInfo = db.Column(db.Text)
     items = db.relationship("Items", backref="user", lazy="dynamic")
 
     def __repr__(self):

@@ -76,18 +76,19 @@ def calculateProfit(model, refund=False):
         raise TypeError("Model must be of Sales type.")
 
 
-def createSaleHistoryList(listOfItemNames, userAction=False):
+def createSaleHistoryList(page, listOfItemNames, userAction=False):
 
     historyList = Sales.query.filter(
-        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).all()
+        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).paginate(page, 50, False).items
 
+    # Remove any already refunded sales if userAction is editing or refunding
     if userAction in ["edit","refund"]:
         historyList = [sale for sale in historyList if not sale.refund ]
 
-    adjustSaleChoices = [
+    historyList = [
         (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
-    return adjustSaleChoices
+    return historyList
 
 
 def usd(value):
@@ -104,3 +105,12 @@ def populateFeeFields(form):
         return
     else:
         raise TypeError("form must be of SaleForm type.")
+
+def createSaleActionForm():
+    form = SaleActionForm()
+
+    names = populateItemSelectField(form)
+
+    form.items.size = len(names)
+
+    return form

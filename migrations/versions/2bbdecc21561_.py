@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 01d8878fd285
+Revision ID: 2bbdecc21561
 Revises: 
-Create Date: 2020-02-04 15:35:34.095171
+Create Date: 2020-02-05 17:48:48.990914
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '01d8878fd285'
+revision = '2bbdecc21561'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,7 @@ def upgrade():
     sa.Column('payPalFixed', sa.String(length=64), nullable=True),
     sa.Column('payPalPercent', sa.String(length=64), nullable=True),
     sa.Column('eBayPercent', sa.String(length=64), nullable=True),
+    sa.Column('saleDisplayInfo', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)

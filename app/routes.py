@@ -13,7 +13,7 @@ from werkzeug.urls import url_parse
 # Local application imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm, FeeForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd, populateFeeFields
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd, populateFeeFields, createSaleActionForm
 from app.models import User, Sales, Items
 
 # Dashboard of user sales
@@ -29,7 +29,7 @@ def index():
     totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(
         username=current_user.username).scalar()
 
-    totalProfit = 0 if totalProfit == None else totalProfit   
+    totalProfit = 0 if totalProfit == None else totalProfit
 
     items = Items.query.filter_by(user=current_user).all()
 
@@ -85,8 +85,10 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
-        usersSale.eBayFees = str(Decimal(form.price.data*form.eBayPercent.data).quantize(Decimal("1.00")))
-        usersSale.payPalFees = str(Decimal(form.price.data * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00")))
+        usersSale.eBayFees = str(
+            Decimal(form.price.data*form.eBayPercent.data).quantize(Decimal("1.00")))
+        usersSale.payPalFees = str(Decimal(
+            form.price.data * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
 
@@ -106,45 +108,55 @@ def newSale():
 @login_required
 def sales():
 
-    form = SaleActionForm()
-
-    names = populateItemSelectField(form)
-
-    form.items.size = len(names)
+    form = createSaleActionForm()
 
     if form.validate_on_submit():
 
-        # Determine how template will be structured depending on which action choice user has made.
-        userAction = form.action.data
+        # Store which items the user wants to view sales from, and the action.
+        current_user.saleDisplayInfo = f"{{'userAction':'{form.action.data}', 'itemsList':{form.items.data}}}"
 
-        # List of tuples (sale.id, string of sale information)
-        saleHistory = createSaleHistoryList(form.items.data, userAction)
+        db.session.add(current_user)
+        db.session.commit()
 
-        if userAction in ["edit", "delete", "refund"]:
-            adjustSaleHistoryForm = SaleHistoryAdjustForm()
-
-            # Dict created to populate SaleHistoryAdjustForm.sale.choices to pass form validation and document user's action intent for the /adjustSaleHistory route.
-            adjustSaleHistoryForm.hidden.data = {
-                'action': userAction, 'itemsSelected': form.items.data}
-
-            # Only return sales for refund that have not already been refunded
-            if userAction == "refund":
-                adjustSaleHistoryForm.sale.choices = [
-                    sale for sale in saleHistory if not sale[1][:6] == "Refund"]
-            else:
-                adjustSaleHistoryForm.sale.choices = saleHistory
-
-            adjustSaleHistoryForm.submit.label.text = f"{userAction.capitalize()} Sale"
-            return render_template("_saleAdjust.html", form=form, adjustForm=adjustSaleHistoryForm, userAction=userAction)
-        else:
-            return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
+        return redirect(url_for("displaySales", action=form.action.data, page=1))
 
     zeroSales = True if not Sales.query.filter_by(
         username=current_user.username).first() else False
 
-    zeroItems = True if not Items.query.filter_by(user=current_user).first() else False
+    zeroItems = True if not Items.query.filter_by(
+        user=current_user).first() else False
 
     return render_template("sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
+
+
+@app.route("/displaySales", methods=["GET"])
+@login_required
+def displaySales():
+
+    page = int(request.args.get("page"))
+
+    # Convert data with userAction and list of items to view sales into a dict
+    requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+
+    if page and requestItemsList:
+
+        saleHistory = createSaleHistoryList(
+            page, requestItemsList["itemsList"], requestItemsList["userAction"])
+
+        form = createSaleActionForm()
+
+        if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
+            adjustSaleHistoryForm = SaleHistoryAdjustForm()
+
+            adjustSaleHistoryForm.sale.choices = saleHistory
+            adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
+
+            return render_template("_saleAdjust.html", adjustForm=adjustSaleHistoryForm, userAction=requestItemsList["userAction"], form=form)
+
+        else:
+            return render_template("_saleHistory.html", history=[sale[1] for sale in saleHistory], form=form)
+
+    return redirect(url_for("sales"))
 
 
 @app.route("/adjustSaleHistory", methods=["POST"])
@@ -319,7 +331,8 @@ def adjustItem():
                 itemName=form.items.data).first_or_404()
 
             # Populate an itemForm object with the "item" data stored in the database to show user.
-            itemForm = ItemForm(price=Decimal(item.price),quantity=item.quantity, itemName=item.itemName)
+            itemForm = ItemForm(price=Decimal(item.price),
+                                quantity=item.quantity, itemName=item.itemName)
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
 
@@ -330,7 +343,7 @@ def adjustItem():
     return redirect(url_for("items"))
 
 
-@app.route("/fees", methods=["GET","POST"])
+@app.route("/fees", methods=["GET", "POST"])
 @login_required
 def fees():
 
@@ -350,7 +363,8 @@ def fees():
     form.payPalPercent.data = Decimal(current_user.payPalPercent)
     form.payPalFixed.data = Decimal(current_user.payPalFixed)
 
-    return render_template("fees.html", form=form)   
+    return render_template("fees.html", form=form)
+
 
 @app.route("/deleteItem", methods=["POST"])
 @login_required
