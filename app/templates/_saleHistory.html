@@ -8,8 +8,32 @@
             <p>{{ sale }}</p>
             {% endfor %}
         </ul>
+    {% elif adjustForm %}
+        {% if adjustForm.sale.choices %}    
+            <form action="/adjustSaleHistory" method="post" novalidate>
+                {{ adjustForm.hidden_tag() }}
+                    <table>
+                        {% for subfield in adjustForm.sale %}
+                        <tr>
+                            <td>{{ subfield }}</td>
+                            <td>{{ subfield.label }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <p>{{ adjustForm.submit() }}</p>
+            </form>
+        {% else %}
+            <p>No sales for the selected items are able to be {{userAction}}ed yet.</p>
+        {% endif %}
     {% else %}
-        <p>No sales have been made yet.</p>
+        <p>NO ITEMS ERROR EDIT THIS!!!</p>        
+    {% endif %}
+
+    {% if prev_url %}
+        <a href="{{ prev_url }}">Newer posts</a>
+    {% endif %}
+    {% if next_url %}
+        <a href="{{ next_url }}">Older posts</a>
     {% endif %}
 
 {% endblock %}

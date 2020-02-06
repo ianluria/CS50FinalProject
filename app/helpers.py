@@ -78,8 +78,10 @@ def calculateProfit(model, refund=False):
 
 def createSaleHistoryList(page, listOfItemNames, userAction=False):
 
-    historyList = Sales.query.filter(
-        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).paginate(page, 50, False).items
+    historyQuery = Sales.query.filter(
+        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).paginate(page, 50, False)
+
+    historyList = historyQuery.items
 
     # Remove any already refunded sales if userAction is editing or refunding
     if userAction in ["edit","refund"]:
@@ -88,7 +90,7 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
     historyList = [
         (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
-    return historyList
+    return {saleHistoryQuery:historyQuery, saleHistoryList:historyList}
 
 
 def usd(value):
