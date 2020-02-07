@@ -8,6 +8,14 @@
             <p>{{ sale }}</p>
             {% endfor %}
         </ul>
+
+        {% if next_url %}
+            <a href="{{ next_url }}">Older Sales</a>
+        {% endif %}
+        {% if prev_url %}
+            <a href="{{ prev_url }}">Newer Sales</a>
+        {% endif %}
+
     {% elif adjustForm %}
         {% if adjustForm.sale.choices %}    
             <form action="/adjustSaleHistory" method="post" novalidate>
@@ -20,6 +28,14 @@
                         </tr>
                         {% endfor %}
                     </table>
+
+                    {% if next_url %}
+                        <a href="{{ next_url }}">Older Sales</a>
+                    {% endif %}
+                    {% if prev_url %}
+                        <a href="{{ prev_url }}">Newer Sales</a>
+                    {% endif %}
+
                     <p>{{ adjustForm.submit() }}</p>
             </form>
         {% else %}
@@ -27,13 +43,6 @@
         {% endif %}
     {% else %}
         <p>NO ITEMS ERROR EDIT THIS!!!</p>        
-    {% endif %}
-
-    {% if prev_url %}
-        <a href="{{ prev_url }}">Newer posts</a>
-    {% endif %}
-    {% if next_url %}
-        <a href="{{ next_url }}">Older posts</a>
     {% endif %}
 
 {% endblock %}

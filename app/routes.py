@@ -136,7 +136,11 @@ def displaySales():
     page = int(request.args.get("page"))
 
     # Convert data with userAction and list of items to view sales into a dict
-    requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+    try:
+        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+    except:
+        flash("Error: User must have a saleDisplayInfo dict stored.")
+        return redirect(url_for("sales"))
 
     if page and requestItemsList:
 
@@ -147,22 +151,23 @@ def displaySales():
         form = createSaleActionForm()
 
         if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
-            adjustSaleHistoryForm = SaleHistoryAdjustForm()
+            adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
 
-            adjustSaleHistoryForm.sale.choices = saleHistory.saleHistoryList
+            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
             adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
 
             history = None
-            return render_template("_saleHistory.html", adjustForm=adjustSaleHistoryForm, userAction=requestItemsList["userAction"], form=form)
 
         elif requestItemsList["userAction"] == "history":
             adjustSaleHistoryForm = None
-            history=[sale[1] for sale in saleHistory.saleHistoryList]
+            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
 
-            next_url = url_for('displaySales', page=saleHistory.saleHistoryQuery.next_num) if saleHistory.saleHistoryQuery.has_next else None
-            prev_url = url_for('displaySales', page=saleHistory.saleHistoryQuery.prev_num) if saleHistory.saleHistoryQuery.has_prev else None    
+        next_url = url_for(
+            'displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
+        prev_url = url_for(
+            'displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
-        return render_template("_saleHistory.html", adjustForm=adjustSaleHistoryFrom, history=history, form=form, next_url=next_url, prev_url=prev_url)
+        return render_template("_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=form, next_url=next_url, prev_url=prev_url)
 
     return redirect(url_for("sales"))
 
@@ -172,53 +177,57 @@ def displaySales():
 def adjustSaleHistory():
 
     form = SaleHistoryAdjustForm()
+    
+    try:
+        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+    except:
+        flash("Error: User must have a saleDisplayInfo dict stored.")
+        return redirect(url_for("sales"))
 
-    # Convert string data from form into a dict
-    hiddenData = ast.literal_eval(form.hidden.data)
+    if requestItemsList: 
+        form.sale.choices = createSaleHistoryList(int(form.hidden.data), requestItemsList["itemsList"], requestItemsList["userAction"])["saleHistoryList"]
 
-    form.sale.choices = createSaleHistoryList(hiddenData["itemsSelected"])
+        if form.validate_on_submit():
 
-    if form.validate_on_submit():
+            saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
+                id=int(form.sale.data)).first_or_404()
 
-        saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
-            id=int(form.sale.data)).first_or_404()
+            if requestItemsList["userAction"] == "delete":
 
-        if hiddenData["action"] == "delete":
+                flash(
+                    f"A sale from {saleToAdjust.itemName} made on {saleToAdjust.date.strftime('%m/%d/%Y')} has been deleted.")
 
-            flash(
-                f"A sale from {saleToAdjust.itemName} made on {saleToAdjust.date.strftime('%m/%d/%Y')} has been deleted.")
+                db.session.delete(saleToAdjust)
+                db.session.commit()
 
-            db.session.delete(saleToAdjust)
-            db.session.commit()
+            elif requestItemsList["userAction"] == "edit":
 
-        elif hiddenData["action"] == "edit":
+                # Create a SaleForm that will be prepopulated with the sale-to-edit's information that the user can then adjust
+                saleFormToEdit = SaleForm()
 
-            # Create a SaleForm that will be prepopulated with the sale-to-edit's information that the user can then adjust
-            saleFormToEdit = SaleForm()
+                populateItemSelectField(saleFormToEdit)
+                saleFormToEdit.items.data = saleToAdjust.item.itemName
 
-            populateItemSelectField(saleFormToEdit)
-            saleFormToEdit.items.data = saleToAdjust.item.itemName
+                # Store a dictionary with information used to process an edit on the newSale route
+                saleFormToEdit.hidden.data = {
+                    "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
+                saleFormToEdit.date.data = saleToAdjust.date
+                saleFormToEdit.price.data = Decimal(saleToAdjust.price)
+                saleFormToEdit.quantity.data = saleToAdjust.quantity
+                saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
+                saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
+                populateFeeFields(saleFormToEdit)
 
-            # Store a dictionary with information used to process an edit on the newSale route
-            saleFormToEdit.hidden.data = {
-                "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
-            saleFormToEdit.date.data = saleToAdjust.date
-            saleFormToEdit.price.data = Decimal(saleToAdjust.price)
-            saleFormToEdit.quantity.data = saleToAdjust.quantity
-            saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
-            saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
-            populateFeeFields(saleFormToEdit)
+                return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 
-            return render_template("saleInput.html", form=saleFormToEdit, action="edit")
+            elif requestItemsList["userAction"] == "refund":
 
-        elif hiddenData["action"] == "refund":
-
-            saleToAdjust.refund = True
-            calculateProfit(saleToAdjust, True)
-            db.session.add(saleToAdjust)
-            db.session.commit()
-            flash(
-                f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
+                saleToAdjust.refund = True
+                calculateProfit(saleToAdjust, True)
+                db.session.add(saleToAdjust)
+                db.session.commit()
+                flash(
+                    f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
 
     return redirect(url_for("sales"))
 
