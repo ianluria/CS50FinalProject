@@ -3,11 +3,16 @@ import datetime
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from time import time
+import jwt
+from app import app
+
 
 class Sales(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, nullable=False)
-    itemName = db.Column(db.String(255),  db.ForeignKey("items.itemName"), index=True, nullable=False)
+    itemName = db.Column(db.String(255),  db.ForeignKey(
+        "items.itemName"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -21,9 +26,11 @@ class Sales(db.Model):
     def __repr__(self):
         return '<Sales {}>'.format(self.username)
 
+
 class Items(db.Model):
     itemName = db.Column(db.String(255), index=True, primary_key=True)
-    username = db.Column(db.String(64), db.ForeignKey("user.username"), index=True, nullable=False)
+    username = db.Column(db.String(64), db.ForeignKey(
+        "user.username"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -31,6 +38,7 @@ class Items(db.Model):
 
     def __repr__(self):
         return '<Items {}>'.format(self.itemName)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,13 +60,26 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def removeItem(self, item):
-        if self.has_item(item):
-            self.items.remove(item)
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
-    def has_item(self, item):
-        return self.items.filter(usersItem==item).count() > 0
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
+    # def removeItem(self, item):
+    #     if self.has_item(item):
+    #         self.items.remove(item)
+
+    # def has_item(self, item):
+    #     return self.items.filter(usersItem==item).count() > 0
 
 
 @login.user_loader
