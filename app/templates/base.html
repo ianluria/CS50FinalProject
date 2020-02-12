@@ -1,61 +1,56 @@
 {% extends 'bootstrap/base.html' %}
 
-{% block title %}eBay Sales Tracker{% endblock %}
+{# {% block title %}eBay Sales Tracker{% endblock %} #}
 
 {% block navbar %}
 
-<nav class="navbar">
-    <a class="navbar-brand" href="{{ url_for('index') }}">eBaySalt</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#eBaySaltNav"
-        aria-controls="eBaySaltNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="eBaySaltNav">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            {% if current_user.is_anonymous %}
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('login') }}">Login<span class="sr-only">(current)</span></a>
-            </li>
-            {% else %}
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('index') }}">Home<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('items') }}">Items</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('sales') }}">Sales</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-            </li>
-        </ul>
-    </div>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('index') }}">eBaySalt</a>
+        <button class="navbar-toggler" data-toggle="collapse" data-target="#eBaySaltNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="eBaySaltNav">
+            <ul class="navbar-nav">
+            
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('items') }}">Items</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('sales') }}">Sales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                
+            </ul>
+        </div>
+    </nav>
 
-</nav>
-<!-- <div>
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('items') }}">Items</a>
-            <a href="{{ url_for('sales') }}">Sales</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
-        </div> -->
 {% endblock %}
 
+{#
+    {% if current_user.is_anonymous %}
+    <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('login') }}">Login<span class="sr-only">(current)</span></a>
+    </li>
+    {% else %}
+#}
+
 {% block content %}
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 
-{% block app_content %}{% endblock %}
-
+    {% block app_content %}{% endblock %}
+</div>
 {% endblock %}
