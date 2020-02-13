@@ -2,25 +2,21 @@
 
 {% block app_content %}
 
-<div class="container mx-auto">
-  <div class="row">
-    <div class="col-md"></div>
-    <div class="col-md">
+<div class="row justify-content-around">
+  <div class="col-auto">
 
-      <p>{{totalSalesMessage}}</p>
+    <p class="text-sm-center">{{totalSalesMessage}}</p>
 
-      {% for item in itemQuantityRemaining %}
-      <p>{{item[1]}} units remaning for {{item[0]}}.</p>
-      {% endfor %}
+    {% for item in itemQuantityRemaining %}
+    <p>{{item[1]}} units remaning for {{item[0]}}.</p>
+    {% endfor %}
 
-      <ul class="list-group">
-        <li class="list-group-item"><a href="{{ url_for('newSale') }}">Add a new sale.</a></li>
-        <li class="list-group-item"><a href="{{ url_for('sales') }}">Edit or view a history of sales.</a></li>
-        <li class="list-group-item"><a href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
-        <li class="list-group-item"><a href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
-      </ul>
-    </div>
-    <div class="col-md"></div>
+    <ul class="list-group my-4">
+      <li class="list-group-item"><a href="{{ url_for('newSale') }}">Add a new sale.</a></li>
+      <li class="list-group-item"><a href="{{ url_for('sales') }}">Edit or view a history of sales.</a></li>
+      <li class="list-group-item"><a href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
+      <li class="list-group-item"><a href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
+    </ul>
   </div>
 </div>
 

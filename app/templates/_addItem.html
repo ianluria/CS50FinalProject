@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<div class="row justify-content-around">
+    <div class="col-auto">
 
-    <h1>Input Item</h1>
-    <form action="/addItem" method="post" novalidate>
+    <h5>Input Item</h5>
+    <form action="/addItem" method="post" class="container" novalidate>
         {{ form.hidden_tag() }}
 
         <p>
@@ -30,5 +32,6 @@
 
         <p>{{ form.submit() }}</p>
     </form>
-
+    </div>
+    </div>
 {% endblock %}

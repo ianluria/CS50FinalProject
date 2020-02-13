@@ -46,11 +46,11 @@ class SaleForm(FeeForm):
 
 class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[InputRequired()])
-    action = RadioField("Action", validators=[InputRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale"), ("refund", "Refund Sale")])
+    action = RadioField("Action", validators=[InputRequired()], choices=[("history","View History"), ("delete","Delete Sale"), ("edit","Edit Sale"), ("refund", "Refund Sale")], render_kw={"class":"form-check-input"})
     submit = SubmitField("Get Sales")
 
 class SaleHistoryAdjustForm(FlaskForm):
-    sale = RadioField("Select Sale", validators=[InputRequired()])
+    sale = RadioField("Select Sale", validators=[InputRequired()], render_kw={"class":"form-check-input"})
     hidden = HiddenField()
     submit = SubmitField("Action")
 

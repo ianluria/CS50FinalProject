@@ -1,36 +1,37 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<div class="row justify-content-around">
+    <div class="col-auto">
 
-<form action="/fees" method="post" novalidate>
-    {{ form.hidden_tag() }}
+        <form action="/fees" method="post" novalidate>
+            {{ form.hidden_tag() }}
 
-    <p>
-        {{ form.eBayPercent.label }}<br>
-        {{ form.eBayPercent() }}
-        {% for error in form.eBayPercent.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.payPalFixed.label }}<br>
-        {{ form.payPalFixed() }}
-        {% for error in form.payPalFixed.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.payPalPercent.label }}<br>
-        {{ form.payPalPercent() }}
-        {% for error in form.payPalPercent.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
+            <p>
+                {{ form.eBayPercent.label }}<br>
+                {{ form.eBayPercent() }}
+                {% for error in form.eBayPercent.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.payPalFixed.label }}<br>
+                {{ form.payPalFixed() }}
+                {% for error in form.payPalFixed.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.payPalPercent.label }}<br>
+                {{ form.payPalPercent() }}
+                {% for error in form.payPalPercent.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
 
-    <p>{{ form.submit() }}</p>
+            <p>{{ form.submit() }}</p>
 
-
-
-
-</form>
+        </form>
+    </div>
+</div>
 {% endblock %}
