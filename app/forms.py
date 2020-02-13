@@ -94,8 +94,8 @@ class ItemForm(FlaskForm):
             raise ValidationError(f"{itemName} is already being tracked.")
 
 class ItemSelectForm(FlaskForm):
-    items = RadioField("Items", validators=[InputRequired()])
-    action = RadioField("Action", validators=[InputRequired()], choices=[('edit','Edit'),('delete','Delete')])
+    items = RadioField("Items", validators=[InputRequired()], render_kw={"class":"form-check-input"})
+    action = RadioField("Action", validators=[InputRequired()], choices=[('edit','Edit'),('delete','Delete')], render_kw={"class":"form-check-input"})
     submit = SubmitField('Select')
 
 class DeleteConfirmationForm(FlaskForm):

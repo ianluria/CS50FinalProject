@@ -16,34 +16,52 @@
         <form action="/adjustItem" method="post" novalidate>
             {{ form.hidden_tag() }}
 
-            <p>
-                {{ form.action.label }}<br>
-                {{ form.action() }}
-                {% for error in form.action.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+            <div class="form-group">
+                <table class="table">
+                {% for subfield in form.action %}
+                    <tr>
+                        <td>{{ subfield }}</td>
+                        <td>{{ subfield.label }}</td>
+                    </tr>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.items.label }}<br>
-                {{ form.items() }}
+                </table>
                 {% for error in form.items.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                    <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-            </p>
+            </div>
+            <div class="form-group">
+                <table class="table">
+                {% for subfield in form.action %}
+                    <tr>
+                        <td>{{ subfield }}</td>
+                        <td>{{ subfield.label }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+                {% for error in form.items.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
 
-            <p>{{ form.submit() }}</p>
+            <div>{{ form.submit(class_="btn btn-primary") }}</div>
         </form>
+
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="col-auto">
 
         <p class="my-4">{{ current_user.username }}'s Items For Sale:</p>
         <ul class="list-group list-group-flush">    
-        {% for item in items %}
+            {% for item in items %}
         <li class="list-group-item">{{ item }}</li>
-        {% endfor %}
+            {% endfor %}
         </ul>
 
         {% endif %}
 
+        </div>
     </div>
-</div>
 
 {% endblock %}
