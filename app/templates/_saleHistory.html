@@ -5,19 +5,19 @@
 {% if history %}
 
     <div class="row justify-content-around">
-        <div class="col-auto">
+        <div class="col-auto bg-light shadow p-3">
 
-            <ul>
+            <table class="table table-borderless table-hover">
                 {% for sale in history %}
-                <p>{{ sale }}</p>
+                    <tr><td>{{ sale }}</td></tr>
                 {% endfor %}
-            </ul>
+            </table>
 
             {% if next_url %}
-            <a href="{{ next_url }}">Older Sales</a>
+                <a href="{{ next_url }}">Older Sales</a>
             {% endif %}
             {% if prev_url %}
-            <a href="{{ prev_url }}">Newer Sales</a>
+                <a href="{{ prev_url }}">Newer Sales</a>
             {% endif %}
 
         </div>
@@ -27,14 +27,15 @@
     <div class="row justify-content-around">
         <div class="col-auto">
             {% if adjustForm.sale.choices %}
-                <form action="/adjustSaleHistory" method="post" novalidate>
+                <form action="/adjustSaleHistory" method="post" class="bg-light shadow p-3" novalidate>
                     {{ adjustForm.hidden_tag() }}
                     <div class="form-group">
-                        <table class="table table-hover">
+                        {{ adjustForm.sale.label}}
+                        <table class="table table-borderless table-hover">
                             {% for subfield in adjustForm.sale %}
-                            <tr>
+                            <tr class="form-check">
                                 <td>{{ subfield }}</td>
-                                <td>{{ subfield.label }}</td>
+                                <td>{{ subfield.label.__call__(class_="form-check-label") }}</td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -46,7 +47,7 @@
                     <a href="{{ prev_url }}">Newer Sales</a>
                     {% endif %}
 
-                    <p>{{ adjustForm.submit(class_="btn btn-primary") }}</p>
+                    <p>{{ adjustForm.submit(class_="btn btn-outline-primary btn-sm") }}</p>
                 </form>
     {% else %}
         <p>No sales for the selected items are able to be {{userAction}}ed yet.</p>

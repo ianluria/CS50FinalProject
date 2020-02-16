@@ -9,55 +9,55 @@
 
         {% if items %}
 
-        <p class="my-4">Choose edit or delete and then an item.</p>
+            <p class="my-4">Choose to edit or delete an item.</p>
 
-        {% block edit %}{% endblock %}
+            {% block edit %}{% endblock %}
 
-        <form action="/adjustItem" method="post" novalidate>
-            {{ form.hidden_tag() }}
+            <form action="/adjustItem" method="post" class="bg-light shadow p-3" novalidate>
+                {{ form.hidden_tag() }}
 
-            <div class="form-group">
-                <table class="table">
-                {% for subfield in form.action %}
-                    <tr>
-                        <td>{{ subfield }}</td>
-                        <td>{{ subfield.label }}</td>
-                    </tr>
-                {% endfor %}
-                </table>
-                {% for error in form.items.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
+                <div class="form-group">
+                    {{ form.action.label }}
+                    {% for subfield in form.action %}
+                        <div class="form-check">
+                            {{ subfield }}
+                            {{ subfield.label.__call__(class_="form-check-label") }}
+                        </div>
+                    {% endfor %}
+                    {% for error in form.action.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.items.label }}
+                        {% for subfield in form.items %}
+                            <div class="form-check">
+                                {{ subfield }}
+                                {{ subfield.label.__call__(class_="form-check-label") }}
+                            </div>
+                        {% endfor %}
+                    {% for error in form.items.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="text-right">
+                    {{ form.submit(class_="btn btn-outline-primary btn-sm") }}
+                </div>
+            </form>
+
             </div>
-            <div class="form-group">
-                <table class="table">
-                {% for subfield in form.action %}
-                    <tr>
-                        <td>{{ subfield }}</td>
-                        <td>{{ subfield.label }}</td>
-                    </tr>
-                {% endfor %}
-                </table>
-                {% for error in form.items.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </div>
-
-            <div>{{ form.submit(class_="btn btn-primary") }}</div>
-        </form>
-
         </div>
-    </div>
 
-    <div class="row justify-content-around">
-        <div class="col-auto">
+        <div class="row justify-content-around">
+            <div class="col-auto">
 
-        <p class="my-4">{{ current_user.username }}'s Items For Sale:</p>
-        <ul class="list-group list-group-flush">    
-            {% for item in items %}
-        <li class="list-group-item">{{ item }}</li>
-            {% endfor %}
-        </ul>
+            <p class="my-4 text-center">{{ current_user.username }}'s Items For Sale:</p>
+            <ul class="list-group list-group-flush bg-light shadow p-3">    
+                {% for item in items %}
+            <li class="list-group-item bg-light">{{ item }}</li>
+                {% endfor %}
+            </ul>
 
         {% endif %}
 
