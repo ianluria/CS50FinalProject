@@ -309,7 +309,7 @@ def addItem():
 
         return redirect(url_for("items"))
 
-    # Return a list of the items already in database
+    # Return a list of the items already in database???
     return render_template("_addItem.html", form=form)
 
 # Route which processes a user's request to edit or delete an existing item.
