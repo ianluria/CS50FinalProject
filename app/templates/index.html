@@ -6,20 +6,20 @@
   <div class="col-auto">
 
 
-    <p class="text-sm-center h5">{{totalSalesMessage}}</p>
+    <p class="text-center h5 mb-3">{{totalSalesMessage}}</p>
 
-    {% for item in itemQuantityRemaining %}
-    <p class="text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
-    {% endfor %}
-
-    <ul class="list-group my-4 shadow">
+    <ul class="list-group my-sm-5 shadow">
       <li class="list-group-item"><a href="{{ url_for('newSale') }}">Add a new sale.</a></li>
       <li class="list-group-item"><a href="{{ url_for('sales') }}">Edit or view a history of sales.</a></li>
       <li class="list-group-item"><a href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
       <li class="list-group-item"><a href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
     </ul>
 
-
+    <div class="mt-3">
+      {% for item in itemQuantityRemaining %}
+      <p class="text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
+      {% endfor %}
+    </div>
   </div>
 </div>
 

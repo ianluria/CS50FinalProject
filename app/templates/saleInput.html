@@ -2,10 +2,10 @@
 
 {% block app_content %}
 <div class="row justify-content-around">
-    <div class="col-auto">
+    <div class="col-auto my-3">
 
         {% if action == "edit" %}
-        <p>Editing Sale For {{ form.items.data }}.</p>
+        <p class="text-center h4">Editing Sale For {{ form.items.data }}.</p>
         {% elif action == "add" %}
         <p class="text-center h4">Add a New Sale.</p>
         {% endif %}
