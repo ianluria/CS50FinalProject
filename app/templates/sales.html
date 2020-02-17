@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="row justify-content-around mb-5">
+<div class="row justify-content-around mb-3">
     <div class="col-auto d-flex flex-column justify-content-center">
 
         {% if zeroItems %}
 
-        <a class="text-center h5 my-4" href="{{ url_for('addItem') }}">Add an item first to get started adding
+        <a class="text-center h5 my-3" href="{{ url_for('addItem') }}">Add an item first to get started adding
             sales.</a>
 
         {% else %}
 
-        <a class="text-center h5 my-4" href="{{ url_for('newSale') }}">Add a new sale.</a>
+        <a class="text-center h5 my-3" href="{{ url_for('newSale') }}">Add a new sale.</a>
 
         {% endif %}
 
