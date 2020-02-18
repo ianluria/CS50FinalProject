@@ -39,11 +39,11 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row justify-content-around mt-4">
+    <div class="row justify-content-around mt-3">
         <div class="col-auto">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
-            <ul>
+            <ul class="list-unstyled">
                 {% for message in messages %}
                 <li>{{ message }}</li>
                 {% endfor %}

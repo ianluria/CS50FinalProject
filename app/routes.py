@@ -48,7 +48,7 @@ def newSale():
 
     # Redirect user to addItem if no items have been added yet.
     if not Items.query.filter_by(user=current_user).first():
-        flash("Please add an item before adding a new sale.")
+        flash("('error','Please add an item before adding a new sale.')")
         return redirect(url_for("addItem"))
 
     form = SaleForm()
@@ -68,9 +68,9 @@ def newSale():
                 id=hiddenData["id"]).first_or_404()
 
             flash(
-                f"{form.items.data}'s sale on {form.date.raw_data[0]} has been edited.")
+                f"('success', '{form.items.data}'s sale on {form.date.raw_data[0]} has been edited.')")
         else:
-            flash(f"New Sale Logged for {form.items.data}.")
+            flash(f"('success', 'New Sale Logged for {form.items.data}.')")
             # Create a new instance of the Sales model.
             usersSale = Sales()
             usersSale.username = current_user.username
@@ -140,7 +140,7 @@ def displaySales():
     try:
         requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
     except:
-        flash("Error: User must have a saleDisplayInfo dict stored.")
+        flash("('error', 'Error: User must have a saleDisplayInfo dict stored.')")
         return redirect(url_for("sales"))
 
     if page and requestItemsList:
@@ -180,7 +180,7 @@ def adjustSaleHistory():
     try:
         requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
     except:
-        flash("Error: User must have a saleDisplayInfo dict stored.")
+        flash("('error', 'Error: User must have a saleDisplayInfo dict stored.')")
         return redirect(url_for("sales"))
 
     if requestItemsList:
@@ -195,7 +195,7 @@ def adjustSaleHistory():
             if requestItemsList["userAction"] == "delete":
 
                 flash(
-                    f"A sale from {saleToAdjust.itemName} made on {saleToAdjust.date.strftime('%m/%d/%Y')} has been deleted.")
+                    f"('success', 'A sale from {saleToAdjust.itemName} made on {saleToAdjust.date.strftime('%m/%d/%Y')} has been deleted.')")
 
                 db.session.delete(saleToAdjust)
                 db.session.commit()
@@ -227,7 +227,7 @@ def adjustSaleHistory():
                 db.session.add(saleToAdjust)
                 db.session.commit()
                 flash(
-                    f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.")
+                    f"('success', 'Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.')")
 
     return redirect(url_for("sales"))
 
@@ -278,7 +278,7 @@ def addItem():
         # User has entered an item name that is in database, but did not arrive through the editing route.
         if item and not form.hidden.data:
             flash(
-                f"Item '{itemName}' is already in database.  Use editing option to adjust it.")
+                f"('error', 'Item '{itemName}' is already in database.  Use editing option to adjust it.')")
             return redirect(url_for("items"))
 
         # Create a new Items object if the user is entering a new item
@@ -300,9 +300,9 @@ def addItem():
                     sale.itemName = item.itemName
                 calculateProfit(sale)
 
-            flash(f"Item {item.itemName} updated.")
+            flash(f"('success', 'Item {item.itemName} updated.')")
         else:
-            flash(f"{item.itemName} added.")
+            flash(f"('success', '{item.itemName} added.')")
 
         db.session.add(item)
         db.session.commit()
@@ -353,7 +353,7 @@ def adjustItem():
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
 
-            flash(f"Editing {item.itemName}.")
+            flash(f"('success', 'Editing {item.itemName}.')")
 
             return render_template("_addItem.html", form=itemForm)
 
@@ -373,7 +373,7 @@ def fees():
         current_user.payPalFixed = str(form.payPalFixed.data)
         db.session.add(current_user)
         db.session.commit()
-        flash("Selling fees sucessfully updated.")
+        flash("('success', 'Selling fees sucessfully updated.')")
         return redirect(url_for("index"))
 
     form.eBayPercent.data = Decimal(current_user.eBayPercent)
@@ -404,7 +404,7 @@ def deleteItem():
         db.session.delete(item)
         db.session.commit()
 
-        flash(f"Item {item.itemName} deleted.")
+        flash(f"('success', 'Item {item.itemName} deleted.')")
 
     return redirect(url_for("items"))
 
@@ -417,7 +417,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash("Invalid username or password.")
+            flash("('error', 'Invalid username or password.')")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
@@ -443,7 +443,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash("('success', 'Congratulations, you are now a registered user!')")
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -457,7 +457,8 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-            flash('Check your email for the instructions to reset your password.')
+            flash(
+                "('error', 'Check your email for the instructions to reset your password.')")
             return redirect(url_for('login'))
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
@@ -474,6 +475,6 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been reset.')
+        flash("('success', 'Your password has been reset.')")
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
