@@ -6,12 +6,12 @@
 
         {% if zeroItems %}
 
-        <a class="text-center h5 my-3" href="{{ url_for('addItem') }}">Add an item first to get started adding
-            sales.</a>
+            <a class="text-center h5 my-3" href="{{ url_for('addItem') }}">Add an item first to get started adding
+                sales.</a>
 
         {% else %}
 
-        <a class="text-center h5 my-3" href="{{ url_for('newSale') }}">Add a new sale.</a>
+            <a class="text-center h5 my-3" href="{{ url_for('newSale') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new sale.</a>
 
         {% endif %}
 

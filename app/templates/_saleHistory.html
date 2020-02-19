@@ -47,12 +47,12 @@
                     <p>{{ adjustForm.submit(class_="btn btn-outline-primary btn-sm") }}</p>
                 </form>
             {% else %}
-                <p class="alert alert-danger" role="alert">No sales for the selected items are able to be {{userAction}}ed yet.</p>
+                <p class="alert alert-danger" role="alert">No sales for the selected items are able to be {{userAction+"ed" if not userAction[-1:] == "e" else userAction+"d"}} yet.</p>
             {% endif %}
         </div>
     </div>
 {% else %}
-    <div class="row justify-content-around my-4">
+    <div class="row justify-content-around">
         <div class="col-auto">
             <p class="alert alert-danger" role="alert">No sales have been made yet for the selected items.</p>
         </div>

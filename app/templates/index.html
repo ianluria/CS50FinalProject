@@ -2,16 +2,22 @@
 
 {% block app_content %}
 
-<div class="row justify-content-around mt-4">
+<div class="row justify-content-around">
+  <div class="col-auto">
+    <p class="text-center display-4"><em>eBaySalt</em></p>
+    <p class="text-center lead">The eBay Sales Tracker</p>
+  </div>
+</div>
+
+<div class="row justify-content-around">
   <div class="col-auto">
 
-    <p class="text-center h3"><strong>eBaySalt:</strong> <em>the eBay Sales Tracker</em></p>
-
-    <p class="text-center h5 mt-5">{{totalSalesMessage}}</p>
+    <p class="text-center h5 mt-3">{{totalSalesMessage}}</p>
 
     <ul class="list-group my-sm-5 shadow">
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('newSale') }}">Add a new sale.</a></li>
-      <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales') }}">Edit or view a history of sales.</a></li>
+      <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales') }}">Edit or view a history of
+          sales.</a></li>
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
     </ul>
