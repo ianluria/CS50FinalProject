@@ -5,11 +5,11 @@
 <div class="row justify-content-around my-4">
     <div class="col-auto d-flex flex-column justify-content-center">
 
-        <a class="text-center h5" href="{{ url_for('addItem') }}">Add new item.</a>
+        <a class="text-center h5" href="{{ url_for('addItem') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new item.</a>
 
         {% if items %}
 
-        <p class="my-4 text-center h5">Choose to edit or delete an item.</p>
+        <p class="my-3 text-center">Choose to edit or delete an item.</p>
 
         {% block edit %}{% endblock %}
 
@@ -18,7 +18,6 @@
             <div class="row">
                 <div class="col-sm-auto">
                     <div class="form-group">
-                        {{ form.action.label }}
                         {% for subfield in form.action %}
                         <div class="form-check">
                             {{ subfield }}
@@ -37,7 +36,6 @@
 
                 <div class="col-sm-auto">
                     <div class="form-group">
-                        {{ form.items.label }}
                         {% for subfield in form.items %}
                         <div class="form-check">
                             {{ subfield }}
@@ -59,7 +57,7 @@
 <div class="row justify-content-around">
     <div class="col-auto">
 
-        <p class="my-4 text-center h5">{{ current_user.username }}'s Items For Sale:</p>
+        <p class="my-4 text-center lead">{{ current_user.username }}'s items for sale:</p>
         <ul class="list-group list-group-flush bg-light shadow p-3">
             {% for item in items %}
             <li class="list-group-item bg-light">{{ item }}</li>

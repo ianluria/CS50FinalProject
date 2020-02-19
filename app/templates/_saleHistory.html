@@ -3,26 +3,24 @@
 {% block history %}
 
 {% if history %}
-
     <div class="row justify-content-around">
         <div class="col-auto bg-light shadow p-3">
-
             <table class="table table-borderless table-hover">
                 {% for sale in history %}
-                    <tr><td>{{ sale }}</td></tr>
+                <tr>
+                    <td>{{ sale }}</td>
+                </tr>
                 {% endfor %}
             </table>
 
             {% if next_url %}
-                <a href="{{ next_url }}">Older Sales</a>
+            <a href="{{ next_url }}">Older Sales</a>
             {% endif %}
             {% if prev_url %}
-                <a href="{{ prev_url }}">Newer Sales</a>
+            <a href="{{ prev_url }}">Newer Sales</a>
             {% endif %}
-
         </div>
     </div>
-
 {% elif adjustForm %}
     <div class="row justify-content-around">
         <div class="col-auto">
@@ -41,19 +39,24 @@
                         </table>
                     </div>
                     {% if next_url %}
-                    <a href="{{ next_url }}">Older Sales</a>
+                        <a href="{{ next_url }}">Older Sales</a>
                     {% endif %}
                     {% if prev_url %}
-                    <a href="{{ prev_url }}">Newer Sales</a>
+                        <a href="{{ prev_url }}">Newer Sales</a>
                     {% endif %}
-
                     <p>{{ adjustForm.submit(class_="btn btn-outline-primary btn-sm") }}</p>
                 </form>
-    {% else %}
-        <p>No sales for the selected items are able to be {{userAction}}ed yet.</p>
-    {% endif %}
+            {% else %}
+                <p class="alert alert-danger" role="alert">No sales for the selected items are able to be {{userAction}}ed yet.</p>
+            {% endif %}
+        </div>
+    </div>
 {% else %}
-        <p>NO ITEMS ERROR EDIT THIS!!!</p>
+    <div class="row justify-content-around my-4">
+        <div class="col-auto">
+            <p class="alert alert-danger" role="alert">No sales have been made yet for the selected items.</p>
+        </div>
+    </div>
 {% endif %}
 
 {% endblock %}

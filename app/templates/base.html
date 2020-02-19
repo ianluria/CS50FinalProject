@@ -41,18 +41,21 @@
 <div class="container-fluid">
     <div class="row justify-content-around mt-3">
         <div class="col-auto">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <ul class="list-unstyled">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="list-unstyled">
+                        {% for category, message in messages %}
+                            {% if category == "error" %}
+                                <li class="alert alert-danger" role="alert">{{ message }}</li>
+                            {% elif category == "success" %}
+                                <li class="alert alert-success" role="alert">{{ message }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             {% endwith %}
         </div>
     </div>
-
     {% block app_content %}{% endblock %}
 </div>
 {% endblock %}
