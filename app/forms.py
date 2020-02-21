@@ -10,7 +10,7 @@ import datetime
 class FeeForm(FlaskForm):
 
     eBayPercent = DecimalField("eBay Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2)
-    payPalFixed = DecimalField("PayPal Base Fee", validators=[InputRequired(), NumberRange(min=0)], places=2)
+    payPalFixed = DecimalField("PayPal Base Fee $", validators=[InputRequired(), NumberRange(min=0)], places=2)
     payPalPercent = DecimalField("PayPal Fee Percent", validators=[InputRequired(), NumberRange(min=0,max=1)], places=2)
     submit = SubmitField("Adjust Fees")
 

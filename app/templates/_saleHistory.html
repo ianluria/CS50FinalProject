@@ -14,7 +14,7 @@
             </table>
 
             {% if next_url %}
-            <a href="{{ next_url }}">Older Sales</a>
+            <a class="mr-3" href="{{ next_url }}">Older Sales</a>
             {% endif %}
             {% if prev_url %}
             <a href="{{ prev_url }}">Newer Sales</a>
@@ -28,7 +28,7 @@
                 <form action="/adjustSaleHistory" method="post" class="bg-light shadow p-3" novalidate>
                     {{ adjustForm.hidden_tag() }}
                     <div class="form-group">
-                        {{ adjustForm.sale.label}}
+                        <p>{{ adjustForm.sale.label}} to {{ userAction.capitalize() }} </p>
                         <table class="table table-borderless table-hover">
                             {% for subfield in adjustForm.sale %}
                             <tr class="form-check">
@@ -38,13 +38,18 @@
                             {% endfor %}
                         </table>
                     </div>
-                    {% if next_url %}
-                        <a href="{{ next_url }}">Older Sales</a>
-                    {% endif %}
-                    {% if prev_url %}
-                        <a href="{{ prev_url }}">Newer Sales</a>
-                    {% endif %}
-                    <p>{{ adjustForm.submit(class_="btn btn-outline-primary btn-sm") }}</p>
+                    <div class="d-flex flex-row justify-content-between">
+                    
+                        <span>
+                            {% if next_url %}
+                                <a class="mr-3" href="{{ next_url }}">Older Sales</a>
+                            {% endif %}
+                            {% if prev_url %}
+                                <a href="{{ prev_url }}">Newer Sales</a>
+                            {% endif %}
+                        </span>        
+                        <span>{{ adjustForm.submit(class_="btn btn-outline-danger btn-sm") }}</span>
+                    </div>    
                 </form>
             {% else %}
                 <p class="alert alert-danger" role="alert">No sales for the selected items are able to be {{userAction+"ed" if not userAction[-1:] == "e" else userAction+"d"}} yet.</p>
