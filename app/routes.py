@@ -16,6 +16,7 @@ from app.email import send_password_reset_email
 from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm, FeeForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd, populateFeeFields, createSaleActionForm
 from app.models import User, Sales, Items
+from app.createCSV import createCSV
 
 # Dashboard of user sales
 @app.route('/')
@@ -407,6 +408,15 @@ def deleteItem():
         flash(f"Item {item.itemName} deleted.", "success")
 
     return redirect(url_for("items"))
+
+
+@app.route("/downloadCSV", methods=["GET"])
+@login_required
+def downloadCSV():
+
+    createCSV()
+
+    return redirect(url_for('static', filename='eBaySales.csv'))
 
 
 @app.route("/login", methods=["GET", "POST"])

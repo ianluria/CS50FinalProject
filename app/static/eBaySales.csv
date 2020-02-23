@@ -1,0 +1,6 @@
+itemName,date,price,quantity,shipping,profit,packaging,payPalFees,eBayFees,refund
+Beans and Brew,02/12/2020,5,1,0.71,2.34,0.15,0.30,0.50,
+Beans and Brew,02/20/2020,7.45,1,0.71,4.34,0.24,0.42,0.74,
+Beans and Brew,02/20/2020,4.53,1,0.72,1.83,0.25,0.28,0.45,
+Beans and Brew,02/20/2020,4.25,1,0.71,1.55,0.31,0.26,0.42,
+Beans and Brew,02/20/2020,5.00,1,0.71,2.24,0.25,0.30,0.50,
