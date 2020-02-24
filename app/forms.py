@@ -18,6 +18,7 @@ class SaleForm(FeeForm):
     items = SelectField("Item", validators=[InputRequired()])
     date = DateField("Date", validators=[InputRequired()], format='%m-%d-%Y')
     price = DecimalField("Price", validators=[InputRequired(), NumberRange(min=0)], places=2)
+    priceWithTax = DecimalField("Price With Tax", validators=[NumberRange(min=0)], places=2)
     quantity = IntegerField("Quantity", validators=[InputRequired(), NumberRange(min=0)])
     shipping = DecimalField("Postage", validators=[InputRequired(), NumberRange(min=0)], places=2)
     packaging = DecimalField("Packaging", validators=[InputRequired(), NumberRange(min=0)], places=2)

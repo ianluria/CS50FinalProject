@@ -15,6 +15,7 @@ class Sales(db.Model):
         "items.itemName"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.String(64), nullable=False)
+    priceWithTax = db.Column(db.String(64), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     shipping = db.Column(db.String(64), nullable=False)
     profit = db.Column(db.String(64), nullable=False)

@@ -84,13 +84,14 @@ def newSale():
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
+        usersSale.priceWithTax = str(form.priceWithTax.data)
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
         usersSale.eBayFees = str(
-            Decimal(form.price.data*form.eBayPercent.data).quantize(Decimal("1.00")))
+            Decimal((form.priceWithTax.data if form.priceWithTax.data else form.price.data)*form.eBayPercent.data).quantize(Decimal("1.00")))
         usersSale.payPalFees = str(Decimal(
-            form.price.data * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00")))
+            (form.priceWithTax.data if form.priceWithTax.data else form.price.data) * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00"))
 
         calculateProfit(usersSale)
 
@@ -101,7 +102,7 @@ def newSale():
 
     else:
         # Prefill certain fields of the form
-        form.date.data = date.today()
+        form.date.data=date.today()
         populateFeeFields(form)
         return render_template("saleInput.html", form=form, action="add")
 
@@ -110,22 +111,22 @@ def newSale():
 @login_required
 def sales():
 
-    form = createSaleActionForm()
+    form=createSaleActionForm()
 
     if form.validate_on_submit():
 
         # Store which items the user wants to view sales from, and the action.
-        current_user.saleDisplayInfo = f"{{'userAction':'{form.action.data}', 'itemsList':{form.items.data}}}"
+        current_user.saleDisplayInfo=f"{{'userAction':'{form.action.data}', 'itemsList':{form.items.data}}}"
 
         db.session.add(current_user)
         db.session.commit()
 
         return redirect(url_for("displaySales", page=1))
 
-    zeroSales = True if not Sales.query.filter_by(
+    zeroSales=True if not Sales.query.filter_by(
         username=current_user.username).first() else False
 
-    zeroItems = True if not Items.query.filter_by(
+    zeroItems=True if not Items.query.filter_by(
         user=current_user).first() else False
 
     return render_template("sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
@@ -135,11 +136,11 @@ def sales():
 @login_required
 def displaySales():
 
-    page = int(request.args.get("page"))
+    page=int(request.args.get("page"))
 
     # Convert data with userAction and list of items to view sales into a dict
     try:
-        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+        requestItemsList=ast.literal_eval(current_user.saleDisplayInfo)
     except:
         flash("Error: User must have a saleDisplayInfo dict stored.", "error")
         return redirect(url_for("sales"))
@@ -147,24 +148,24 @@ def displaySales():
     if page and requestItemsList:
 
         # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, string)}
-        saleHistory = createSaleHistoryList(
+        saleHistory=createSaleHistoryList(
             page, requestItemsList["itemsList"], requestItemsList["userAction"])
 
         if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
-            adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
+            adjustSaleHistoryForm=SaleHistoryAdjustForm(hidden=page)
 
-            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
-            adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
+            adjustSaleHistoryForm.sale.choices=saleHistory["saleHistoryList"]
+            adjustSaleHistoryForm.submit.label.text=f"{requestItemsList['userAction'].capitalize()} Sale"
 
-            history = None
+            history=None
 
         else:
-            adjustSaleHistoryForm = None
-            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
+            adjustSaleHistoryForm=None
+            history=[sale[1] for sale in saleHistory["saleHistoryList"]]
 
-        next_url = url_for(
+        next_url=url_for(
             'displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
-        prev_url = url_for(
+        prev_url=url_for(
             'displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
         return render_template("_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
@@ -176,21 +177,21 @@ def displaySales():
 @login_required
 def adjustSaleHistory():
 
-    form = SaleHistoryAdjustForm()
+    form=SaleHistoryAdjustForm()
 
     try:
-        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+        requestItemsList=ast.literal_eval(current_user.saleDisplayInfo)
     except:
         flash("Error: User must have a saleDisplayInfo dict stored.", "error")
         return redirect(url_for("sales"))
 
     if requestItemsList:
-        form.sale.choices = createSaleHistoryList(int(
+        form.sale.choices=createSaleHistoryList(int(
             form.hidden.data), requestItemsList["itemsList"], requestItemsList["userAction"])["saleHistoryList"]
 
         if form.validate_on_submit():
 
-            saleToAdjust = Sales.query.filter_by(username=current_user.username).filter_by(
+            saleToAdjust=Sales.query.filter_by(username=current_user.username).filter_by(
                 id=int(form.sale.data)).first_or_404()
 
             if requestItemsList["userAction"] == "delete":
@@ -204,26 +205,26 @@ def adjustSaleHistory():
             elif requestItemsList["userAction"] == "edit":
 
                 # Create a SaleForm that will be prepopulated with the sale-to-edit's information that the user can then adjust
-                saleFormToEdit = SaleForm()
+                saleFormToEdit=SaleForm()
 
                 populateItemSelectField(saleFormToEdit)
-                saleFormToEdit.items.data = saleToAdjust.item.itemName
+                saleFormToEdit.items.data=saleToAdjust.item.itemName
 
                 # Store a dictionary with information used to process an edit on the newSale route
-                saleFormToEdit.hidden.data = {
+                saleFormToEdit.hidden.data={
                     "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
-                saleFormToEdit.date.data = saleToAdjust.date
-                saleFormToEdit.price.data = Decimal(saleToAdjust.price)
-                saleFormToEdit.quantity.data = saleToAdjust.quantity
-                saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
-                saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
+                saleFormToEdit.date.data=saleToAdjust.date
+                saleFormToEdit.price.data=Decimal(saleToAdjust.price)
+                saleFormToEdit.quantity.data=saleToAdjust.quantity
+                saleFormToEdit.shipping.data=Decimal(saleToAdjust.shipping)
+                saleFormToEdit.packaging.data=Decimal(saleToAdjust.packaging)
                 populateFeeFields(saleFormToEdit)
 
                 return render_template("saleInput.html", form=saleFormToEdit, action="edit")
 
             elif requestItemsList["userAction"] == "refund":
 
-                saleToAdjust.refund = True
+                saleToAdjust.refund=True
                 calculateProfit(saleToAdjust, True)
                 db.session.add(saleToAdjust)
                 db.session.commit()
@@ -238,11 +239,11 @@ def adjustSaleHistory():
 def items():
 
     # Form that allows user to select an existing item to edit or delete
-    form = ItemSelectForm()
+    form=ItemSelectForm()
 
-    items = populateItemSelectField(form)
+    items=populateItemSelectField(form)
 
-    items = [
+    items=[
         f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
     # Ian3 cost $785.0 for 700 added on 2019-12-05
 
@@ -254,7 +255,7 @@ def items():
 @login_required
 def addItem():
 
-    form = ItemForm()
+    form=ItemForm()
 
     if form.validate_on_submit():
 
@@ -262,19 +263,19 @@ def addItem():
         if form.hidden.data and not form.hidden.data == form.itemName.data:
 
             # Use the unmodified item name to query the database
-            itemName = form.hidden.data
+            itemName=form.hidden.data
 
             # Go through all the sales for the item and update the foreign key due to name change.
-            updateForeignKey = True
+            updateForeignKey=True
 
         else:
-            itemName = form.itemName.data
-            updateForeignKey = False
+            itemName=form.itemName.data
+            updateForeignKey=False
 
-        item = Items.query.filter_by(user=current_user).filter_by(
+        item=Items.query.filter_by(user=current_user).filter_by(
             itemName=itemName).first()
 
-        edit = True
+        edit=True
 
         # User has entered an item name that is in database, but did not arrive through the editing route.
         if item and not form.hidden.data:
@@ -284,11 +285,11 @@ def addItem():
 
         # Create a new Items object if the user is entering a new item
         if item is None:
-            item = Items()
-            edit = False
+            item=Items()
+            edit=False
 
         if edit:
-            sales = item.sales.all()
+            sales=item.sales.all()
 
         # Update item with new data from form.
         populateItemsObject(item, form, edit=edit)
@@ -298,7 +299,7 @@ def addItem():
             for sale in sales:
                 if updateForeignKey:
                     # Update each sale's itemName to the new itemName from form
-                    sale.itemName = item.itemName
+                    sale.itemName=item.itemName
                 calculateProfit(sale)
 
             flash(f"Item {item.itemName} updated.", "success")
@@ -318,7 +319,7 @@ def addItem():
 @login_required
 def adjustItem():
 
-    form = ItemSelectForm()
+    form=ItemSelectForm()
 
     populateItemSelectField(form)
 
@@ -345,14 +346,14 @@ def adjustItem():
 
         elif form.action.data == "edit":
 
-            item = Items.query.filter_by(user=current_user).filter_by(
+            item=Items.query.filter_by(user=current_user).filter_by(
                 itemName=form.items.data).first_or_404()
 
             # Populate an itemForm object with the "item" data stored in the database to show user.
-            itemForm = ItemForm(price=Decimal(item.price),
+            itemForm=ItemForm(price=Decimal(item.price),
                                 quantity=item.quantity, itemName=item.itemName)
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
-            itemForm.hidden.data = item.itemName
+            itemForm.hidden.data=item.itemName
 
             flash(f"Editing {item.itemName}.", "success")
 
@@ -365,21 +366,21 @@ def adjustItem():
 @login_required
 def fees():
 
-    form = FeeForm()
+    form=FeeForm()
 
     if form.validate_on_submit():
 
-        current_user.eBayPercent = str(form.eBayPercent.data)
-        current_user.payPalPercent = str(form.payPalPercent.data)
-        current_user.payPalFixed = str(form.payPalFixed.data)
+        current_user.eBayPercent=str(form.eBayPercent.data)
+        current_user.payPalPercent=str(form.payPalPercent.data)
+        current_user.payPalFixed=str(form.payPalFixed.data)
         db.session.add(current_user)
         db.session.commit()
         flash("Selling fees sucessfully updated.", "success")
         return redirect(url_for("index"))
 
-    form.eBayPercent.data = Decimal(current_user.eBayPercent)
-    form.payPalPercent.data = Decimal(current_user.payPalPercent)
-    form.payPalFixed.data = Decimal(current_user.payPalFixed)
+    form.eBayPercent.data=Decimal(current_user.eBayPercent)
+    form.payPalPercent.data=Decimal(current_user.payPalPercent)
+    form.payPalFixed.data=Decimal(current_user.payPalFixed)
 
     return render_template("fees.html", form=form)
 
@@ -388,15 +389,15 @@ def fees():
 @login_required
 def deleteItem():
 
-    form = DeleteConfirmationForm()
+    form=DeleteConfirmationForm()
 
     if form.validate_on_submit():
 
-        item = Items.query.filter_by(user=current_user).filter_by(
+        item=Items.query.filter_by(user=current_user).filter_by(
             itemName=form.hidden.data).first_or_404()
 
         # Delete all sales history for item
-        salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
+        salesToDelete=Sales.query.filter_by(username=current_user.username).filter_by(
             item=item).all()
 
         for sale in salesToDelete:
@@ -423,16 +424,16 @@ def downloadCSV():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
-    form = LoginForm()
+    form=LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user=User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get("next")
+        next_page=request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
-            next_page = url_for("index")
+            next_page=url_for("index")
         return redirect(next_page)
     return render_template("login.html", form=form)
 
@@ -447,9 +448,9 @@ def logout():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm()
+    form=RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user=User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -462,9 +463,9 @@ def register():
 def reset_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = ResetPasswordRequestForm()
+    form=ResetPasswordRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user=User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
             flash(
@@ -478,10 +479,10 @@ def reset_password_request():
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    user = User.verify_reset_password_token(token)
+    user=User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('index'))
-    form = ResetPasswordForm()
+    form=ResetPasswordForm()
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
