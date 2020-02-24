@@ -25,6 +25,11 @@ class SaleForm(FeeForm):
     hidden = HiddenField()
     submit = SubmitField("Log Sale")
 
+    def validate_priceWithTax(form, field):
+
+        if field.data < form.price.data:
+            raise ValidationError("Price with tax cannot be less than price.")
+
     def validate_date(form,field):
 
         if not type(field.data) == datetime.date:
@@ -33,14 +38,11 @@ class SaleForm(FeeForm):
         if field.data > datetime.date.today():
             raise ValidationError("Date cannot be in the future.")
 
-
     def validate_quantity(form,field):
 
         item = Items.query.filter_by(user=current_user).filter_by(itemName=form.items.data).first_or_404()
 
         totalNumberOfItemsSold = item.quantity - sum([sale.quantity for sale in item.sales])
-
-        # totalNumberOfItemSales = db.session.query(func.sum(Sales.quantity)).filter_by(username=current_user.username).filter_by(itemName=)
 
         if field.data > totalNumberOfItemsSold:
             raise ValidationError(f"{totalNumberOfItemsSold} of quantity remaining for {form.items.data}.")

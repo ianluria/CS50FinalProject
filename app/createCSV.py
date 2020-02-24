@@ -9,7 +9,7 @@ def createCSV():
 
     with open("app/static/eBaySales.csv", "w", newline='', encoding='utf-8') as new_file:
 
-        fieldnames = ["itemName", "date", "price", "quantity", "shipping",
+        fieldnames = ["itemName", "date", "priceWithTax", "price", "quantity", "shipping",
                       "profit", "packaging", "payPalFees", "eBayFees", "refund"]
 
         csv_writer = csv.DictWriter(

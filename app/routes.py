@@ -88,10 +88,12 @@ def newSale():
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
+        # eBay fees never include sales taxes
         usersSale.eBayFees = str(
-            Decimal((form.priceWithTax.data if form.priceWithTax.data else form.price.data)*form.eBayPercent.data).quantize(Decimal("1.00")))
+            Decimal(form.price.data*form.eBayPercent.data).quantize(Decimal("1.00")))
+        # PayPal fees include sales taxes    
         usersSale.payPalFees = str(Decimal(
-            (form.priceWithTax.data if form.priceWithTax.data else form.price.data) * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00"))
+            (form.priceWithTax.data if form.priceWithTax.data else form.price.data) * form.payPalPercent.data + form.payPalFixed.data).quantize(Decimal("1.00")))
 
         calculateProfit(usersSale)
 
@@ -213,8 +215,10 @@ def adjustSaleHistory():
                 # Store a dictionary with information used to process an edit on the newSale route
                 saleFormToEdit.hidden.data={
                     "id": saleToAdjust.id, "originalItemName": saleToAdjust.item.itemName}
+
                 saleFormToEdit.date.data=saleToAdjust.date
                 saleFormToEdit.price.data=Decimal(saleToAdjust.price)
+                saleFormToEdit.priceWithTax.data = Decimal(saleToAdjust.priceWithTax)
                 saleFormToEdit.quantity.data=saleToAdjust.quantity
                 saleFormToEdit.shipping.data=Decimal(saleToAdjust.shipping)
                 saleFormToEdit.packaging.data=Decimal(saleToAdjust.packaging)
