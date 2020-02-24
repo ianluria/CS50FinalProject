@@ -84,7 +84,7 @@ def newSale():
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
-        usersSale.priceWithTax = str(form.priceWithTax.data)
+        usersSale.priceWithTax = str(form.priceWithTax.data.quantize(Decimal("1.00")))
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
