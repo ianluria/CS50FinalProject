@@ -359,8 +359,6 @@ def adjustItem():
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data=item.itemName
 
-            flash(f"Editing {item.itemName}.", "success")
-
             return render_template("_addItem.html", form=itemForm)
 
     return redirect(url_for("items"))

@@ -90,7 +90,7 @@ class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[
                            InputRequired(), Length(max=64)])
     email = StringField('Email', validators=[InputRequired(), Email()])
-    password = PasswordField('Password', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired(), Length(max=64)])
     password2 = PasswordField(
         'Repeat Password', validators=[InputRequired(), EqualTo('password')])
     submit = SubmitField('Register')
@@ -119,11 +119,14 @@ class ItemForm(FlaskForm):
     submit = SubmitField('Add')
 
     def validate_itemName(form, field):
-        itemName = field.data.strip()
-        item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=itemName).first()
-        if item:
-            raise ValidationError(f"{itemName} is already being tracked.")
+        
+        # Only check for duplicate item if user is adding a new item and not editing.
+        if not form.hidden.data:
+            itemName = field.data.strip()
+            item = Items.query.filter_by(user=current_user).filter_by(
+                itemName=itemName).first()
+            if item:
+                raise ValidationError(f"{itemName} is already being tracked.")
 
 
 class ItemSelectForm(FlaskForm):
