@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <div class="row justify-content-around">
-        <div class="col-auto">
-            <p>Are you sure you want to delete {{ form.hidden.data }}?</p>
-            <p>This is a permanent change. Every sale in history for {{ form.hidden.data }} will be removed as well.</p>
-            <p>All profit calculations will be adjusted accordingly.</p>
+<div class="row justify-content-around">
+    <div class="col-sm-6 bg-light shadow p-3 my-4">
+        <p class="blockquote text-center mb-3 font-weight-bold">Are you sure you want to delete {{ form.hidden.data }}?</p>
+        <p class="blockquote text-center">
+        This is a permanent change. Every sale in history for {{ form.hidden.data }} will be removed as well.
+        All profit calculations will be adjusted accordingly.</p>
 
-            <form action="/deleteItem" method="post" novalidate>
-                {{ form.hidden_tag() }}
+        <form action="/deleteItem" method="post" novalidate>
+            {{ form.hidden_tag() }}
 
-                <p>{{ form.confirm() }}</p>
+            <p class="text-right mt-sm-4">{{ form.confirm(class_="btn btn-danger") }}</p>
 
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 {% endblock %}
