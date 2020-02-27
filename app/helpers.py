@@ -10,21 +10,21 @@ from app import db
 # """Populates form select field and returns results from items query."""
 
 
-def populateItemSelectField(form):
+def populateItemSelectField(form=False):
+
+    items = Items.query.filter_by(username=current_user.username).all()
 
     if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm) or isinstance(form, SaleActionForm):
-
-        items = Items.query.filter_by(username=current_user.username).all()
 
         # Create a list of items for use in select field
         names = [(item.itemName, item.itemName) for item in items]
 
         form.items.choices = names
 
-        return items
-    else:
-        raise TypeError(
-            "Form must be of ItemSelectForm, SaleActionForm, or SaleForm type.")
+    items = [
+        f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+
+    return items
 
 
 def populateItemsObject(obj, form, edit=False):
@@ -84,13 +84,13 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
     historyList = historyQuery.items
 
     # Remove any already refunded sales if userAction is editing or refunding
-    if userAction in ["edit","refund"]:
-        historyList = [sale for sale in historyList if not sale.refund ]
+    if userAction in ["edit", "refund"]:
+        historyList = [sale for sale in historyList if not sale.refund]
 
     historyList = [
         (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
 
-    return {"saleHistoryQuery":historyQuery, "saleHistoryList":historyList}
+    return {"saleHistoryQuery": historyQuery, "saleHistoryList": historyList}
 
 
 def usd(value):
@@ -107,6 +107,7 @@ def populateFeeFields(form):
         return
     else:
         raise TypeError("form must be of SaleForm type.")
+
 
 def createSaleActionForm():
     form = SaleActionForm()

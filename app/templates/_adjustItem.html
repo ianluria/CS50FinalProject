@@ -1,0 +1,57 @@
+{% extends "items.html" %}
+
+{% block item_content %}
+
+<div class="row justify-content-around my-4">
+    <div class="col-auto d-flex flex-column justify-content-center">
+
+        <a class="text-center h5" href="{{ url_for('addItem') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new item.</a>
+
+        {% if items %}
+
+        <p class="my-3 text-center">Choose to edit or delete an item.</p>
+
+        {% block edit %}{% endblock %}
+
+        <form action="/adjustItem" method="post" class="bg-light shadow p-3" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-sm-auto">
+                    <div class="form-group">
+                        {% for subfield in form.action %}
+                        <div class="form-check">
+                            {{ subfield }}
+                            {{ subfield.label.__call__(class_="form-check-label") }}
+                        </div>
+                        {% endfor %}
+                        {% for error in form.action.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.submit(class_="btn btn-outline-primary btn-sm") }}
+                    </div>
+                </div>
+
+
+                <div class="col-sm-auto">
+                    <div class="form-group">
+                        {% for subfield in form.items %}
+                        <div class="form-check">
+                            {{ subfield }}
+                            {{ subfield.label.__call__(class_="form-check-label") }}
+                        </div>
+                        {% endfor %}
+                        {% for error in form.items.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
