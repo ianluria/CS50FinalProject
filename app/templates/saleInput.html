@@ -5,9 +5,9 @@
     <div class="col-auto my-3">
 
         {% if action == "edit" %}
-        <p class="text-center h4">Editing Sale For {{ form.items.data }}.</p>
+        <p class="text-center h4">Editing Sale For {{ form.items.data }}</p>
         {% elif action == "add" %}
-        <p class="text-center h4">Add a New Sale.</p>
+        <p class="text-center h4">Add a New Sale</p>
         {% endif %}
 
         <form action="/newSale" method="post" class="d-flex bg-light shadow p-3 my-4" novalidate>

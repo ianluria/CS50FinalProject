@@ -21,7 +21,7 @@
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
     </ul>
 
-    <div class="mt-3">
+    <div class="mt-4">
       {% for item in itemQuantityRemaining %}
       <p class="text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
       {% endfor %}

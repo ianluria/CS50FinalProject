@@ -112,7 +112,6 @@ class ItemForm(FlaskForm):
     # date = DateField("Date", validators=[InputRequired()], format='%d-%m-%Y')
     price = DecimalField("Total Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
-    # Must be greater than 0 and less than 1000
     quantity = IntegerField("Total Quantity", validators=[
                             InputRequired(), NumberRange(min=1)])
     hidden = HiddenField()
