@@ -260,6 +260,11 @@ def addItem():
     form = ItemForm()
 
     if form.validate_on_submit():
+        
+        # Check if adding this item would bring total items being tracked to greater than 50
+        if len(current_user.items.all()) > 50:
+            flash("Error: cannot track more than 50 items.", "error")
+            return redirect(url_for("addItem"))
 
         # The user has altered the item name.
         if form.hidden.data and not form.hidden.data == form.itemName.data:
@@ -355,6 +360,8 @@ def adjustItem():
                                 quantity=item.quantity, itemName=item.itemName)
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
+
+            itemForm.submit.label.text = form.action.data.capitalize()
 
             return render_template("_addItem.html", form=itemForm, items=populateItemSelectField(), action="Edit")
 
