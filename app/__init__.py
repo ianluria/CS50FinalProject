@@ -18,6 +18,9 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = "login"
 
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
 mail = Mail(app)
 
 if not app.debug:
@@ -36,4 +39,4 @@ if not app.debug:
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler) 
 
-from app import routes, models, errors
+from app import routes, models
