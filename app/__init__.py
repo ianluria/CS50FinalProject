@@ -21,6 +21,15 @@ login.login_view = "login"
 from app.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 
+from app.auth import bp as auth_bp
+app.register_blueprint(auth_bp, url_prefix="/auth")
+
+from app.sales import bp as sales_bp
+app.register_blueprint(sales_bp, url_prefix="/sales")
+
+from app.items import bp as items_bp
+app.register_blueprint(items_bp, url_prefix="/items")
+
 mail = Mail(app)
 
 if not app.debug:
