@@ -6,12 +6,12 @@
 
         {% if zeroItems %}
 
-            <a class="text-center h5 my-3" href="{{ url_for('addItem') }}">Add an item first to get started adding
+            <a class="text-center h5 my-3" href="{{ url_for('items.addItem') }}">Add an item first to get started adding
                 sales.</a>
 
         {% else %}
 
-            <a class="text-center h5 my-3" href="{{ url_for('newSale') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new sale.</a>
+            <a class="text-center h5 my-3" href="{{ url_for('sales.newSale') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new sale.</a>
 
         {% endif %}
 
@@ -28,7 +28,7 @@
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
-                    <a href="/downloadCSV"><small>Download CSV of All Sales</small></a>
+                    <a href="{{ url_for('downloadCSV') }}"><small>Download CSV of All Sales</small></a>
                 </div>
                 <div class="col-sm-auto">
                     <div class="form-group">

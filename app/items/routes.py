@@ -6,12 +6,13 @@ from flask_login import current_user, login_required
 
 # Local application imports
 from app import db
-from app.forms import , , ItemForm, ItemSelectForm, DeleteConfirmationForm
+from app.items import bp
+from app.forms import ItemForm, ItemSelectForm, DeleteConfirmationForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject,
 from app.models import User, Sales, Items
 
 
-@app.route("/items", methods=["GET"])
+@bp.route("/items", methods=["GET"])
 @login_required
 def items():
 
@@ -24,7 +25,7 @@ def items():
 
 
 # Create a new item or edit an existing item's details
-@app.route("/addItem", methods=["GET", "POST"])
+@bp.route("/addItem", methods=["GET", "POST"])
 @login_required
 def addItem():
 
@@ -35,7 +36,7 @@ def addItem():
         # Check if adding this item would bring total items being tracked to greater than 50
         if len(current_user.items.all()) > 50:
             flash("Error: cannot track more than 50 items.", "error")
-            return redirect(url_for("addItem"))
+            return redirect(url_for("items.addItem"))
 
         # The user has altered the item name.
         if form.hidden.data and not form.hidden.data == form.itemName.data:
@@ -59,7 +60,7 @@ def addItem():
         if item and not form.hidden.data:
             flash(
                 f"Item '{itemName}' is already in database.  Use editing option to adjust it.", "error")
-            return redirect(url_for("items"))
+            return redirect(url_for("items.items"))
 
         # Create a new Items object if the user is entering a new item
         if item is None:
@@ -87,12 +88,12 @@ def addItem():
         db.session.add(item)
         db.session.commit()
 
-        return redirect(url_for("items"))
+        return redirect(url_for("items.items"))
 
     return render_template("_addItem.html", form=form, items=populateItemSelectField(), action="Add New")
 
 # Route which processes a user's request to edit or delete an existing item.
-@app.route("/adjustItem", methods=["POST"])
+@bp.route("/adjustItem", methods=["POST"])
 @login_required
 def adjustItem():
 
@@ -136,9 +137,10 @@ def adjustItem():
 
             return render_template("_addItem.html", form=itemForm, items=populateItemSelectField(), action="Edit")
 
-    return redirect(url_for("items"))
+    return redirect(url_for("items.items"))
 
-@app.route("/deleteItem", methods=["POST"])
+
+@bp.route("/deleteItem", methods=["POST"])
 @login_required
 def deleteItem():
 
@@ -161,4 +163,4 @@ def deleteItem():
 
         flash(f"Item {item.itemName} deleted.", "success")
 
-    return redirect(url_for("items"))
+    return redirect(url_for("items.items"))

@@ -9,6 +9,7 @@ from flask_login import current_user, login_required
 
 # Local application imports
 from app import db
+from app.sales import bp
 from app.forms import SaleForm, SaleHistoryAdjustForm
 from app.helpers import populateItemSelectField, calculateProfit, createSaleHistoryList, populateFeeFields, createSaleActionForm
 from app.models import User, Sales, Items
@@ -16,14 +17,14 @@ from app.createCSV import createCSV
 
 
 # Enter a new sale or edit and existing
-@app.route("/newSale", methods=["GET", "POST"])
+@bp.route("/newSale", methods=["GET", "POST"])
 @login_required
 def newSale():
 
     # Redirect user to addItem if no items have been added yet.
     if not Items.query.filter_by(user=current_user).first():
         flash("Please add an item before adding a new sale.", "error")
-        return redirect(url_for("addItem"))
+        return redirect(url_for("items.addItem"))
 
     form = SaleForm()
 
@@ -74,7 +75,7 @@ def newSale():
         db.session.add(usersSale)
         db.session.commit()
 
-        return redirect(url_for("sales"))
+        return redirect(url_for("sales.sales"))
 
     else:
         # Prefill certain fields of the form
@@ -83,7 +84,7 @@ def newSale():
         return render_template("saleInput.html", form=form, action="add")
 
 # Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
-@app.route("/sales", methods=["GET", "POST"])
+@bp.route("/sales", methods=["GET", "POST"])
 @login_required
 def sales():
 
@@ -97,7 +98,7 @@ def sales():
         db.session.add(current_user)
         db.session.commit()
 
-        return redirect(url_for("displaySales", page=1))
+        return redirect(url_for("sales.displaySales", page=1))
 
     zeroSales = True if not Sales.query.filter_by(
         username=current_user.username).first() else False
@@ -108,7 +109,7 @@ def sales():
     return render_template("sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
 
 
-@app.route("/displaySales", methods=["GET"])
+@bp.route("/displaySales", methods=["GET"])
 @login_required
 def displaySales():
 
@@ -119,7 +120,7 @@ def displaySales():
         requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
     except:
         flash("Error: User must have a saleDisplayInfo dict stored.", "error")
-        return redirect(url_for("sales"))
+        return redirect(url_for("sales.sales"))
 
     if page and requestItemsList:
 
@@ -140,16 +141,16 @@ def displaySales():
             history = [sale[1] for sale in saleHistory["saleHistoryList"]]
 
         next_url = url_for(
-            'displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
         prev_url = url_for(
-            'displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
         return render_template("_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
 
-    return redirect(url_for("sales"))
+    return redirect(url_for("sales.sales"))
 
 
-@app.route("/adjustSaleHistory", methods=["POST"])
+@bp.route("/adjustSaleHistory", methods=["POST"])
 @login_required
 def adjustSaleHistory():
 
@@ -159,7 +160,7 @@ def adjustSaleHistory():
         requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
     except:
         flash("Error: User must have a saleDisplayInfo dict stored.", "error")
-        return redirect(url_for("sales"))
+        return redirect(url_for("sales.sales"))
 
     if requestItemsList:
         form.sale.choices = createSaleHistoryList(int(
@@ -210,9 +211,9 @@ def adjustSaleHistory():
                 flash(
                     f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.", "success")
 
-    return redirect(url_for("sales"))
+    return redirect(url_for("sales.sales"))
 
-@app.route("/downloadCSV", methods=["GET"])
+@bp.route("/downloadCSV", methods=["GET"])
 @login_required
 def downloadCSV():
 

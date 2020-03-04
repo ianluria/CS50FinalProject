@@ -1,13 +1,7 @@
-from flask import render_template, redirect, url_for
 from flask_login import current_user
 from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
 from app.models import Items, Sales, User
-from decimal import Decimal, getcontext
-from app import db
-
-# getcontext().prec = 2
-
-# """Populates form select field and returns results from items query."""
+from decimal import Decimal
 
 
 def populateItemSelectField(form=False):

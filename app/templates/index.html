@@ -14,10 +14,10 @@
     <p class="text-center h5 mt-3">{{totalSalesMessage}}</p>
 
     <ul class="list-group my-sm-4 shadow">
-      <li class="list-group-item"><a class="text-dark" href="{{ url_for('newSale') }}">Add a new sale.</a></li>
-      <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales') }}">Edit or view a history of
+      <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales.newSale') }}">Add a new sale.</a></li>
+      <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales.sales') }}">Edit or view a history of
           sales.</a></li>
-      <li class="list-group-item"><a class="text-dark" href="{{ url_for('addItem') }}">Add a new item for sale.</a></li>
+      <li class="list-group-item"><a class="text-dark" href="{{ url_for('items.addItem') }}">Add a new item for sale.</a></li>
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('fees') }}">Adjust selling fees.</a></li>
     </ul>
 
