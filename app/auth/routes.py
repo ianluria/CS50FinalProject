@@ -7,12 +7,12 @@ from werkzeug.urls import url_parse
 # Local application imports
 from app import db
 from app.auth import bp
-from app.email import send_password_reset_email
+# from app.auth.email import send_password_reset_email
 from app.auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User
 
 
-@app.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
@@ -21,22 +21,22 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash("Invalid username or password.", "error")
-            return redirect(url_for("login"))
+            return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
             next_page = url_for("index")
         return redirect(next_page)
-    return render_template("login.html", form=form)
+    return render_template("auth/login.html", form=form)
 
 
-@app.route("/logout")
+@bp.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
 # Create a new user account
-@app.route('/register', methods=['GET', 'POST'])
+@bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -47,11 +47,11 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash("Congratulations, you are now a registered user!", "success")
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+        return redirect(url_for('auth.login'))
+    return render_template('auth/register.html', title='Register', form=form)
 
 
-@app.route('/reset_password_request', methods=['GET', 'POST'])
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -59,15 +59,15 @@ def reset_password_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            send_password_reset_email(user)
+            # send_password_reset_email(user)
             flash(
                 "Check your email for the instructions to reset your password.", "error")
-            return redirect(url_for('login'))
-    return render_template('reset_password_request.html',
+            return redirect(url_for('auth.login'))
+    return render_template('auth/reset_password_request.html',
                            title='Reset Password', form=form)
 
 
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -79,5 +79,5 @@ def reset_password(token):
         user.set_password(form.password.data)
         db.session.commit()
         flash("Your password has been reset.", "success")
-        return redirect(url_for('login'))
-    return render_template('reset_password.html', form=form)
+        return redirect(url_for('auth.login'))
+    return render_template('auth/reset_password.html', form=form)

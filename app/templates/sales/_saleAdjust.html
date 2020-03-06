@@ -10,7 +10,7 @@
         </ul>
     {% elif adjustForm %}
         {% if adjustForm.sale.choices %}    
-            <form action="/adjustSaleHistory" method="post" novalidate>
+            <form action="/sales/adjustSaleHistory" method="post" novalidate>
                 {{ adjustForm.hidden_tag() }}
                     <table>
                         {% for subfield in adjustForm.sale %}

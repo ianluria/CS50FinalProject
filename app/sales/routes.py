@@ -13,7 +13,7 @@ from app.sales import bp
 from app.forms import SaleForm, SaleHistoryAdjustForm
 from app.helpers import populateItemSelectField, calculateProfit, createSaleHistoryList, populateFeeFields, createSaleActionForm
 from app.models import User, Sales, Items
-from app.createCSV import createCSV
+from app.sales.createCSV import createCSV
 
 
 # Enter a new sale or edit and existing
@@ -81,7 +81,7 @@ def newSale():
         # Prefill certain fields of the form
         form.date.data = date.today()
         populateFeeFields(form)
-        return render_template("saleInput.html", form=form, action="add")
+        return render_template("sales/saleInput.html", form=form, action="add")
 
 # Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
 @bp.route("/sales", methods=["GET", "POST"])
@@ -106,7 +106,7 @@ def sales():
     zeroItems = True if not Items.query.filter_by(
         user=current_user).first() else False
 
-    return render_template("sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
+    return render_template("sales/sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
 
 
 @bp.route("/displaySales", methods=["GET"])
@@ -145,7 +145,7 @@ def displaySales():
         prev_url = url_for(
             'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
-        return render_template("_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+        return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
 
     return redirect(url_for("sales.sales"))
 
@@ -200,7 +200,7 @@ def adjustSaleHistory():
                 saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
                 populateFeeFields(saleFormToEdit)
 
-                return render_template("saleInput.html", form=saleFormToEdit, action="edit")
+                return render_template("sales/saleInput.html", form=saleFormToEdit, action="edit")
 
             elif requestItemsList["userAction"] == "refund":
 

@@ -1,6 +1,5 @@
-from app.models import User, Sales, Items
+from app.models import Sales
 from flask_login import current_user
-from flask import render_template, redirect, url_for
 
 import csv
 

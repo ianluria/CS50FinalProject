@@ -8,7 +8,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.items import bp
 from app.forms import ItemForm, ItemSelectForm, DeleteConfirmationForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject,
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject
 from app.models import User, Sales, Items
 
 
@@ -21,7 +21,7 @@ def items():
 
     items = populateItemSelectField(form)
 
-    return render_template("_adjustItem.html", items=items, form=form)
+    return render_template("items/_adjustItem.html", items=items, form=form)
 
 
 # Create a new item or edit an existing item's details
@@ -90,7 +90,7 @@ def addItem():
 
         return redirect(url_for("items.items"))
 
-    return render_template("_addItem.html", form=form, items=populateItemSelectField(), action="Add New")
+    return render_template("items/_addItem.html", form=form, items=populateItemSelectField(), action="Add New")
 
 # Route which processes a user's request to edit or delete an existing item.
 @bp.route("/adjustItem", methods=["POST"])
@@ -135,7 +135,7 @@ def adjustItem():
 
             itemForm.submit.label.text = form.action.data.capitalize()
 
-            return render_template("_addItem.html", form=itemForm, items=populateItemSelectField(), action="Edit")
+            return render_template("items/_addItem.html", form=itemForm, items=populateItemSelectField(), action="Edit")
 
     return redirect(url_for("items.items"))
 

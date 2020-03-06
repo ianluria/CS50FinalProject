@@ -1,22 +1,15 @@
-# Standard library imports
-import re
-import ast
 
 # Third party imports
-from datetime import date
 from decimal import Decimal
-from flask import render_template, flash, redirect, url_for, request
-from flask_login import current_user, login_user, logout_user, login_required
+from flask import render_template, flash, redirect, url_for
+from flask_login import current_user, login_required
 from sqlalchemy import func
-from werkzeug.urls import url_parse
 
 # Local application imports
 from app import app, db
-from app.email import send_password_reset_email
-from app.forms import LoginForm, RegistrationForm, ItemForm, ItemSelectForm, SaleForm, SaleActionForm, SaleHistoryAdjustForm, DeleteConfirmationForm, FeeForm, ResetPasswordRequestForm, ResetPasswordForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, createSaleHistoryList, usd, populateFeeFields, createSaleActionForm
-from app.models import User, Sales, Items
-from app.createCSV import createCSV
+from app.forms import FeeForm
+from app.helpers import usd
+from app.models import Sales, Items
 
 # Dashboard of user sales
 @app.route('/')
@@ -43,10 +36,6 @@ def index():
     return render_template("index.html", totalSalesMessage=totalSalesMessage, itemQuantityRemaining=itemAndQuantityList)
 
 
-
-
-
-
 @app.route("/fees", methods=["GET", "POST"])
 @login_required
 def fees():
@@ -68,5 +57,3 @@ def fees():
     form.payPalFixed.data = Decimal(current_user.payPalFixed)
 
     return render_template("fees.html", form=form)
-
-

@@ -17,7 +17,7 @@
 
         {% if not zeroSales %}
 
-        <form action="/sales" method="post" class="bg-light shadow p-4 my-3" novalidate>
+        <form action="/sales/sales" method="post" class="bg-light shadow p-4 my-3" novalidate>
             {{ form.hidden_tag() }}
             <div class="row">
                 <div class="col-sm-auto">
@@ -28,7 +28,7 @@
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
-                    <a href="{{ url_for('downloadCSV') }}"><small>Download CSV of All Sales</small></a>
+                    <a href="{{ url_for('sales.downloadCSV') }}"><small>Download CSV of All Sales</small></a>
                 </div>
                 <div class="col-sm-auto">
                     <div class="form-group">
