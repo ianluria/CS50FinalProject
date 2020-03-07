@@ -107,7 +107,7 @@ def adjustItem():
 
             # deleteConfirmationForm = DeleteConfirmationForm(hidden=form.items.data)
 
-            return render_template("deleteConfirmation.html", form=DeleteConfirmationForm(hidden=form.items.data))
+            return render_template("items/deleteConfirmation.html", form=DeleteConfirmationForm(hidden=form.items.data))
             # Forward user to a warning page
 
             # # Delete all sales history for item

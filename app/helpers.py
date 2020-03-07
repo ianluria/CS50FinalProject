@@ -73,7 +73,7 @@ def calculateProfit(model, refund=False):
 def createSaleHistoryList(page, listOfItemNames, userAction=False):
 
     historyQuery = Sales.query.filter(
-        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).order_by(Sales.date.desc()).paginate(page, 2, False)
+        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).order_by(Sales.date.desc()).paginate(page, 30, False)
 
     historyList = historyQuery.items
 

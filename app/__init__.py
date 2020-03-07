@@ -9,43 +9,51 @@ from logging.handlers import SMTPHandler
 from flask_mail import Mail
 
 
-app = Flask(__name__)
-app.config.from_object(Config)
+db = SQLAlchemy()
+migrate = Migrate()
+login = LoginManager()
+login.login_view = 'auth.login'
+login.login_message = _l('Please log in to access this page.')
+mail = Mail()
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+def create_app(config_class=Config):
 
-login = LoginManager(app)
-login.login_view = "auth.login"
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-from app.errors import bp as errors_bp
-app.register_blueprint(errors_bp)
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login.init_app(app)
+    mail.init_app(app)
 
-from app.auth import bp as auth_bp
-app.register_blueprint(auth_bp, url_prefix="/auth")
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
 
-from app.sales import bp as sales_bp
-app.register_blueprint(sales_bp, url_prefix="/sales")
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
 
-from app.items import bp as items_bp
-app.register_blueprint(items_bp, url_prefix="/items")
+    from app.sales import bp as sales_bp
+    app.register_blueprint(sales_bp, url_prefix="/sales")
 
-mail = Mail(app)
+    from app.items import bp as items_bp
+    app.register_blueprint(items_bp, url_prefix="/items")
 
-if not app.debug:
-    if app.config['MAIL_SERVER']:
-        auth = None
-    if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-        auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-        secure = None
-    if app.config['MAIL_USE_TLS']:
-        secure = ()
-        mail_handler = SMTPHandler(
-            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-            fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'], subject='Microblog Failure',
-            credentials=auth, secure=secure)
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler) 
+    if not app.debug and not app.testing:
+        if app.config['MAIL_SERVER']:
+            auth = None
+        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+            secure = None
+        if app.config['MAIL_USE_TLS']:
+            secure = ()
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr='no-reply@' + app.config['MAIL_SERVER'],
+                toaddrs=app.config['ADMINS'], subject='Microblog Failure',
+                credentials=auth, secure=secure)
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler) 
+
+    return app
 
 from app import routes, models
