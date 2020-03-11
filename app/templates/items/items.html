@@ -7,8 +7,8 @@
 {% if items %}
 <div class="row justify-content-around mb-3">
     <div class="col-auto">
-        <p class="my-4 text-center lead">{{ current_user.username }}'s items for sale:</p>
-        <ul class="list-group list-group-flush bg-light shadow p-3">
+        <p class="mt-2 mb-1 text-center lead">{{ current_user.username }}'s items for sale:</p>
+        <ul class="list-group list-group-flush bg-light shadow p-2">
             {% for item in items %}
             <li class="list-group-item bg-light">{{ item }}</li>
             {% endfor %}

@@ -51,7 +51,7 @@ def fees():
         db.session.add(current_user)
         db.session.commit()
         flash("Selling fees sucessfully updated.", "success")
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
     form.eBayPercent.data = Decimal(current_user.eBayPercent)
     form.payPalPercent.data = Decimal(current_user.payPalPercent)
