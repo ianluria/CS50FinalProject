@@ -28,7 +28,10 @@
                 <form action="/sales/adjustSaleHistory" method="post" class="bg-light shadow p-3" novalidate>
                     {{ adjustForm.hidden_tag() }}
                     <div class="form-group">
-                        <p>{{ adjustForm.sale.label}} to {{ userAction.capitalize() }} </p>
+                        <div class="d-flex justify-content-between">
+                            <span>{{ adjustForm.sale.label}} to {{ userAction.capitalize() }} </span>
+                            <span>{{ adjustForm.submit(class_="btn btn-outline-danger btn-sm") }}</span>
+                        </div>
                         <table class="table table-borderless table-hover">
                             {% for subfield in adjustForm.sale %}
                             <tr class="form-check">
@@ -48,7 +51,7 @@
                                 <a href="{{ prev_url }}">Newer Sales</a>
                             {% endif %}
                         </span>        
-                        <span>{{ adjustForm.submit(class_="btn btn-outline-danger btn-sm") }}</span>
+                        
                     </div>    
                 </form>
             {% else %}

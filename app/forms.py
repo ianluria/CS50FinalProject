@@ -6,6 +6,7 @@ from app import db
 from sqlalchemy import func
 from flask_login import current_user
 import datetime
+from decimal import Decimal
 
 
 class FeeForm(FlaskForm):
@@ -22,9 +23,11 @@ class FeeForm(FlaskForm):
 class SaleForm(FeeForm):
     items = SelectField("Item", validators=[InputRequired()])
     date = DateField("Date", validators=[InputRequired()], format='%m-%d-%Y')
-    price = DecimalField("Price", validators=[
+    price = DecimalField("Sale Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
-    priceWithTax = DecimalField("Price With Tax")
+    # priceWithTax is a purely optional field. It is a StringField but will be custom validated /
+    # to make sure it is a proper decimal value if the user enters data.
+    priceWithTax = StringField("Price With Tax")
     quantity = IntegerField("Quantity", validators=[
                             InputRequired(), NumberRange(min=0)])
     shipping = DecimalField("Postage", validators=[
@@ -38,7 +41,8 @@ class SaleForm(FeeForm):
 
         if field.data:
             if field.data < form.price.data:
-                raise ValidationError("Price with tax cannot be less than price.")
+                raise ValidationError(
+                    "Price with tax cannot be less than price.")
 
             if field.data < 0:
                 raise ValidationError("Price cannot be less than zero.")
@@ -62,6 +66,21 @@ class SaleForm(FeeForm):
         if field.data > totalNumberOfItemsSold:
             raise ValidationError(
                 f"{totalNumberOfItemsSold} of quantity remaining for {form.items.data}.")
+
+    def validate_priceWithTax(form, field):
+
+        if field.data:
+            try:
+                decimalData = Decimal(field.data)
+            except:
+                raise ValidationError("Must be a non-negative decimal number.")
+
+            if decimalData < 0:
+                raise ValidationError("Must be a non-negative decimal number.")
+
+            if decimalData < form.price.data:
+                raise ValidationError("Cannot be less than sale price.")
+        
 
 
 class SaleActionForm(FlaskForm):
@@ -90,7 +109,7 @@ class ItemForm(FlaskForm):
     submit = SubmitField('Add')
 
     def validate_itemName(form, field):
-        
+
         # Only check for duplicate item if user is adding a new item and not editing.
         if not form.hidden.data:
             itemName = field.data.strip()

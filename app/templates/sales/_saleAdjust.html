@@ -13,6 +13,7 @@
             <form action="/sales/adjustSaleHistory" method="post" novalidate>
                 {{ adjustForm.hidden_tag() }}
                     <table>
+                        <p>{{ adjustForm.submit() }}</p>
                         {% for subfield in adjustForm.sale %}
                         <tr>
                             <td>{{ subfield }}</td>
@@ -20,7 +21,7 @@
                         </tr>
                         {% endfor %}
                     </table>
-                    <p>{{ adjustForm.submit() }}</p>
+                    
             </form>
         {% else %}
             <p>No sales for the selected items are able to be {{userAction}}ed yet.</p>
