@@ -1,4 +1,5 @@
 env2/
 venv/
+.venv/
 
 *.env
