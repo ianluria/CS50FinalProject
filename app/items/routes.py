@@ -21,9 +21,9 @@ def items():
 
     populateItemSelectField(form)
 
-    return render_template("items/_adjustItem.html", form=form)
+    return render_template("items/adjustItem.html", form=form)
 
-@bp.route("/itemDetails", methods["GET"])
+@bp.route("/itemDetails", methods=["GET"])
 @login_required
 def itemDetails():
 
@@ -48,7 +48,7 @@ def addItem():
         # Check if adding this item would bring total items being tracked to greater than 50
         if len(current_user.items.all()) > 50:
             flash("Error: cannot track more than 50 items.", "error")
-            return redirect(url_for("items.addItem"))
+            return redirect(url_for("items.items"))
 
         # The user has altered the item name.
         if form.hidden.data and not form.hidden.data == form.itemName.data:
@@ -102,7 +102,7 @@ def addItem():
 
         return redirect(url_for("items.items"))
 
-    return render_template("items/_addItem.html", form=form, items=populateItemSelectField(), action="Add New")
+    return render_template("items/addItem.html", form=form, action="Add New")
 
 # Route which processes a user's request to edit or delete an existing item.
 @bp.route("/adjustItem", methods=["POST"])
@@ -147,7 +147,7 @@ def adjustItem():
 
             itemForm.submit.label.text = form.action.data.capitalize()
 
-            return render_template("items/_addItem.html", form=itemForm, items=populateItemSelectField(), action="Edit")
+            return render_template("items/addItem.html", form=itemForm, action="Edit")
 
     return redirect(url_for("items.items"))
 
