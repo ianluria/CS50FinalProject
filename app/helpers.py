@@ -4,6 +4,7 @@ from app.models import Items, Sales, User
 from decimal import Decimal
 
 
+# Can also be used to return a preformatted list of strings with item details
 def populateItemSelectField(form=False):
 
     items = Items.query.filter_by(username=current_user.username).all()
@@ -15,10 +16,12 @@ def populateItemSelectField(form=False):
 
         form.items.choices = names
 
-    items = [
-        f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+    return
 
-    return items
+    # items = [
+    #     f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+
+    # return items
 
 
 def populateItemsObject(obj, form, edit=False):

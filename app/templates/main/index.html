@@ -17,13 +17,14 @@
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales.newSale') }}">Add a new sale.</a></li>
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('sales.sales') }}">Edit or view a history of
           sales.</a></li>
-      <li class="list-group-item"><a class="text-dark" href="{{ url_for('items.addItem') }}">Add a new item for sale.</a></li>
+      <li class="list-group-item"><a class="text-dark" href="{{ url_for('items.addItem') }}">Add a new item for
+          sale.</a></li>
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('main.fees') }}">Adjust selling fees.</a></li>
     </ul>
 
-    <div class="mt-4">
+    <div class="mt-4 overflow-auto" id="unitsRemainingList">
       {% for item in itemQuantityRemaining %}
-      <p class="text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
+      <p class=" text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
       {% endfor %}
     </div>
   </div>

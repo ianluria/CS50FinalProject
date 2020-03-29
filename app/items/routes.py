@@ -19,9 +19,21 @@ def items():
     # Form that allows user to select an existing item to edit or delete
     form = ItemSelectForm()
 
-    items = populateItemSelectField(form)
+    populateItemSelectField(form)
 
-    return render_template("items/_adjustItem.html", items=items, form=form)
+    return render_template("items/_adjustItem.html", form=form)
+
+@bp.route("/itemDetails", methods["GET"])
+@login_required
+def itemDetails():
+
+    items = Items.query.filter_by(username=current_user.username).all()
+
+    # items = [
+    #     f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
+
+
+    return render_template("items/itemDetails.html", items=items)   
 
 
 # Create a new item or edit an existing item's details
