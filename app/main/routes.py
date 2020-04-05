@@ -29,12 +29,12 @@ def index():
 
     items = Items.query.filter_by(user=current_user).all()
 
-    itemAndQuantityList = [(item.itemName, item.quantity -
-                            sum([sale.quantity for sale in item.sales])) for item in items]
+    # itemAndQuantityList = [(item.itemName, item.quantity -
+    #                         sum([sale.quantity for sale in item.sales])) for item in items]
 
     totalSalesMessage = f"{current_user.username} is tracking {totalNumberOfSales} {'sale' if totalNumberOfSales == 1 else 'sales'} with total {'profit' if totalProfit >= 0 else 'loss'} of {usd(totalProfit or 0)}."
 
-    return render_template("main/index.html", totalSalesMessage=totalSalesMessage, itemQuantityRemaining=itemAndQuantityList)
+    return render_template("main/index.html", totalSalesMessage=totalSalesMessage)
 
 
 @bp.route("/fees", methods=["GET", "POST"])

@@ -8,7 +8,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.items import bp
 from app.forms import ItemForm, ItemSelectForm, DeleteConfirmationForm
-from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject
+from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, usd
 from app.models import User, Sales, Items
 
 
@@ -23,17 +23,20 @@ def items():
 
     return render_template("items/adjustItem.html", form=form)
 
+
 @bp.route("/itemDetails", methods=["GET"])
 @login_required
 def itemDetails():
 
     items = Items.query.filter_by(username=current_user.username).all()
 
+    items = [{"itemName": item.itemName, "quantityRemaining": item.quantity -
+              sum([sale.quantity for sale in item.sales]), "quantity":item.quantity, "date":item.date.strftime('%m/%d/%Y'), "price":usd(item.price)} for item in items]
+
     # items = [
     #     f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
 
-
-    return render_template("items/itemDetails.html", items=items)   
+    return render_template("items/itemDetails.html", items=items)
 
 
 # Create a new item or edit an existing item's details
