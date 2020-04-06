@@ -12,7 +12,10 @@
         <form action="/items/deleteItem" method="post" novalidate>
             {{ form.hidden_tag() }}
 
-            <p class="text-right mt-sm-4">{{ form.confirm(class_="btn btn-danger") }}</p>
+            <div class="text-right mt-sm-4">
+                <a class="mr-3 text-secondary" href="{{ url_for('items.items') }}">Cancel</a>
+                {{ form.confirm(class_="btn btn-danger") }}
+            </div>
 
         </form>
     </div>

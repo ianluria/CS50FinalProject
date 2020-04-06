@@ -18,8 +18,6 @@ from app.models import Sales, Items
 @login_required
 def index():
 
-    t = current_user
-
     totalNumberOfSales = Sales.query.filter_by(
         username=current_user.username).count()
     totalProfit = db.session.query(func.sum(Sales.profit)).filter_by(

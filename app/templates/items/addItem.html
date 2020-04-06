@@ -5,7 +5,10 @@
     <div class="col-auto">
 
         <div class="text-center h4">{{ action }} Item</div>
-        <p class="text-center">Maximum of 50 items able to be added.</p>
+
+        {% if not action == 'Edit' %}
+            <p class="text-center">Maximum of 50 items able to be added.</p>
+        {% endif %}
 
         <form action="/items/addItem" method="post" class="bg-light shadow p-3 my-4" novalidate>
             {{ form.hidden_tag() }}
@@ -33,6 +36,7 @@
             </div>
 
             <div class="text-right">
+                <a class="mr-3 text-secondary" href="{{ url_for('items.items') }}">Cancel</a>
                 {{ form.submit(class_="btn btn-outline-primary btn-sm") }}
             </div>
         </form>

@@ -16,12 +16,7 @@ def populateItemSelectField(form=False):
 
         form.items.choices = names
 
-    return
-
-    # items = [
-    #     f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
-
-    # return items
+    return items
 
 
 def populateItemsObject(obj, form, edit=False):
