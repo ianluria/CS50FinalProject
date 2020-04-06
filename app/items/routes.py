@@ -1,7 +1,7 @@
 
 # Third party imports
 from decimal import Decimal
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
 
 # Local application imports
@@ -46,9 +46,9 @@ def addItem():
 
     if form.validate_on_submit():
 
-        # Check if adding this item would bring total items being tracked to greater than 50
-        if len(current_user.items.all()) > 50:
-            flash("Error: cannot track more than 50 items.", "error")
+        # Check if adding this item would bring total items being tracked to greater than 30
+        if len(current_user.items.all()) > 30:
+            flash("Error: cannot track more than 30 items.", "error")
             return redirect(url_for("items.items"))
 
         # The user has altered the item name.
@@ -118,23 +118,8 @@ def adjustItem():
 
         if form.action.data == "delete":
 
-            # deleteConfirmationForm = DeleteConfirmationForm(hidden=form.items.data)
-
             return render_template("items/deleteConfirmation.html", form=DeleteConfirmationForm(hidden=form.items.data))
-            # Forward user to a warning page
-
-            # # Delete all sales history for item
-            # salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
-            #     item=item).all()
-
-            # for sale in salesToDelete:
-            #     db.session.delete(sale)
-
-            # db.session.delete(item)
-            # db.session.commit()
-
-            # flash(f"Item {item.itemName} deleted.")
-
+            
         elif form.action.data == "edit":
 
             item = Items.query.filter_by(user=current_user).filter_by(
@@ -152,7 +137,7 @@ def adjustItem():
 
     return redirect(url_for("items.items"))
 
-
+# Removes an item only after the user confirms that a deletion is desired
 @bp.route("/deleteItem", methods=["POST"])
 @login_required
 def deleteItem():
