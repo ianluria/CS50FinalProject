@@ -19,9 +19,9 @@ def items():
     # Form that allows user to select an existing item to edit or delete
     form = ItemSelectForm()
 
-    populateItemSelectField(form)
+    listOfItems = populateItemSelectField(form)
 
-    return render_template("items/adjustItem.html", form=form)
+    return render_template("items/adjustItem.html", form=form, items=True if listOfItems else False)
 
 
 @bp.route("/itemDetails", methods=["GET"])
@@ -30,11 +30,9 @@ def itemDetails():
 
     items = Items.query.filter_by(username=current_user.username).all()
 
+    # Create a list of dictionaries with specific information about each item
     items = [{"itemName": item.itemName, "quantityRemaining": item.quantity -
               sum([sale.quantity for sale in item.sales]), "quantity":item.quantity, "date":item.date.strftime('%m/%d/%Y'), "price":usd(item.price)} for item in items]
-
-    # items = [
-    #     f"{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items]
 
     return render_template("items/itemDetails.html", items=items)
 

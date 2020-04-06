@@ -7,7 +7,9 @@
 
         <a class="text-center h5" href="{{ url_for('items.addItem') }}"><i class="fas fa-plus"></i>&nbsp&nbspAdd a new item.</a>
 
-        <a class="text-center text-success mt-3" href="{{ url_for('items.itemDetails') }}">View all item details and remaining quantities.</a>
+        {% if items %}
+            <a class="text-center text-success mt-3" href="{{ url_for('items.itemDetails') }}">View all item details and remaining quantities.</a>
+        {% endif %}
 
         <p class="my-3 text-center">Choose to edit or delete an item.</p>
 
