@@ -16,7 +16,72 @@ from app.models import User, Sales, Items
 from app.sales.createCSV import createCSV
 
 
-# Enter a new sale or edit and existing
+# Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
+@bp.route("/sales", methods=["GET", "POST"])
+@login_required
+def sales():
+
+    form = createSaleActionForm()
+
+    if form.validate_on_submit():
+
+        # Store which items the user wants to view sales from, and the action.
+        current_user.saleDisplayInfo = f"{{'userAction':'{form.action.data}', 'itemsList':{form.items.data}}}"
+
+        db.session.add(current_user)
+        db.session.commit()
+
+        return redirect(url_for("sales.displaySales", page=1))
+
+    zeroSales = True if not Sales.query.filter_by(
+        username=current_user.username).first() else False
+
+    zeroItems = True if not current_user.items.first() else False
+
+    return render_template("sales/sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
+
+# Display sales to view or adjust and divided by pagination
+@bp.route("/displaySales", methods=["GET"])
+@login_required
+def displaySales():
+
+    page = int(request.args.get("page"))
+
+    # Convert data with userAction and list of items to view sales into a dict
+    try:
+        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+    except:
+        flash("Error: User must have a saleDisplayInfo dict stored.", "error")
+        return redirect(url_for("sales.sales"))
+
+    if page and requestItemsList:
+
+        # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, string)}
+        saleHistory = createSaleHistoryList(
+            page, requestItemsList["itemsList"], requestItemsList["userAction"])
+
+        if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
+            adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
+
+            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
+            adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
+
+            history = None
+        else:
+            adjustSaleHistoryForm = None
+            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
+
+        next_url = url_for(
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
+        prev_url = url_for(
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
+
+        return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+
+    return redirect(url_for("sales.sales"))
+
+
+# Enter a new sale or edit an existing one
 @bp.route("/newSale", methods=["GET", "POST"])
 @login_required
 def newSale():
@@ -58,7 +123,8 @@ def newSale():
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
-        usersSale.priceWithTax = str(Decimal(form.priceWithTax.data).quantize(Decimal("1.00"))) if form.priceWithTax.data else ""
+        usersSale.priceWithTax = str(Decimal(form.priceWithTax.data).quantize(
+            Decimal("1.00"))) if form.priceWithTax.data else ""
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
@@ -82,73 +148,7 @@ def newSale():
         populateFeeFields(form)
         return render_template("sales/saleInput.html", form=form, action="add")
 
-# Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
-@bp.route("/sales", methods=["GET", "POST"])
-@login_required
-def sales():
-
-    form = createSaleActionForm()
-
-    if form.validate_on_submit():
-
-        # Store which items the user wants to view sales from, and the action.
-        current_user.saleDisplayInfo = f"{{'userAction':'{form.action.data}', 'itemsList':{form.items.data}}}"
-
-        db.session.add(current_user)
-        db.session.commit()
-
-        return redirect(url_for("sales.displaySales", page=1))
-
-    zeroSales = True if not Sales.query.filter_by(
-        username=current_user.username).first() else False
-
-    zeroItems = True if not Items.query.filter_by(
-        user=current_user).first() else False
-
-    return render_template("sales/sales.html", form=form, zeroSales=zeroSales, zeroItems=zeroItems)
-
-
-@bp.route("/displaySales", methods=["GET"])
-@login_required
-def displaySales():
-
-    page = int(request.args.get("page"))
-
-    # Convert data with userAction and list of items to view sales into a dict
-    try:
-        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
-    except:
-        flash("Error: User must have a saleDisplayInfo dict stored.", "error")
-        return redirect(url_for("sales.sales"))
-
-    if page and requestItemsList:
-
-        # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, string)}
-        saleHistory = createSaleHistoryList(
-            page, requestItemsList["itemsList"], requestItemsList["userAction"])
-
-        if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
-            adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
-
-            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
-            adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
-
-            history = None
-
-        else:
-            adjustSaleHistoryForm = None
-            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
-
-        next_url = url_for(
-            'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
-        prev_url = url_for(
-            'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
-
-        return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
-
-    return redirect(url_for("sales.sales"))
-
-
+# User has selected a specific sale to refund, delete, or edit
 @bp.route("/adjustSaleHistory", methods=["POST"])
 @login_required
 def adjustSaleHistory():
@@ -162,6 +162,7 @@ def adjustSaleHistory():
         return redirect(url_for("sales.sales"))
 
     if requestItemsList:
+        # Populate sale choices to pass validation
         form.sale.choices = createSaleHistoryList(int(
             form.hidden.data), requestItemsList["itemsList"], requestItemsList["userAction"])["saleHistoryList"]
 
@@ -210,6 +211,7 @@ def adjustSaleHistory():
                     f"Refund issued for {saleToAdjust.itemName} sold on {saleToAdjust.date.strftime('%m/%d/%Y')}. Loss is {saleToAdjust.profit}.", "success")
 
     return redirect(url_for("sales.sales"))
+
 
 @bp.route("/downloadCSV", methods=["GET"])
 @login_required
