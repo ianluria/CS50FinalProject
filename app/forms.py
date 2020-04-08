@@ -111,7 +111,6 @@ class SaleHistoryAdjustForm(FlaskForm):
 class ItemForm(FlaskForm):
     itemName = StringField("Item Name", validators=[
                            InputRequired(), Length(max=255)])
-    # date = DateField("Date", validators=[InputRequired()], format='%d-%m-%Y')
     price = DecimalField("Total Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
     quantity = IntegerField("Total Quantity", validators=[
@@ -121,13 +120,20 @@ class ItemForm(FlaskForm):
 
     def validate_itemName(form, field):
 
-        itemName = field.data.strip()
-        item = Items.query.filter_by(user=current_user).filter_by(
-            itemName=itemName).first()
-        if item:
-                # If editing, ignore error for repeating item name being edited.
-            if not form.hidden.data or not form.hidden.data == itemName:
-                raise ValidationError(f"{itemName} is already being tracked.")
+        thisItem = field.data.strip()
+
+        items = Items.query.filter_by(user=current_user).all()
+
+        items = [item.itemName.lower() for item in items]
+
+        if thisItem.lower() in items:
+
+            # If editing, ignore error for repeating item name being edited.
+            if form.hidden.data.lower() == thisItem.lower():
+                return
+
+            else:
+                raise ValidationError(f"{thisItem} is already being tracked.")
 
 
 class ItemSelectForm(FlaskForm):
