@@ -4,7 +4,7 @@ import ast
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField, RadioField
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, Length, NumberRange
-from app.models import User, Items
+from app.models import User, Items, Sales
 from app import db
 from sqlalchemy import func
 from flask_login import current_user

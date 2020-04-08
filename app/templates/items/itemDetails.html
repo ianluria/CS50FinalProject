@@ -23,9 +23,9 @@
                 {% for item in items %}
 
                     {% if item.quantityRemaining <= 5 %}
-                        <tr class="bg-warning">
+                        <tr class="alert-warning">
                     {% elif item.quantityRemaining == 0 %}
-                        <tr class="bg-danger">
+                        <tr class="alert-danger">
                     {% else %}
                         <tr>
                     {% endif %}        
