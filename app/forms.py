@@ -66,7 +66,7 @@ class SaleForm(FeeForm):
         unitsRemaining = item.quantity - \
             sum([sale.quantity for sale in item.sales])
 
-        # For validation, return units sold from sale to unitsRemaining if the sale is being edited 
+        # For validation, return units sold from sale to unitsRemaining if the sale is being edited
         if form.hidden.data:
             hiddenData = ast.literal_eval(form.hidden.data)
 
@@ -121,12 +121,12 @@ class ItemForm(FlaskForm):
 
     def validate_itemName(form, field):
 
-        # Only check for duplicate item if user is adding a new item and not editing.
-        if not form.hidden.data:
-            itemName = field.data.strip()
-            item = Items.query.filter_by(user=current_user).filter_by(
-                itemName=itemName).first()
-            if item:
+        itemName = field.data.strip()
+        item = Items.query.filter_by(user=current_user).filter_by(
+            itemName=itemName).first()
+        if item:
+                # If editing, ignore error for repeating item name being edited.
+            if not form.hidden.data or not form.hidden.data == itemName:
                 raise ValidationError(f"{itemName} is already being tracked.")
 
 
