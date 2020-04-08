@@ -1,3 +1,6 @@
+# Standard library imports
+import ast
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField, RadioField
 from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, Length, NumberRange
@@ -60,12 +63,21 @@ class SaleForm(FeeForm):
         item = Items.query.filter_by(user=current_user).filter_by(
             itemName=form.items.data).first_or_404()
 
-        totalNumberOfItemsSold = item.quantity - \
+        unitsRemaining = item.quantity - \
             sum([sale.quantity for sale in item.sales])
 
-        if field.data > totalNumberOfItemsSold:
+        # For validation, return units sold from sale to unitsRemaining if the sale is being edited 
+        if form.hidden.data:
+            hiddenData = ast.literal_eval(form.hidden.data)
+
+            originalSale = Sales.query.filter_by(username=current_user.username).filter_by(
+                id=hiddenData["id"]).first_or_404()
+
+            unitsRemaining += originalSale.quantity
+
+        if field.data > unitsRemaining:
             raise ValidationError(
-                f"{totalNumberOfItemsSold} of quantity remaining for {form.items.data}.")
+                f"{unitsRemaining} of quantity remaining for {form.items.data}.")
 
     def validate_priceWithTax(form, field):
 
@@ -80,7 +92,6 @@ class SaleForm(FeeForm):
 
             if decimalData < form.price.data:
                 raise ValidationError("Cannot be less than sale price.")
-        
 
 
 class SaleActionForm(FlaskForm):
