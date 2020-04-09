@@ -113,7 +113,7 @@ class SaleHistoryAdjustForm(FlaskForm):
 
 class ItemForm(FlaskForm):
     itemName = StringField("Item Name", validators=[
-                           InputRequired(), Length(max=255)])
+                           InputRequired(), Length(max=40)])
     price = DecimalField("Total Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
     quantity = IntegerField("Total Quantity", validators=[

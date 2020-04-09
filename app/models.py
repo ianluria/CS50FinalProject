@@ -12,7 +12,7 @@ import jwt
 class Sales(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, nullable=False)
-    itemName = db.Column(db.String(255),  db.ForeignKey(
+    itemName = db.Column(db.String(50),  db.ForeignKey(
         "items.itemName"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
     price = db.Column(db.String(64), nullable=False)
@@ -30,7 +30,7 @@ class Sales(db.Model):
 
 
 class Items(db.Model):
-    itemName = db.Column(db.String(255), index=True, primary_key=True)
+    itemName = db.Column(db.String(50), index=True, primary_key=True)
     username = db.Column(db.String(64), db.ForeignKey(
         "user.username"), index=True, nullable=False)
     date = db.Column(db.Date, index=True, default=date.today, nullable=False)
