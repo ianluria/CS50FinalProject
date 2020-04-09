@@ -3,6 +3,7 @@
 from decimal import Decimal
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import func
 
 # Local application imports
 from app import db
@@ -103,7 +104,8 @@ def addItem():
 
         return redirect(url_for("items.items"))
 
-    return render_template("items/addItem.html", form=form, action="Add New")
+    return render_template("items/addItem.html", form=form, action="Add New", itemsRemaining=db.session.query(func.count(Items.itemName)).filter_by(
+        username=current_user.username).scalar())
 
 # Route which processes a user's request to edit or delete an existing item.
 @bp.route("/adjustItem", methods=["POST"])

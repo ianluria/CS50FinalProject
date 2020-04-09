@@ -6,8 +6,8 @@
 
         <div class="text-center h4">{{ action }} Item</div>
 
-        {% if not action == 'Edit' %}
-            <p class="text-center">Maximum of 50 items able to be added.</p>
+        {% if action == 'Add New' %}
+            <p class="text-center">Maximum of 30 items able to be added; {{ 30-itemsRemaining }} items remaining.</p>
         {% endif %}
 
         <form action="/items/addItem" method="post" class="bg-light shadow p-3 my-4" novalidate>
