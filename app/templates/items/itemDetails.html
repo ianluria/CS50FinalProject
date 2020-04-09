@@ -22,7 +22,7 @@
             <tbody>
                 {% for item in items %}
 
-                    {% if item.quantityRemaining <= 5 %}
+                    {% if item.quantityRemaining <= 5 and item.quantityRemaining > 0 %}
                         <tr class="alert-warning">
                     {% elif item.quantityRemaining == 0 %}
                         <tr class="alert-danger">

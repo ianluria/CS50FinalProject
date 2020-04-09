@@ -32,7 +32,7 @@ class SaleForm(FeeForm):
     # to make sure it is a proper decimal value if the user enters data.
     priceWithTax = StringField("Price With Tax")
     quantity = IntegerField("Quantity", validators=[
-                            InputRequired(), NumberRange(min=0)])
+                            InputRequired(), NumberRange(min=1)])
     shipping = DecimalField("Postage", validators=[
                             InputRequired(), NumberRange(min=0)], places=2)
     packaging = DecimalField("Packaging", validators=[
@@ -59,6 +59,9 @@ class SaleForm(FeeForm):
             raise ValidationError("Date cannot be in the future.")
 
     def validate_quantity(form, field):
+
+        if not isinstance(field.data, int):
+            raise ValidationError("Must be integer greater than zero.")
 
         item = Items.query.filter_by(user=current_user).filter_by(
             itemName=form.items.data).first_or_404()
