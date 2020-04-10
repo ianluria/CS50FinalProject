@@ -104,7 +104,7 @@ def addItem():
 
         return redirect(url_for("items.items"))
 
-    return render_template("items/addItem.html", form=form, action="Add New", itemsRemaining=db.session.query(func.count(Items.itemName)).filter_by(
+    return render_template("items/addItem.html", form=form, action="Edit" if form.data['hidden'] else "Add New", itemsRemaining=db.session.query(func.count(Items.itemName)).filter_by(
         username=current_user.username).scalar())
 
 # Route which processes a user's request to edit or delete an existing item.
