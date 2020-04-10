@@ -61,7 +61,7 @@ class SaleForm(FeeForm):
     def validate_quantity(form, field):
 
         if not isinstance(field.data, int):
-            raise ValidationError("Must be integer greater than zero.")
+            raise ValidationError()
 
         item = Items.query.filter_by(user=current_user).filter_by(
             itemName=form.items.data).first_or_404()
@@ -121,6 +121,23 @@ class ItemForm(FlaskForm):
     hidden = HiddenField()
     submit = SubmitField('Add')
 
+    def validate_quantity(form, field):
+
+        if not isinstance(field.data, int):
+            raise ValidationError()
+
+        # Only validate quantity if item is being edited
+        if form.hidden.data:
+            itemBeingEdited = Items.query.filter_by(user=current_user).filter_by(itemName=form.hidden.data).first_or_404()
+            
+            quantitySold = sum([sale.quantity for sale in itemBeingEdited.sales])
+
+            # Can't adjust quantity below amount that has already been sold
+            if field.data < quantitySold:
+                raise ValidationError(f"Can't have less than {quantitySold}.")
+
+
+    # Check if itemName will be a duplicate
     def validate_itemName(form, field):
 
         thisItem = field.data.strip()
