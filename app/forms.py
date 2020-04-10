@@ -128,14 +128,15 @@ class ItemForm(FlaskForm):
 
         # Only validate quantity if item is being edited
         if form.hidden.data:
-            itemBeingEdited = Items.query.filter_by(user=current_user).filter_by(itemName=form.hidden.data).first_or_404()
-            
-            quantitySold = sum([sale.quantity for sale in itemBeingEdited.sales])
+            itemBeingEdited = Items.query.filter_by(user=current_user).filter_by(
+                itemName=form.hidden.data).first_or_404()
+
+            quantitySold = sum(
+                [sale.quantity for sale in itemBeingEdited.sales])
 
             # Can't adjust quantity below amount that has already been sold
             if field.data < quantitySold:
                 raise ValidationError(f"Can't have less than {quantitySold}.")
-
 
     # Check if itemName will be a duplicate
     def validate_itemName(form, field):

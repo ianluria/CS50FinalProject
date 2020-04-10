@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ef6f3326979a
+Revision ID: c0ebfe020dcf
 Revises: 
-Create Date: 2020-02-23 20:26:39.265334
+Create Date: 2020-04-09 22:31:22.756068
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ef6f3326979a'
+revision = 'c0ebfe020dcf'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,7 +32,7 @@ def upgrade():
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
     op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
     op.create_table('items',
-    sa.Column('itemName', sa.String(length=255), nullable=False),
+    sa.Column('itemName', sa.String(length=50), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
     sa.Column('date', sa.Date(), nullable=False),
     sa.Column('price', sa.String(length=64), nullable=False),
@@ -46,7 +46,7 @@ def upgrade():
     op.create_table('sales',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
-    sa.Column('itemName', sa.String(length=255), nullable=False),
+    sa.Column('itemName', sa.String(length=50), nullable=False),
     sa.Column('date', sa.Date(), nullable=False),
     sa.Column('price', sa.String(length=64), nullable=False),
     sa.Column('priceWithTax', sa.String(length=64), nullable=False),
