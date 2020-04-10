@@ -60,23 +60,23 @@ def displaySales():
         saleHistory = createSaleHistoryList(
             page, requestItemsList["itemsList"], requestItemsList["userAction"])
 
+        next_url = url_for(
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
+        prev_url = url_for(
+            'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
+
         if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
             adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
 
             adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
             adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
 
-            history = None
+            return render_template("sales/_saleEdit.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+
         else:
-            adjustSaleHistoryForm = None
             history = [sale[1] for sale in saleHistory["saleHistoryList"]]
 
-        next_url = url_for(
-            'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
-        prev_url = url_for(
-            'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
-
-        return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+            return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
 
     return redirect(url_for("sales.sales"))
 

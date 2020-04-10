@@ -79,8 +79,10 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
     if userAction in ["edit", "refund"]:
         historyList = [sale for sale in historyList if not sale.refund]
 
-    historyList = [
-        (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
+    # historyList = [
+    #     (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
+
+    historyList = [(sale.id, sale) for sale in historyList]
 
     return {"saleHistoryQuery": historyQuery, "saleHistoryList": historyList}
 
