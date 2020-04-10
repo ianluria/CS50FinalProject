@@ -9,46 +9,48 @@
 
         {% if items %}
             <a class="text-center text-success mt-3" href="{{ url_for('items.itemDetails') }}">View all item details and remaining quantities.</a>
+
+            <p class="my-3 text-center">Choose to edit or delete an item.</p>
+
+            <form action="/items/adjustItem" method="post" class="bg-light shadow p-3" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-sm-auto">
+                        <div class="form-group">
+                            {% for subfield in form.action %}
+                            <div class="form-check">
+                                {{ subfield }}
+                                {{ subfield.label.__call__(class_="form-check-label") }}
+                            </div>
+                            {% endfor %}
+                            {% for error in form.action.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ form.submit(class_="btn btn-outline-primary btn-sm") }}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-auto">
+                        <div class="form-group">
+                            {% for subfield in form.items %}
+                            <div class="form-check">
+                                {{ subfield }}
+                                {{ subfield.label.__call__(class_="form-check-label") }}
+                            </div>
+                            {% endfor %}
+                            {% for error in form.items.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                </div>
+            </form>
+            
         {% endif %}
 
-        <p class="my-3 text-center">Choose to edit or delete an item.</p>
-
-        <form action="/items/adjustItem" method="post" class="bg-light shadow p-3" novalidate>
-            {{ form.hidden_tag() }}
-            <div class="row">
-                <div class="col-sm-auto">
-                    <div class="form-group">
-                        {% for subfield in form.action %}
-                        <div class="form-check">
-                            {{ subfield }}
-                            {{ subfield.label.__call__(class_="form-check-label") }}
-                        </div>
-                        {% endfor %}
-                        {% for error in form.action.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </div>
-                    <div>
-                        {{ form.submit(class_="btn btn-outline-primary btn-sm") }}
-                    </div>
-                </div>
-
-                <div class="col-sm-auto">
-                    <div class="form-group">
-                        {% for subfield in form.items %}
-                        <div class="form-check">
-                            {{ subfield }}
-                            {{ subfield.label.__call__(class_="form-check-label") }}
-                        </div>
-                        {% endfor %}
-                        {% for error in form.items.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </div>
-                    
-                </div>
-            </div>
-        </form>
     </div>
 </div>
 
