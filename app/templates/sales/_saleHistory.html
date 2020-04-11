@@ -23,14 +23,14 @@
                     {% for sale in history %}
                     <tr>
                       <th scope="row">{{sale.itemName}}</th>
-                      <td>{{sale.quantity}}</td>
-                      <td>{{sale.priceWithTax}}</td>
-                      <td>{{sale.price}}</td>
-                      <td>{{sale.shipping}}</td>
-                      <td>{{sale.packaging}}</td>
-                      <td>{{sale.date}}</td>
-                      <td>{{sale.profit}}</td>
-                      <td>{{'X' if sale.refund else ""}}</td>
+                      <td>{{sale["quantity"]}}</td>
+                      <td>{{sale["priceWithTax"]}}</td>
+                      <td>{{sale["price"]}</td>
+                      <td>{{sale["shipping"]}</td>
+                      <td>{{sale["packaging"]}</td>
+                      <td>{{sale["date"]}</td>
+                      <td>{{sale["profit"]}</td>
+                      <td>{{'X' if sale["refund"] else ""}}</td>
                     </tr>
                     {% endfor %}
                     </tbody>

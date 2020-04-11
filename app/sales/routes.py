@@ -11,7 +11,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.sales import bp
 from app.forms import SaleForm, SaleHistoryAdjustForm
-from app.helpers import populateItemSelectField, calculateProfit, createSaleHistoryList, populateFeeFields, createSaleActionForm
+from app.helpers import populateItemSelectField, calculateProfit, createSaleHistoryList, populateFeeFields, createSaleActionForm, usd
 from app.models import User, Sales, Items
 from app.sales.createCSV import createCSV
 
@@ -56,7 +56,7 @@ def displaySales():
 
     if page and requestItemsList:
 
-        # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, string)}
+        # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, Sales object)}
         saleHistory = createSaleHistoryList(
             page, requestItemsList["itemsList"], requestItemsList["userAction"])
 
@@ -68,17 +68,30 @@ def displaySales():
         if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
             adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
 
-            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
+            adjustSaleHistoryForm.sale.choices = prepareSaleHistory(
+                saleHistory["saleHistoryList"])
             adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
 
             return render_template("sales/_saleEdit.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
-
         else:
-            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
+            history = [sale[1] for sale in prepareSaleHistory(
+                saleHistory["saleHistoryList"])]
 
             return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
 
     return redirect(url_for("sales.sales"))
+
+# Takes saleHistoryList and returns a list of dictionaries with formatted sale information for display
+
+
+def prepareSaleHistory(saleHistoryList):
+
+    # saleHistory is a list of tuples with the 0 index being the sale ID and 1 index being the Sales object
+    for sale in saleHistoryList:
+
+        sale[1] = {"itemName": sale[1].itemName, "date": sale[1].date.strftime('%m/%d/%Y'), "price": usd(sale[1].price), "priceWithTax": usd(sale[1].priceWithTax), "quantity": sale[1].quantity, "shipping": usd(sale[1].shipping), "profit": usd(sale[1].profit), "packaging": usd(sale[1].packaging), "refund": sale[1].refund}
+
+    return saleHistoryList
 
 
 # Enter a new sale or edit an existing one
