@@ -3,37 +3,38 @@
 {% block history %}
 
 {% if history %}
-    <div class="row justify-content-around">
-        <div class="col-auto bg-light shadow p-3">
+<div class="row justify-content-around">
+    <div class="col-auto bg-light shadow p-3">
+        <div class="table-responsive-sm">
             <table class="table table-borderless table-hover">
                 <thead>
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Price w/ Tax</th>
-                      <th scope="col">Price</th>
-                      <th scope="col">Shipping</th>
-                      <th scope="col">Packaging</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">Profit</th>
-                      <th scope="col">Refunded</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price w/ Tax</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Shipping</th>
+                        <th scope="col">Packaging</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Profit</th>
+                        <th scope="col">Refund</th>
                     </tr>
-                  </thead>
-                  <tbody>
+                </thead>
+                <tbody>
                     {% for sale in history %}
                     <tr>
-                      <th scope="row">{{sale.itemName}}</th>
-                      <td>{{sale["quantity"]}}</td>
-                      <td>{{sale["priceWithTax"]}}</td>
-                      <td>{{sale["price"]}}</td>
-                      <td>{{sale["shipping"]}}</td>
-                      <td>{{sale["packaging"]}}</td>
-                      <td>{{sale["date"]}}</td>
-                      <td>{{sale["profit"]}}</td>
-                      <td>{{'X' if sale["refund"] else ""}}</td>
+                        <th scope="row">{{sale.itemName}}</th>
+                        <td>{{sale["quantity"]}}</td>
+                        <td>{{sale["priceWithTax"]}}</td>
+                        <td>{{sale["price"]}}</td>
+                        <td>{{sale["shipping"]}}</td>
+                        <td>{{sale["packaging"]}}</td>
+                        <td>{{sale["date"]}}</td>
+                        <td>{{sale["profit"]}}</td>
+                        <td>{{'X' if sale["refund"] else ""}}</td>
                     </tr>
                     {% endfor %}
-                    </tbody>
+                </tbody>
             </table>
             {% if next_url %}
             <a class="mr-3" href="{{ next_url }}">Older Sales</a>
@@ -43,12 +44,13 @@
             {% endif %}
         </div>
     </div>
+</div>
 {% else %}
-    <div class="row justify-content-around">
-        <div class="col-auto">
-            <p class="alert alert-danger" role="alert">No sales have been made yet for the selected items.</p>
-        </div>
+<div class="row justify-content-around">
+    <div class="col-auto">
+        <p class="alert alert-danger" role="alert">No sales have been made yet for the selected items.</p>
     </div>
+</div>
 {% endif %}
 
 {% endblock %}
