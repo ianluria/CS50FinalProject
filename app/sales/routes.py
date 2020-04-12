@@ -94,9 +94,9 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
     if userAction in ["edit", "refund"]:
         historyList = [sale for sale in historyList if not sale.refund]
 
-    for sale in historyList:
+    for index, sale in enumerate(historyList):
 
-        sale = (sale.id, {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
+        historyList[index] = (sale.id, {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
             sale.priceWithTax), "quantity": sale.quantity, "shipping": usd(sale.shipping), "profit": usd(sale.profit), "packaging": usd(sale.packaging), "refund": sale.refund})
 
     # historyList = [
