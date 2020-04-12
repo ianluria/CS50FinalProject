@@ -11,7 +11,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.sales import bp
 from app.forms import SaleForm, SaleHistoryAdjustForm
-from app.helpers import populateItemSelectField, calculateProfit, createSaleHistoryList, populateFeeFields, createSaleActionForm, usd
+from app.helpers import populateItemSelectField, calculateProfit, populateFeeFields, createSaleActionForm, usd
 from app.models import User, Sales, Items
 from app.sales.createCSV import createCSV
 
@@ -47,51 +47,62 @@ def displaySales():
 
     page = int(request.args.get("page"))
 
-    # Convert data with userAction and list of items to view sales into a dict
+    # Convert data with userAction and list of items into a dict
     try:
-        requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
+        items = ast.literal_eval(current_user.saleDisplayInfo)
     except:
         flash("Error: User must have a saleDisplayInfo dict stored.", "error")
         return redirect(url_for("sales.sales"))
 
-    if page and requestItemsList:
+    if page and items:
 
-        # createSaleHistory returns a dict {saleHistoryQuery object, saleHistoryList tuples(id, Sales object)}
+        # createSaleHistory returns a dictionary  {"saleHistoryQuery": saleHistoryQuery object, "saleHistoryList": list of tuples (id, dict of Sales information)}
         saleHistory = createSaleHistoryList(
-            page, requestItemsList["itemsList"], requestItemsList["userAction"])
+            page, items["itemsList"], items["userAction"])
 
         next_url = url_for(
             'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
         prev_url = url_for(
             'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
-        if requestItemsList["userAction"] in ["edit", "delete", "refund"]:
+        if items["userAction"] in ["edit", "delete", "refund"]:
             adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
 
-            adjustSaleHistoryForm.sale.choices = prepareSaleHistory(
-                saleHistory["saleHistoryList"])
-            adjustSaleHistoryForm.submit.label.text = f"{requestItemsList['userAction'].capitalize()} Sale"
+            adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
+            adjustSaleHistoryForm.submit.label.text = f"{items['userAction'].capitalize()} Sale"
 
-            return render_template("sales/_saleEdit.html", userAction=requestItemsList["userAction"], adjustForm=adjustSaleHistoryForm, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+            return render_template("sales/_saleEdit.html", userAction=items["userAction"], adjustForm=adjustSaleHistoryForm, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
         else:
-            history = [sale[1] for sale in prepareSaleHistory(
-                saleHistory["saleHistoryList"])]
 
-            return render_template("sales/_saleHistory.html", userAction=requestItemsList["userAction"], history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
+            # history will be a list of dictionaries with sale information
+            history = [sale[1] for sale in saleHistory["saleHistoryList"]]
+
+            return render_template("sales/_saleHistory.html", userAction=items["userAction"], history=history, form=createSaleActionForm(), next_url=next_url, prev_url=prev_url)
 
     return redirect(url_for("sales.sales"))
 
-# Takes saleHistoryList and returns a list of dictionaries with formatted sale information for display
 
+# Returns a dict that includes a list of sale information divided by page
+def createSaleHistoryList(page, listOfItemNames, userAction=False):
 
-def prepareSaleHistory(saleHistoryList):
+    historyQuery = Sales.query.filter(
+        Sales.username == current_user.username, Sales.itemName.in_(listOfItemNames)).order_by(Sales.date.desc()).paginate(page, 30, False)
 
-    # saleHistory is a list of tuples with the 0 index being the sale ID and 1 index being the Sales object
-    for sale in saleHistoryList:
+    historyList = historyQuery.items
 
-        sale[1] = {"itemName": sale[1].itemName, "date": sale[1].date.strftime('%m/%d/%Y'), "price": usd(sale[1].price), "priceWithTax": usd(sale[1].priceWithTax), "quantity": sale[1].quantity, "shipping": usd(sale[1].shipping), "profit": usd(sale[1].profit), "packaging": usd(sale[1].packaging), "refund": sale[1].refund}
+    # Remove any already refunded sales if userAction is editing or refunding
+    if userAction in ["edit", "refund"]:
+        historyList = [sale for sale in historyList if not sale.refund]
 
-    return saleHistoryList
+    for sale in historyList:
+
+        sale = (sale.id, {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
+            sale.priceWithTax), "quantity": sale.quantity, "shipping": usd(sale.shipping), "profit": usd(sale.profit), "packaging": usd(sale.packaging), "refund": sale.refund})
+
+    # historyList = [
+    #     (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
+
+    return {"saleHistoryQuery": historyQuery, "saleHistoryList": historyList}
 
 
 # Enter a new sale or edit an existing one
