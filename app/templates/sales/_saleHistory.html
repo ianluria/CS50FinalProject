@@ -9,29 +9,29 @@
             <table class="table table-borderless table-hover">
                 <thead>
                     <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Price w/ Tax</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Shipping</th>
-                        <th scope="col">Packaging</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Profit</th>
-                        <th scope="col">Refund</th>
+                        <th scope="col" class="text-center">Item</th>
+                        <th scope="col" class="text-center">Quantity</th>
+                        <th scope="col" class="text-center">Price w/ Tax</th>
+                        <th scope="col" class="text-center">Price</th>
+                        <th scope="col" class="text-center">Shipping</th>
+                        <th scope="col" class="text-center">Packaging</th>
+                        <th scope="col" class="text-center">Date</th>
+                        <th scope="col" class="text-center">Profit</th>
+                        <th scope="col" class="text-center">Refund</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for sale in history %}
                     <tr>
-                        <th scope="row">{{sale.itemName}}</th>
-                        <td>{{sale["quantity"]}}</td>
-                        <td>{{sale["priceWithTax"]}}</td>
-                        <td>{{sale["price"]}}</td>
-                        <td>{{sale["shipping"]}}</td>
-                        <td>{{sale["packaging"]}}</td>
-                        <td>{{sale["date"]}}</td>
-                        <td>{{sale["profit"]}}</td>
-                        <td>{{'X' if sale["refund"] else ""}}</td>
+                        <th scope="row" class="text-center">{{sale["itemName"]}}</th>
+                        <td class="text-center">{{sale["quantity"]}}</td>
+                        <td class="text-center">{{sale["priceWithTax"]}}</td>
+                        <td class="text-center">{{sale["price"]}}</td>
+                        <td class="text-center">{{sale["shipping"]}}</td>
+                        <td class="text-center">{{sale["packaging"]}}</td>
+                        <td class="text-center">{{sale["date"]}}</td>
+                        <td class="text-center">{{sale["profit"]}}</td>
+                        <td class="text-center">{{'X' if sale["refund"] else ""}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

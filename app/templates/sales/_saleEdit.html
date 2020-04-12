@@ -8,20 +8,50 @@
         {% if adjustForm.sale.choices %}
         <form action="/sales/adjustSaleHistory" method="post" class="bg-light shadow p-3" novalidate>
             {{ adjustForm.hidden_tag() }}
-            <div class="form-group">
+            <!-- <div class="form-group"> -->
                 <div class="d-flex justify-content-between">
                     <span>{{ adjustForm.sale.label}} to {{ userAction.capitalize() }} </span>
                     <span>{{ adjustForm.submit(class_="btn btn-outline-danger btn-sm") }}</span>
                 </div>
-                <table class="table table-borderless table-hover">
-                    {% for subfield in adjustForm.sale %}
-                    <tr class="form-check">
-                        <td>{{ subfield }}</td>
-                        <td>{{ subfield.label.__call__(class_="form-check-label") }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
+                <div class="table-responsive-sm">
+                    <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col" class="text-center">Item</th>
+                                <th scope="col" class="text-center">Quantity</th>
+                                <th scope="col" class="text-center">Price w/ Tax</th>
+                                <th scope="col" class="text-center">Price</th>
+                                <th scope="col" class="text-center">Shipping</th>
+                                <th scope="col" class="text-center">Packaging</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Profit</th>
+                                {% if userAction not in ['edit', 'refund'] %}
+                                <th scope="col" class="text-center">Refund</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subfield in adjustForm.sale %}
+                            <tr>
+                                <td class="text-center">{{ subfield }}</td>
+                                <td class="text-center">{{subfield.label.text["itemName"]}}</td>
+                                <td class="text-center">{{subfield.label.text["quantity"]}}</td>
+                                <td class="text-center">{{subfield.label.text["priceWithTax"]}}</td>
+                                <td class="text-center">{{subfield.label.text["price"]}}</td>
+                                <td class="text-center">{{subfield.label.text["shipping"]}}</td>
+                                <td class="text-center">{{subfield.label.text["packaging"]}}</td>
+                                <td class="text-center">{{subfield.label.text["date"]}}</td>
+                                <td class="text-center">{{subfield.label.text["profit"]}}</td>
+                                {% if userAction not in ['edit', 'refund'] %}
+                                <td class="text-center">{{'X' if subfield.label.text["refund"] else ""}}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            <!-- </div> -->
             <div class="d-flex flex-row justify-content-between">
 
                 <span>

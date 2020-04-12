@@ -96,7 +96,7 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
 
     for index, sale in enumerate(historyList):
 
-        historyList[index] = (sale.id, {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
+        historyList[index] = (str(sale.id), {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
             sale.priceWithTax), "quantity": sale.quantity, "shipping": usd(sale.shipping), "profit": usd(sale.profit), "packaging": usd(sale.packaging), "refund": sale.refund})
 
     # historyList = [
@@ -186,6 +186,7 @@ def adjustSaleHistory():
         return redirect(url_for("sales.sales"))
 
     if requestItemsList:
+        
         # Populate sale choices to pass validation
         form.sale.choices = createSaleHistoryList(int(
             form.hidden.data), requestItemsList["itemsList"], requestItemsList["userAction"])["saleHistoryList"]
