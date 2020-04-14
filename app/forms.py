@@ -28,7 +28,8 @@ class SaleForm(FeeForm):
     date = DateField("Date", validators=[InputRequired()], format='%m-%d-%Y')
     price = DecimalField("Sale Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
-    priceWithTax = DecimalField("Price With Tax", validators=[NumberRange(min=0)], places=2)
+    priceWithTax = DecimalField("Price With Tax", validators=[
+                                NumberRange(min=0)], places=2)
     quantity = IntegerField("Quantity", validators=[
                             InputRequired(), NumberRange(min=1)])
     shipping = DecimalField("Postage", validators=[
@@ -39,6 +40,9 @@ class SaleForm(FeeForm):
     submit = SubmitField("Log Sale")
 
     def validate_priceWithTax(form, field):
+
+        if not isinstance(form.price.data, Decimal):
+            raise  ValidationError()
 
         if field.data:
             if field.data < form.price.data:
@@ -80,20 +84,6 @@ class SaleForm(FeeForm):
             raise ValidationError(
                 f"{unitsRemaining} of quantity remaining for {form.items.data}.")
 
-    def validate_priceWithTax(form, field):
-
-        if field.data:
-            try:
-                decimalData = Decimal(field.data)
-            except:
-                raise ValidationError("Must be a non-negative decimal number.")
-
-            if decimalData < 0:
-                raise ValidationError("Must be a non-negative decimal number.")
-
-            if decimalData < form.price.data:
-                raise ValidationError("Cannot be less than sale price.")
-
 
 class SaleActionForm(FlaskForm):
     items = SelectMultipleField("Item(s)", validators=[InputRequired()])
@@ -121,8 +111,8 @@ class ItemForm(FlaskForm):
 
     def validate_quantity(form, field):
 
-        if not isinstance(field.data, int):
-            raise ValidationError()
+        # if not isinstance(field.data, int):
+        #     raise ValidationError()
 
         # Only validate quantity if item is being edited
         if form.hidden.data:

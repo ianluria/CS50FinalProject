@@ -2,7 +2,6 @@
 
 {% block app_content %}
 
-
 {% if items %}
 <div class="row justify-content-around">
     <div class="col-auto">
@@ -11,7 +10,7 @@
 
         <table class="table table-hover">
             <thead>
-                <tr>
+                <tr class="text-center">
                     <th scope="col">Item</th>
                     <th scope="col">Quantity Remaining</th>
                     <th scope="col">Original Quantity</th>
@@ -22,32 +21,23 @@
             <tbody>
                 {% for item in items %}
 
-                    {% if item.quantityRemaining <= 5 and item.quantityRemaining > 0 %}
-                        <tr class="alert-warning">
+                {% if item.quantityRemaining <= 5 and item.quantityRemaining > 0 %}
+                <tr class="alert-warning text-center">
                     {% elif item.quantityRemaining == 0 %}
-                        <tr class="alert-danger">
+                <tr class="alert-danger text-center">
                     {% else %}
-                        <tr>
-                    {% endif %}        
-                        <th scope="row">{{ item.itemName }}</th>
-                        <td>{{ item.quantityRemaining }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.date }}</td>
-                        <td>{{ item.price }}</td>
-                    </tr>
+                <tr class="text-center">
+                    {% endif %}
+                    <th scope="row">{{ item.itemName }}</th>
+                    <td>{{ item.quantityRemaining }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.date }}</td>
+                    <td>{{ item.price }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-
-
-        <!-- <ul class="list-group list-group-flush bg-light shadow p-2">
-            
-        </ul> -->
     </div>
 </div>
 {% endif %}
-
-<!-- "{item.itemName} cost {usd(item.price)} for quantity of {item.quantity} and added on {item.date.strftime('%m/%d/%Y')}." for item in items] -->
-
 {% endblock %}
