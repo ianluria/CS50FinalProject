@@ -28,9 +28,7 @@ class SaleForm(FeeForm):
     date = DateField("Date", validators=[InputRequired()], format='%m-%d-%Y')
     price = DecimalField("Sale Price", validators=[
                          InputRequired(), NumberRange(min=0)], places=2)
-    # priceWithTax is a purely optional field. It is a StringField but will be custom validated /
-    # to make sure it is a proper decimal value if the user enters data.
-    priceWithTax = StringField("Price With Tax")
+    priceWithTax = DecimalField("Price With Tax", validators=[NumberRange(min=0)], places=2)
     quantity = IntegerField("Quantity", validators=[
                             InputRequired(), NumberRange(min=1)])
     shipping = DecimalField("Postage", validators=[

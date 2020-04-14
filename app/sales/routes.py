@@ -147,8 +147,7 @@ def newSale():
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
-        usersSale.priceWithTax = str(Decimal(form.priceWithTax.data).quantize(
-            Decimal("1.00"))) if form.priceWithTax.data else ""
+        usersSale.priceWithTax = str(form.priceWithTax.data) if form.priceWithTax.data else ""
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
@@ -218,7 +217,7 @@ def adjustSaleHistory():
 
                 saleFormToEdit.date.data = saleToAdjust.date
                 saleFormToEdit.price.data = Decimal(saleToAdjust.price)
-                saleFormToEdit.priceWithTax.data = saleToAdjust.priceWithTax
+                saleFormToEdit.priceWithTax.data = Decimal(saleToAdjust.priceWithTax)
                 saleFormToEdit.quantity.data = saleToAdjust.quantity
                 saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
                 saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
