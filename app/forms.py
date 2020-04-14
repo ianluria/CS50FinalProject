@@ -42,7 +42,7 @@ class SaleForm(FeeForm):
     def validate_priceWithTax(form, field):
 
         if not isinstance(form.price.data, Decimal):
-            raise  ValidationError()
+            raise ValidationError()
 
         if field.data:
             if field.data < form.price.data:
@@ -110,9 +110,6 @@ class ItemForm(FlaskForm):
     submit = SubmitField('Add')
 
     def validate_quantity(form, field):
-
-        # if not isinstance(field.data, int):
-        #     raise ValidationError()
 
         # Only validate quantity if item is being edited
         if form.hidden.data:
