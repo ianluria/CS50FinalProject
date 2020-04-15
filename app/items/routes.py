@@ -122,15 +122,16 @@ def adjustItem():
         if form.action.data == "delete":
 
             return render_template("items/deleteConfirmation.html", form=DeleteConfirmationForm(hidden=form.items.data))
-            
+
         elif form.action.data == "edit":
 
             item = Items.query.filter_by(user=current_user).filter_by(
                 itemName=form.items.data).first_or_404()
 
-            # Populate an itemForm object with the "item" data stored in the database to show user.
+            # Populate an itemForm object with item data
             itemForm = ItemForm(price=Decimal(item.price),
                                 quantity=item.quantity, itemName=item.itemName)
+
             # Store the current name of the item in a hidden field to track if the user makes changes to the itemName.
             itemForm.hidden.data = item.itemName
 
@@ -153,10 +154,7 @@ def deleteItem():
             itemName=form.hidden.data).first_or_404()
 
         # Delete all sales history for item
-        salesToDelete = Sales.query.filter_by(username=current_user.username).filter_by(
-            item=item).all()
-
-        for sale in salesToDelete:
+        for sale in item.sales.all():
             db.session.delete(sale)
 
         db.session.delete(item)
