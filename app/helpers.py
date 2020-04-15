@@ -18,7 +18,7 @@ def populateItemSelectField(form=False):
 
     return items
 
-
+# Transfers information from ItemForm's user input to an Item object
 def populateItemsObject(obj, form, edit=False):
 
     if isinstance(obj, Items):
@@ -31,8 +31,7 @@ def populateItemsObject(obj, form, edit=False):
             # Only fill these values if a new instance of Items is being created.
             if not edit:
                 obj.username = current_user.username
-                obj.user = User.query.filter_by(
-                    username=current_user.username).first()
+                obj.user = current_user
 
             return
 
@@ -66,9 +65,6 @@ def calculateProfit(model, refund=False):
 
     else:
         raise TypeError("Model must be of Sales type.")
-
-
-
 
 
 def usd(value):

@@ -12,7 +12,7 @@ from app.forms import ItemForm, ItemSelectForm, DeleteConfirmationForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, usd
 from app.models import User, Sales, Items
 
-
+# Landing page for creating, editing, or deleting items
 @bp.route("/items", methods=["GET"])
 @login_required
 def items():
@@ -22,9 +22,9 @@ def items():
 
     listOfItems = populateItemSelectField(form)
 
-    return render_template("items/adjustItem.html", form=form, items=True if listOfItems else False)
+    return render_template("items/adjustItem.html", form=form)
 
-
+# Creates a list of dictionaries used to populate a table of all items' details
 @bp.route("/itemDetails", methods=["GET"])
 @login_required
 def itemDetails():
@@ -81,10 +81,11 @@ def addItem():
             item = Items()
             edit = False
 
+        # Capture sales for current item in case of an item name change in the next function
         if edit:
             sales = item.sales.all()
 
-        # Update item with new data from form.
+        # Update item object with new data from form.
         populateItemsObject(item, form, edit=edit)
 
         # The profit for each sale will be updated given the new item information from user
