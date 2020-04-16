@@ -8,9 +8,9 @@
 
         <p class="my-4 text-center h4">{{ current_user.username }}'s items for sale:</p>
 
-        <table class="table table-hover">
+        <table class="table table-hover text-center">
             <thead>
-                <tr class="text-center">
+                <tr>
                     <th scope="col">Item</th>
                     <th scope="col">Quantity Remaining</th>
                     <th scope="col">Original Quantity</th>
@@ -22,12 +22,12 @@
                 {% for item in items %}
 
                 {% if item.quantityRemaining <= 5 and item.quantityRemaining > 0 %}
-                <tr class="alert-warning text-center">
-                    {% elif item.quantityRemaining == 0 %}
-                <tr class="alert-danger text-center">
-                    {% else %}
-                <tr class="text-center">
-                    {% endif %}
+                <tr class="alert-warning">
+                {% elif item.quantityRemaining == 0 %}
+                <tr class="alert-danger">
+                {% else %}
+                <tr>
+                {% endif %}
                     <th scope="row">{{ item.itemName }}</th>
                     <td>{{ item.quantityRemaining }}</td>
                     <td>{{ item.quantity }}</td>
