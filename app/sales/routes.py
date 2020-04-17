@@ -16,7 +16,7 @@ from app.models import User, Sales, Items
 from app.sales.createCSV import createCSV
 
 
-# Provide a list of items that user can select from to either edit/delete a sale or view a history of that item's sales.  Multiple items can be selected.
+# User can choose to view a history of sales or edit/delete/refund a sale.
 @bp.route("/sales", methods=["GET", "POST"])
 @login_required
 def sales():
@@ -99,9 +99,6 @@ def createSaleHistoryList(page, listOfItemNames, userAction=False):
         historyList[index] = (str(sale.id), {"itemName": sale.itemName, "date": sale.date.strftime('%m/%d/%Y'), "price": usd(sale.price), "priceWithTax": usd(
             sale.priceWithTax), "quantity": sale.quantity, "shipping": usd(sale.shipping), "profit": usd(sale.profit), "packaging": usd(sale.packaging), "refund": sale.refund})
 
-    # historyList = [
-    #     (str(sale.id), f"{'Refunded' if sale.refund else ''} {sale.quantity} {sale.itemName} sold at {usd(Decimal(sale.price))} on {sale.date.strftime('%m/%d/%Y')} with shipping of {usd(Decimal(sale.shipping))} and packaging of {usd(Decimal(sale.packaging))} for a {'profit' if Decimal(sale.profit) >= 0 else 'loss'} of {usd(Decimal(sale.profit))}.") for sale in historyList]
-
     return {"saleHistoryQuery": historyQuery, "saleHistoryList": historyList}
 
 
@@ -147,7 +144,8 @@ def newSale():
 
         usersSale.date = form.date.data
         usersSale.price = str(form.price.data)
-        usersSale.priceWithTax = str(form.priceWithTax.data) if form.priceWithTax.data else ""
+        usersSale.priceWithTax = str(
+            form.priceWithTax.data) if form.priceWithTax.data else ""
         usersSale.quantity = form.quantity.data
         usersSale.shipping = str(form.shipping.data)
         usersSale.packaging = str(form.packaging.data)
@@ -185,7 +183,7 @@ def adjustSaleHistory():
         return redirect(url_for("sales.sales"))
 
     if requestItemsList:
-        
+
         # Populate sale choices to pass validation
         form.sale.choices = createSaleHistoryList(int(
             form.hidden.data), requestItemsList["itemsList"], requestItemsList["userAction"])["saleHistoryList"]
@@ -217,7 +215,8 @@ def adjustSaleHistory():
 
                 saleFormToEdit.date.data = saleToAdjust.date
                 saleFormToEdit.price.data = Decimal(saleToAdjust.price)
-                saleFormToEdit.priceWithTax.data = Decimal(saleToAdjust.priceWithTax)
+                saleFormToEdit.priceWithTax.data = Decimal(
+                    saleToAdjust.priceWithTax)
                 saleFormToEdit.quantity.data = saleToAdjust.quantity
                 saleFormToEdit.shipping.data = Decimal(saleToAdjust.shipping)
                 saleFormToEdit.packaging.data = Decimal(saleToAdjust.packaging)
