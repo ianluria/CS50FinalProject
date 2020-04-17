@@ -66,6 +66,7 @@ def displaySales():
             'sales.displaySales', page=saleHistory["saleHistoryQuery"].prev_num) if saleHistory["saleHistoryQuery"].has_prev else None
 
         if items["userAction"] in ["edit", "delete", "refund"]:
+            # hidden is used to track which page of sales data is being displayed to the user
             adjustSaleHistoryForm = SaleHistoryAdjustForm(hidden=page)
 
             adjustSaleHistoryForm.sale.choices = saleHistory["saleHistoryList"]
@@ -176,6 +177,7 @@ def adjustSaleHistory():
 
     form = SaleHistoryAdjustForm()
 
+    # requestItemsList is a dict containing userAction and itemsList
     try:
         requestItemsList = ast.literal_eval(current_user.saleDisplayInfo)
     except:
@@ -203,7 +205,7 @@ def adjustSaleHistory():
 
             elif requestItemsList["userAction"] == "edit":
 
-                # Create a SaleForm that will be prepopulated with the sale-to-edit's information that the user can then adjust
+                # Create a SaleForm that will be prepopulated
                 saleFormToEdit = SaleForm()
 
                 populateItemSelectField(saleFormToEdit)
