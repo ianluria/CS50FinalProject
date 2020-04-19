@@ -19,72 +19,72 @@
                         {{ form.items.label }}
                         {{ form.items(class_="form-control") }}
                         {% for error in form.items.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.date.label }}
                         {{ form.date(class_="form-control") }}
                         {% for error in form.date.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.priceWithTax.label }}
                         {{ form.priceWithTax(class_="form-control") }}
                         {% for error in form.priceWithTax.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.price.label }}
                         {{ form.price(class_="form-control") }}
                         {% for error in form.price.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.quantity.label }}
                         {{ form.quantity(class_="form-control") }}
                         {% for error in form.quantity.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
-                    </div>                    
+                    </div>
                 </div>
                 <div class="col-sm d-flex flex-column justify-content-between">
                     <div class="form-group">
                         {{ form.shipping.label }}
                         {{ form.shipping(class_="form-control") }}
                         {% for error in form.shipping.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.packaging.label }}
                         {{ form.packaging(class_="form-control") }}
                         {% for error in form.packaging.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.eBayPercent.label }}
                         {{ form.eBayPercent(class_="form-control") }}
                         {% for error in form.eBayPercent.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.payPalFixed.label }}
                         {{ form.payPalFixed(class_="form-control") }}
                         {% for error in form.payPalFixed.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
                     <div class="form-group">
                         {{ form.payPalPercent.label }}
                         {{ form.payPalPercent(class_="form-control") }}
                         {% for error in form.payPalPercent.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        <span style="color: red;">{{ '[' + error + ']' if error }}</span>
                         {% endfor %}
                     </div>
 
