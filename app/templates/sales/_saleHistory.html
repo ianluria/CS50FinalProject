@@ -2,7 +2,7 @@
 
 {% block history %}
 
-{% if history %}
+
 <div class="row justify-content-around">
     <div class="col-auto bg-light shadow p-3">
         <div class="table-responsive-sm">
@@ -45,12 +45,5 @@
         </div>
     </div>
 </div>
-{% else %}
-<div class="row justify-content-around">
-    <div class="col-auto">
-        <p class="alert alert-danger" role="alert">No sales have been made yet for the selected items.</p>
-    </div>
-</div>
-{% endif %}
 
 {% endblock %}
