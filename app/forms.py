@@ -2,11 +2,9 @@
 import ast
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, PasswordField, BooleanField, SelectField, HiddenField, SelectMultipleField, RadioField
-from wtforms.validators import ValidationError, InputRequired, Email, EqualTo, Length, NumberRange
-from app.models import User, Items, Sales
-from app import db
-from sqlalchemy import func
+from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, SelectField, HiddenField, SelectMultipleField, RadioField
+from wtforms.validators import ValidationError, InputRequired, Length, NumberRange
+from app.models import Items, Sales
 from flask_login import current_user
 import datetime
 from decimal import Decimal
@@ -49,15 +47,9 @@ class SaleForm(FeeForm):
                 raise ValidationError(
                     "Price with tax cannot be less than price.")
 
-            if field.data < 0:
-                raise ValidationError("Price cannot be less than zero.")
-
     def validate_date(form, field):
 
-        if not type(field.data) == datetime.date:
-            raise ValidationError("Date must be 'MM-DD-YYYY'")
-
-        if field.data > datetime.date.today():
+        if type(field.data) == datetime.date and field.data > datetime.date.today():
             raise ValidationError("Date cannot be in the future.")
 
     def validate_quantity(form, field):
