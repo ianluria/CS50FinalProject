@@ -60,6 +60,15 @@ def displaySales():
         saleHistory = createSaleHistoryList(
             page, items["itemsList"], items["userAction"])
 
+        # No sales are able to be edited, refunded, or deleted
+        if not saleHistory["saleHistoryList"]:
+
+            userAction = items['userAction']+'ed' if not items['userAction'][-1:] == 'e' else items['userAction']+'d'
+            userAction = "viewed" if items["userAction"] == "history" else userAction
+
+            flash(f"None of the selected items have sales that can be {userAction} yet.", "error")
+            return redirect(url_for("sales.sales"))
+
         next_url = url_for(
             'sales.displaySales', page=saleHistory["saleHistoryQuery"].next_num) if saleHistory["saleHistoryQuery"].has_next else None
         prev_url = url_for(
