@@ -1,12 +1,10 @@
 from app import db, login
-import datetime
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask import current_app
 from time import time
 import jwt
-# from app import app
 
 
 class Sales(db.Model):
@@ -26,7 +24,7 @@ class Sales(db.Model):
     refund = db.Column(db.Boolean)
 
     def __repr__(self):
-        return '<Sales {}>'.format(self.username)
+        return '<Sales {}>'.format(self.id)
 
 
 class Items(db.Model):
@@ -75,13 +73,6 @@ class User(UserMixin, db.Model):
         except:
             return
         return User.query.get(id)
-
-    # def removeItem(self, item):
-    #     if self.has_item(item):
-    #         self.items.remove(item)
-
-    # def has_item(self, item):
-    #     return self.items.filter(usersItem==item).count() > 0
 
 
 @login.user_loader
