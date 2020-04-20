@@ -10,7 +10,7 @@ from app import db
 from app.items import bp
 from app.forms import ItemForm, ItemSelectForm, DeleteConfirmationForm
 from app.helpers import populateItemSelectField, calculateProfit, populateItemsObject, usd
-from app.models import User, Sales, Items
+from app.models import User, Items
 
 # Landing page for creating, editing, or deleting items
 @bp.route("/items", methods=["GET"])

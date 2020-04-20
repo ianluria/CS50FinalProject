@@ -22,11 +22,6 @@
       <li class="list-group-item"><a class="text-dark" href="{{ url_for('main.fees') }}">Adjust selling fees.</a></li>
     </ul>
 
-    <div class="mt-4 overflow-auto" id="unitsRemainingList">
-      {% for item in itemQuantityRemaining %}
-      <p class=" text-center">{{item[1]}} units remaning for {{item[0]}}.</p>
-      {% endfor %}
-    </div>
   </div>
 </div>
 
