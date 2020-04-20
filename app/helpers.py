@@ -1,28 +1,24 @@
 from flask_login import current_user
 from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
-from app.models import Items, Sales, User
+from app.models import Items, Sales
 from decimal import Decimal
 
 
-# Can also be used to return a preformatted list of strings with item details
-def populateItemSelectField(form=False):
-
-    items = Items.query.filter_by(username=current_user.username).all()
+# Poplates the choices field of a given form
+def populateItemSelectField(form):
 
     if isinstance(form, ItemSelectForm) or isinstance(form, SaleForm) or isinstance(form, SaleActionForm):
 
         # Create a list of items for use in select field
-        names = [(item.itemName, item.itemName) for item in items]
+        names = [(item.itemName, item.itemName) for item in current_user.items]
 
         form.items.choices = names
 
-    return items
 
 # Transfers information from ItemForm's user input to an Item object
 def populateItemsObject(obj, form, edit=False):
 
-    if isinstance(obj, Items):
-        if isinstance(form, ItemForm):
+    if isinstance(obj, Items) and isinstance(form, ItemForm):
 
             obj.itemName = form.itemName.data.strip()
             obj.price = str(form.price.data)
@@ -85,8 +81,8 @@ def populateFeeFields(form):
 def createSaleActionForm():
     form = SaleActionForm()
 
-    names = populateItemSelectField(form)
+    populateItemSelectField(form)
 
-    form.items.size = len(names)
+    form.items.size = len(form.items.choices)
 
     return form

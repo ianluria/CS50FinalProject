@@ -20,7 +20,7 @@ def items():
     # Form that allows user to select an existing item to edit or delete
     form = ItemSelectForm()
 
-    listOfItems = populateItemSelectField(form)
+    populateItemSelectField(form)
 
     return render_template("items/adjustItem.html", form=form)
 
