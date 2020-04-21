@@ -1,7 +1,10 @@
+# Standard library imports
+from decimal import Decimal
+# Related third party imports
 from flask_login import current_user
+# Local application/library specific imports
 from app.forms import ItemSelectForm, SaleForm, ItemForm, SaleActionForm
 from app.models import Items, Sales
-from decimal import Decimal
 
 
 # Poplates the choices field of a given form
@@ -20,16 +23,16 @@ def populateItemsObject(obj, form, edit=False):
 
     if isinstance(obj, Items) and isinstance(form, ItemForm):
 
-            obj.itemName = form.itemName.data.strip()
-            obj.price = str(form.price.data)
-            obj.quantity = form.quantity.data
+        obj.itemName = form.itemName.data.strip()
+        obj.price = str(form.price.data)
+        obj.quantity = form.quantity.data
 
-            # Only fill these values if a new instance of Items is being created.
-            if not edit:
-                obj.username = current_user.username
-                obj.user = current_user
+        # Only fill these values if a new instance of Items is being created.
+        if not edit:
+            obj.username = current_user.username
+            obj.user = current_user
 
-            return
+        return
 
     raise TypeError(
         "Obj must be of Items type and form must be of ItemForm type.")

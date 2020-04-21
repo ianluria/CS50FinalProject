@@ -1,10 +1,13 @@
-from app import db, login
+# Standard library imports
+from time import time
 from datetime import date
+# Related third party imports
+import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask import current_app
-from time import time
-import jwt
+# Local application/library specific imports
+from app import db, login
 
 
 class Sales(db.Model):

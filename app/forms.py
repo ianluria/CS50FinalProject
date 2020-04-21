@@ -1,13 +1,14 @@
-# Standard library imports
+#Standard library imports
 import ast
-
+import datetime
+from decimal import Decimal
+#Related third party imports
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, DateField, SubmitField, IntegerField, SelectField, HiddenField, SelectMultipleField, RadioField
 from wtforms.validators import ValidationError, InputRequired, Length, NumberRange
-from app.models import Items, Sales
 from flask_login import current_user
-import datetime
-from decimal import Decimal
+#Local application/library specific imports
+from app.models import Items, Sales
 
 
 class FeeForm(FlaskForm):

@@ -1,8 +1,9 @@
-from app.models import Sales
-from flask_login import current_user
-
+#Standard library imports
 import csv
-
+#Related third party imports
+from flask_login import current_user
+#Local application/library specific imports
+from app.models import Sales
 
 def createCSV():
 
