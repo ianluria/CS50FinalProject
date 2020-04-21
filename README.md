@@ -1,4 +1,4 @@
-###### **eBaySalt** *The eBay Sales Tracker*
+## **eBaySalt** *The eBay Sales Tracker*
 
 A simple application built with Flask to store and track eBay sales.
 
