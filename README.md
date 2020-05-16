@@ -4,11 +4,13 @@ A simple application built with Flask to store and track eBay sales.
 
 The user can create a unique, password protected account.
 
-Once logged in, the user can store up to 40 unique items for sale.
+Once logged in, the user can add up to 40 unique items for sale, and set specific eBay fee information.
 
-Each item can have an unlimited number of unique sales.
+Each item can have an unlimited number of associated unique sales.
 
 Each sale contains information such as the date, price, sales tax, and shipping costs.
+
+After the sale is entered, based on the sale information, a profit calcuation is stored for it.
 
 The user is able to edit, delete, and refund each sale, as well as edit or delete items themselves.
 
